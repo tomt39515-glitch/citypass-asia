@@ -3,6 +3,7 @@ import QRTab from "../components/client/QRTab";
 import HistoryTab from "../components/client/HistoryTab";
 import ProfileTab from "../components/client/ProfileTab";
 import NotificationsTab from "../components/client/NotificationsTab";
+import OffersTab from "../components/client/OffersTab";
 
 export default function ClientDashboard(props) {
   const { currentTab } = props;
@@ -21,6 +22,10 @@ export default function ClientDashboard(props) {
 
   if (currentTab === "notifications") {
     return <NotificationsTab {...props} />;
+  }
+
+  if (currentTab === "offers") {
+    return <OffersTab {...props} />;
   }
 
   if (currentTab === "profile") {
