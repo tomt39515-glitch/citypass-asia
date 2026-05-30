@@ -51,7 +51,14 @@ export default function OffersTab() {
           ← Назад
         </button>
 
-        <PartnerDetails />
+        <PartnerDetails
+          partner={selectedPartner}
+          onGetDiscount={() =>
+            alert(
+              `Переход к QR для ${selectedPartner.name}`
+            )
+          }
+        />
       </div>
     );
   }

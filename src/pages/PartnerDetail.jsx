@@ -1,4 +1,7 @@
-export default function PartnerDetails() {
+export default function PartnerDetails({
+  partner,
+  onGetDiscount,
+}) {
   return (
     <div
       style={{
@@ -9,7 +12,7 @@ export default function PartnerDetails() {
     >
       <img
         src="https://picsum.photos/600/300"
-        alt="partner"
+        alt={partner?.name}
         style={{
           width: "100%",
           borderRadius: "20px",
@@ -23,11 +26,13 @@ export default function PartnerDetails() {
           padding: "20px",
         }}
       >
-        <h2>Burger House</h2>
+        <h2>{partner?.name}</h2>
 
-        <p>🍔 Лучшие бургеры в Нячанге</p>
+        <p>
+          {partner?.icon} Партнёр CityPass Asia
+        </p>
 
-        <p>📍 Nha Trang Center</p>
+        <p>📍 Нячанг</p>
 
         <p>📞 +84 901 234 567</p>
 
@@ -41,10 +46,11 @@ export default function PartnerDetails() {
             fontWeight: "700",
           }}
         >
-          Скидка 15%
+          Скидка {partner?.discount}
         </div>
 
         <button
+          onClick={onGetDiscount}
           style={{
             width: "100%",
             marginTop: "20px",
@@ -54,6 +60,7 @@ export default function PartnerDetails() {
             background: "#2563eb",
             color: "#fff",
             cursor: "pointer",
+            fontWeight: "600",
           }}
         >
           Получить скидку
