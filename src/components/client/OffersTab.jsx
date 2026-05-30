@@ -33,7 +33,7 @@ export default function OffersTab() {
         minHeight: "100vh",
       }}
     >
-      <h2>🔥 Предложения</h2>
+      <h2>🔥 Скидки и предложения</h2>
 
       <div
         style={{
@@ -56,7 +56,7 @@ export default function OffersTab() {
           >
             <img
               src={offer.image}
-              alt=""
+              alt={offer.name}
               style={{
                 width: "100%",
                 height: "180px",
@@ -75,7 +75,7 @@ export default function OffersTab() {
                 style={{
                   color: "#ff7b00",
                   fontWeight: "700",
-                  fontSize: "20px",
+                  fontSize: "22px",
                 }}
               >
                 Скидка {offer.discount}
