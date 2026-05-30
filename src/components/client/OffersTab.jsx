@@ -1,3 +1,5 @@
+import PartnerCard from "./PartnerCard";
+
 export default function OffersTab() {
   const offers = [
     {
@@ -48,50 +50,13 @@ export default function OffersTab() {
       />
 
       {offers.map((offer, index) => (
-        <div
+        <PartnerCard
           key={index}
-          style={{
-            background: "#fff",
-            borderRadius: "20px",
-            padding: "18px",
-            boxShadow: "0 4px 15px rgba(0,0,0,.05)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>
-              <h3 style={{ margin: 0 }}>
-                {offer.icon} {offer.name}
-              </h3>
-
-              <div
-                style={{
-                  color: "#666",
-                  marginTop: "5px",
-                }}
-              >
-                {offer.category}
-              </div>
-            </div>
-
-            <div
-              style={{
-                background: "#16a34a",
-                color: "#fff",
-                padding: "10px 14px",
-                borderRadius: "12px",
-                fontWeight: "700",
-              }}
-            >
-              -{offer.discount}
-            </div>
-          </div>
-        </div>
+          name={offer.name}
+          discount={offer.discount}
+          category={offer.category}
+          icon={offer.icon}
+        />
       ))}
     </div>
   );
