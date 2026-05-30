@@ -2,10 +2,10 @@ import React, { useState } from "react";
 
 import AppLayout from "./layouts/AppLayout";
 
-import ClientDashboard from "./pages/ClientDashboard";
-import PartnerDashboard from "./pages/PartnerDashboard";
-import AgentDashboard from "./components/AgentDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
+import ClientDashboard from "./dashboards/ClientDashboard";
+import PartnerDashboard from "./dashboards/PartnerDashboard";
+import AgentDashboard from "./dashboards/AgentDashboard";
+import AdminDashboard from "./dashboards/AdminDashboard";
 
 function App() {
   const [role, setRole] = useState("client");
