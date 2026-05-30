@@ -1,4 +1,22 @@
+import React, { useState } from "react";
+import QRScanner from "../components/QRScanner";
+
 export default function PartnerDashboard() {
+  const [showScanner, setShowScanner] =
+    useState(false);
+
+  const handleScanSuccess = (data) => {
+    console.log("QR DATA:", data);
+
+    alert(
+      `Клиент найден: ${
+        data.name || data.clientId
+      }`
+    );
+
+    setShowScanner(false);
+  };
+
   return (
     <div
       style={{
@@ -43,7 +61,6 @@ export default function PartnerDashboard() {
           }}
         >
           <div>Клиентов сегодня</div>
-
           <h2>24</h2>
         </div>
 
@@ -55,7 +72,6 @@ export default function PartnerDashboard() {
           }}
         >
           <div>Скидок сегодня</div>
-
           <h2>1 250 000 ₫</h2>
         </div>
       </div>
@@ -69,6 +85,9 @@ export default function PartnerDashboard() {
         }}
       >
         <button
+          onClick={() =>
+            setShowScanner(true)
+          }
           style={{
             background:
               "linear-gradient(135deg,#2563eb,#1d4ed8)",
@@ -83,6 +102,42 @@ export default function PartnerDashboard() {
           📷 Сканировать QR
         </button>
       </div>
+
+      {showScanner && (
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "20px",
+            padding: "20px",
+          }}
+        >
+          <h3>Сканирование QR</h3>
+
+          <QRScanner
+            onScanSuccess={
+              handleScanSuccess
+            }
+          />
+
+          <button
+            onClick={() =>
+              setShowScanner(false)
+            }
+            style={{
+              marginTop: "16px",
+              width: "100%",
+              padding: "14px",
+              border: "none",
+              borderRadius: "14px",
+              background: "#ef4444",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            Закрыть сканер
+          </button>
+        </div>
+      )}
 
       <div
         style={{
