@@ -3,6 +3,7 @@ export default function PartnerCard({
   discount,
   category,
   icon,
+  onOpen,
 }) {
   return (
     <div
@@ -20,13 +21,14 @@ export default function PartnerCard({
         }}
       >
         <div>
-          <h3>
+          <h3 style={{ margin: 0 }}>
             {icon} {name}
           </h3>
 
           <div
             style={{
               color: "#666",
+              marginTop: "6px",
             }}
           >
             {category}
@@ -40,6 +42,7 @@ export default function PartnerCard({
             padding: "10px 14px",
             borderRadius: "12px",
             fontWeight: "700",
+            height: "fit-content",
           }}
         >
           -{discount}
@@ -47,6 +50,7 @@ export default function PartnerCard({
       </div>
 
       <button
+        onClick={onOpen}
         style={{
           marginTop: "15px",
           width: "100%",
@@ -56,6 +60,7 @@ export default function PartnerCard({
           borderRadius: "12px",
           padding: "12px",
           cursor: "pointer",
+          fontWeight: "600",
         }}
       >
         Подробнее
