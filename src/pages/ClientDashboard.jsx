@@ -136,11 +136,7 @@ export default function ClientDashboard({
           >
             <div>Сегодня сэкономлено</div>
 
-            <h2
-              style={{
-                marginTop: "10px",
-              }}
-            >
+            <h2 style={{ marginTop: "10px" }}>
               12 458 000 ₫
             </h2>
           </div>
@@ -170,29 +166,133 @@ export default function ClientDashboard({
       )}
 
       {currentTab === "qr" && (
-        <div>
-          <h2>Мой QR</h2>
-          <p>QR экран работает</p>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+          }}
+        >
+          <div
+            style={{
+              background:
+                "linear-gradient(135deg,#2563eb,#1d4ed8)",
+              borderRadius: "24px",
+              padding: "24px",
+              color: "#fff",
+            }}
+          >
+            <div style={{ fontSize: "14px" }}>
+              CityPass Asia
+            </div>
+
+            <h2 style={{ marginTop: "10px" }}>
+              Виталий К.
+            </h2>
+
+            <div
+              style={{
+                display: "inline-block",
+                marginTop: "10px",
+                background: "rgba(255,255,255,.2)",
+                padding: "8px 12px",
+                borderRadius: "999px",
+              }}
+            >
+              ⭐ Premium
+            </div>
+          </div>
+
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: "24px",
+              padding: "24px",
+              textAlign: "center",
+            }}
+          >
+            <h2>Мой QR</h2>
+
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=citypass"
+              alt="QR"
+              style={{
+                marginTop: "15px",
+                borderRadius: "20px",
+              }}
+            />
+
+            <div
+              style={{
+                marginTop: "20px",
+                color: "#2563eb",
+                fontSize: "24px",
+                fontWeight: "700",
+              }}
+            >
+              60 сек
+            </div>
+
+            <p style={{ color: "#666" }}>
+              Покажите QR партнёру
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "12px",
+            }}
+          >
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: "20px",
+                padding: "20px",
+              }}
+            >
+              <div>Сегодня</div>
+
+              <h2 style={{ color: "#16a34a" }}>
+                245 000 ₫
+              </h2>
+            </div>
+
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: "20px",
+                padding: "20px",
+              }}
+            >
+              <div>Всего скидок</div>
+
+              <h2 style={{ color: "#ff7b00" }}>
+                341
+              </h2>
+            </div>
+          </div>
         </div>
       )}
 
       {currentTab === "history" && (
         <div>
-          <h2>История</h2>
+          <h2>📜 История</h2>
           <p>История операций</p>
         </div>
       )}
 
       {currentTab === "notifications" && (
         <div>
-          <h2>Уведомления</h2>
+          <h2>🔔 Уведомления</h2>
           <p>Уведомлений пока нет</p>
         </div>
       )}
 
       {currentTab === "profile" && (
         <div>
-          <h2>Профиль</h2>
+          <h2>👤 Профиль</h2>
 
           <button onClick={() => setRole("client")}>
             Клиент
