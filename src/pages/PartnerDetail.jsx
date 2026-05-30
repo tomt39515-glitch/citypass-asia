@@ -60,7 +60,6 @@ export default function PartnerDetails({
             background: "#2563eb",
             color: "#fff",
             cursor: "pointer",
-            fontWeight: "600",
           }}
         >
           Получить скидку
