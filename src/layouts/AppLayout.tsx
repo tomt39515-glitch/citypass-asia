@@ -15,27 +15,18 @@ import {
   Briefcase,
 } from "lucide-react";
 
-type Role = "client" | "partner" | "admin" | "agent";
-
-interface Props {
-  role: Role;
-  currentTab: string;
-  onChangeTab: (tab: string) => void;
-  children: React.ReactNode;
-}
-
 export default function AppLayout({
   role,
   currentTab,
   onChangeTab,
   children,
-}: Props) {
+}) {
   const tabsByRole = {
     client: [
       { key: "home", label: "Главная", icon: Home },
+      { key: "offers", label: "Скидки", icon: Briefcase },
       { key: "qr", label: "QR", icon: QrCode },
       { key: "history", label: "История", icon: History },
-      { key: "notifications", label: "Уведомления", icon: Bell },
       { key: "profile", label: "Профиль", icon: User },
     ],
 
@@ -62,11 +53,10 @@ export default function AppLayout({
     ],
   };
 
-  const tabs = tabsByRole[role];
+  const tabs = tabsByRole[role] || [];
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
-      {/* HEADER */}
       <header className="sticky top-0 z-50 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold text-slate-900">
@@ -78,17 +68,15 @@ export default function AppLayout({
           </p>
         </div>
 
-        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+        <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
           C
         </div>
       </header>
 
-      {/* CONTENT */}
       <main className="flex-1 p-4 pb-28 overflow-y-auto">
         {children}
       </main>
 
-      {/* BOTTOM NAV */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -100,11 +88,12 @@ export default function AppLayout({
               onClick={() => onChangeTab(tab.key)}
               className={`flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all ${
                 active
-                  ? "bg-blue-600 text-white"
+                  ? "bg-orange-500 text-white"
                   : "text-slate-500"
               }`}
             >
               <Icon size={20} />
+
               <span className="text-[10px] mt-1">
                 {tab.label}
               </span>
