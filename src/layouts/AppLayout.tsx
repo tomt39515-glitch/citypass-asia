@@ -3,7 +3,6 @@ import {
   Home,
   QrCode,
   History,
-  Bell,
   User,
   LayoutDashboard,
   ScanLine,
@@ -24,8 +23,8 @@ export default function AppLayout({
   const tabsByRole = {
     client: [
       { key: "home", label: "Главная", icon: Home },
-      { key: "offers", label: "Скидки", icon: Briefcase },
-      { key: "qr", label: "QR", icon: QrCode },
+      { key: "offers", label: "Партнёры", icon: Briefcase },
+      { key: "qr", label: "Карта", icon: QrCode },
       { key: "history", label: "История", icon: History },
       { key: "profile", label: "Профиль", icon: User },
     ],
@@ -76,7 +75,7 @@ export default function AppLayout({
       >
         <div
           style={{
-            maxWidth: "480px",
+            maxWidth: "560px",
             margin: "0 auto",
             display: "flex",
             justifyContent: "space-between",
@@ -120,7 +119,7 @@ export default function AppLayout({
 
       <main
         style={{
-          paddingBottom: "100px",
+          paddingBottom: "110px",
         }}
       >
         {children}
@@ -134,13 +133,14 @@ export default function AppLayout({
           bottom: "12px",
           left: "12px",
           right: "12px",
-          maxWidth: "480px",
+          maxWidth: "560px",
           margin: "0 auto",
           background: "#FFFFFF",
-          borderRadius: "24px",
-          padding: "10px",
+          borderRadius: "28px",
+          padding: "8px",
           display: "flex",
-          justifyContent: "space-around",
+          justifyContent: "space-between",
+          alignItems: "center",
           boxShadow:
             "0 10px 35px rgba(15,23,42,.12)",
           zIndex: 1000,
@@ -153,32 +153,31 @@ export default function AppLayout({
           return (
             <button
               key={tab.key}
-              onClick={() =>
-                onChangeTab(tab.key)
-              }
+              onClick={() => onChangeTab(tab.key)}
               style={{
+                flex: 1,
                 border: "none",
                 background: active
-                  ? "#14B8A6"
+                  ? "linear-gradient(135deg,#14B8A6,#0D9488)"
                   : "transparent",
                 color: active
                   ? "#FFFFFF"
                   : "#64748B",
-                borderRadius: "16px",
-                padding: "10px 12px",
+                borderRadius: "18px",
+                padding: "10px 6px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 gap: "4px",
                 cursor: "pointer",
-                minWidth: "58px",
+                transition: "all .2s ease",
               }}
             >
-              <Icon size={20} />
+              <Icon size={22} />
 
               <span
                 style={{
-                  fontSize: "10px",
+                  fontSize: "11px",
                   fontWeight: 600,
                 }}
               >
