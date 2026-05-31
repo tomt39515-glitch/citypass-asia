@@ -1,10 +1,5 @@
-import React, {
-  useEffect,
-} from "react";
-
-import {
-  Html5QrcodeScanner,
-} from "html5-qrcode";
+import React, { useEffect } from "react";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 export default function QRScanner({
   onScanSuccess,
@@ -16,6 +11,11 @@ export default function QRScanner({
         {
           fps: 10,
           qrbox: 250,
+          videoConstraints: {
+            facingMode: {
+              exact: "environment",
+            },
+          },
         },
         false
       );
@@ -35,14 +35,14 @@ export default function QRScanner({
         }
       },
       (error) => {
-        console.log(error);
+        // не засоряем консоль
       }
     );
 
     return () => {
       scanner.clear().catch(() => {});
     };
-  }, []);
+  }, [onScanSuccess]);
 
   return (
     <div
@@ -63,8 +63,6 @@ export default function QRScanner({
         }}
       />
 
-      {/* SCAN FRAME */}
-
       <div
         style={{
           position: "absolute",
@@ -82,8 +80,6 @@ export default function QRScanner({
           pointerEvents: "none",
         }}
       />
-
-      {/* TEXT */}
 
       <div
         style={{
