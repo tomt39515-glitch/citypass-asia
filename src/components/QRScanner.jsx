@@ -1,34 +1,56 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
 export default function QRScanner({
   onScanSuccess,
 }) {
+  const scannedRef = useRef(false);
+
   useEffect(() => {
     const scanner = new Html5Qrcode("reader");
 
     scanner
       .start(
-        { facingMode: "environment" },
+        {
+          facingMode: "environment",
+        },
         {
           fps: 10,
           qrbox: 250,
         },
-        (decodedText) => {
+        async (decodedText) => {
+          if (scannedRef.current) return;
+
+          scannedRef.current = true;
+
           onScanSuccess({
             token: decodedText,
           });
 
-          // НИЧЕГО НЕ ОСТАНАВЛИВАЕМ
+          try {
+            await scanner.stop();
+          } catch (e) {
+            console.log(e);
+          }
         },
         () => {}
       )
       .catch(console.error);
 
-    return () => {};
+    return () => {
+      try {
+        scanner.stop();
+      } catch (e) {}
+    };
   }, []);
 
   return (
-    <div id="reader" />
+    <div
+      id="reader"
+      style={{
+        width: "100%",
+        minHeight: "350px",
+      }}
+    />
   );
 }
