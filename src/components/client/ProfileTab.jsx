@@ -1,22 +1,21 @@
-export default function ProfileTab({
-  role,
-  setRole,
-}) {
+export default function ProfileTab() {
   return (
     <div
       style={{
+        maxWidth: "560px",
+        margin: "0 auto",
         padding: "16px",
-        background: "#f5f7fb",
-        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         gap: "16px",
       }}
     >
+      {/* CARD */}
+
       <div
         style={{
           background:
-            "linear-gradient(135deg,#ff7b00,#ffb347)",
+            "linear-gradient(135deg,#14B8A6,#0F766E)",
           borderRadius: "28px",
           padding: "24px",
           color: "#fff",
@@ -24,78 +23,149 @@ export default function ProfileTab({
       >
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
+            fontSize: "14px",
+            opacity: 0.9,
+          }}
+        >
+          CITYPASS ASIA
+        </div>
+
+        <div
+          style={{
+            marginTop: "12px",
+            fontSize: "28px",
+            fontWeight: 800,
+          }}
+        >
+          Участник клуба
+        </div>
+
+        <div
+          style={{
+            marginTop: "12px",
+            display: "inline-block",
+            background:
+              "rgba(255,255,255,.18)",
+            padding: "8px 14px",
+            borderRadius: "999px",
+          }}
+        >
+          Активный статус
+        </div>
+
+        <div
+          style={{
+            marginTop: "24px",
+            opacity: 0.9,
+          }}
+        >
+          ID: CPA-000001
+        </div>
+      </div>
+
+      {/* STATS */}
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "12px",
+        }}
+      >
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "20px",
+            padding: "20px",
+            textAlign: "center",
           }}
         >
           <div
             style={{
-              width: "70px",
-              height: "70px",
-              borderRadius: "50%",
-              background: "#fff",
-              color: "#ff7b00",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "28px",
-              fontWeight: "700",
+              color: "#64748B",
+              fontSize: "14px",
             }}
           >
-            В
+            Экономия
           </div>
 
-          <div>
-            <h2 style={{ margin: 0 }}>
-              Виталий К.
-            </h2>
-
-            <div
-              style={{
-                marginTop: "8px",
-              }}
-            >
-              ⭐ Premium
-            </div>
+          <div
+            style={{
+              marginTop: "8px",
+              fontSize: "24px",
+              fontWeight: 700,
+              color: "#14B8A6",
+            }}
+          >
+            750 000 ₫
           </div>
         </div>
-      </div>
-
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: "24px",
-          padding: "20px",
-        }}
-      >
-        <h3>Смена роли</h3>
 
         <div
           style={{
-            display: "grid",
-            gap: "10px",
-            marginTop: "15px",
+            background: "#fff",
+            borderRadius: "20px",
+            padding: "20px",
+            textAlign: "center",
           }}
         >
-          <button onClick={() => setRole("client")}>
-            Клиент
-          </button>
+          <div
+            style={{
+              color: "#64748B",
+              fontSize: "14px",
+            }}
+          >
+            Скидок
+          </div>
 
-          <button onClick={() => setRole("partner")}>
-            Партнёр
-          </button>
-
-          <button onClick={() => setRole("agent")}>
-            Агент
-          </button>
-
-          <button onClick={() => setRole("admin")}>
-            Администратор
-          </button>
+          <div
+            style={{
+              marginTop: "8px",
+              fontSize: "24px",
+              fontWeight: 700,
+              color: "#14B8A6",
+            }}
+          >
+            341
+          </div>
         </div>
       </div>
 
+      {/* MENU */}
+
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: "24px",
+          overflow: "hidden",
+        }}
+      >
+        {[
+          "Мои данные",
+          "Мои скидки",
+          "Избранные партнёры",
+          "Уведомления",
+          "Поддержка",
+          "О CityPass Asia",
+        ].map((item) => (
+          <div
+            key={item}
+            style={{
+              padding: "18px 20px",
+              borderBottom:
+                "1px solid #F1F5F9",
+              cursor: "pointer",
+              color: "#0F172A",
+              fontWeight: 500,
+            }}
+          >
+            {item}
+          </div>
+        ))}
+      </div>
+
+      {/* SUPPORT */}
+
       <div
         style={{
           background: "#fff",
@@ -103,28 +173,40 @@ export default function ProfileTab({
           padding: "20px",
         }}
       >
-        <h3>Настройки</h3>
+        <div
+          style={{
+            fontWeight: 700,
+            marginBottom: "10px",
+          }}
+        >
+          Поддержка CityPass
+        </div>
 
-        <p>🌐 Язык</p>
-        <p>🔔 Уведомления</p>
-        <p>🔒 Безопасность</p>
-        <p>💳 Подписка Premium</p>
-        <p>📞 Поддержка</p>
+        <div
+          style={{
+            color: "#64748B",
+          }}
+        >
+          support@citypass.asia
+        </div>
       </div>
 
-      <div
+      {/* LOGOUT */}
+
+      <button
         style={{
-          background: "#fff",
-          borderRadius: "24px",
-          padding: "20px",
+          width: "100%",
+          border: "none",
+          borderRadius: "18px",
+          padding: "16px",
+          background: "#EF4444",
+          color: "#fff",
+          fontWeight: 700,
+          cursor: "pointer",
         }}
       >
-        <h3>Статистика</h3>
-
-        <p>Скидок использовано: 341</p>
-        <p>Экономия: 12 458 000 ₫</p>
-        <p>Партнёров рядом: 127</p>
-      </div>
+        Выйти из аккаунта
+      </button>
     </div>
   );
 }
