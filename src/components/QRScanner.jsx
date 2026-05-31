@@ -5,21 +5,19 @@ export default function QRScanner({
   onScanSuccess,
 }) {
   useEffect(() => {
-    const html5QrCode =
-      new Html5Qrcode("reader");
+    let scanner;
 
-    const startScanner = async () => {
+    async function startScanner() {
       try {
-        await html5QrCode.start(
+        scanner = new Html5Qrcode("reader");
+
+        await scanner.start(
           {
             facingMode: "environment",
           },
           {
             fps: 10,
-            qrbox: {
-              width: 250,
-              height: 250,
-            },
+            qrbox: 250,
           },
           (decodedText) => {
             console.log(
@@ -31,81 +29,47 @@ export default function QRScanner({
               token: decodedText,
             });
 
-            html5QrCode
+            scanner
               .stop()
               .catch(() => {});
           },
           () => {}
         );
-      } catch (err) {
+      } catch (error) {
         console.error(
           "QR START ERROR:",
-          err
+          error
         );
       }
-    };
+    }
 
     startScanner();
 
     return () => {
-      html5QrCode
-        .stop()
-        .catch(() => {});
+      if (scanner) {
+        scanner
+          .stop()
+          .catch(() => {});
+      }
     };
   }, [onScanSuccess]);
 
   return (
     <div
       style={{
-        position: "relative",
         width: "100%",
-        height: "420px",
-        borderRadius: "28px",
+        borderRadius: "20px",
         overflow: "hidden",
-        background: "#000",
+        background: "#fff",
       }}
     >
       <div
         id="reader"
         style={{
           width: "100%",
-          height: "100%",
+          minHeight: "350px",
         }}
       />
-
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform:
-            "translate(-50%, -50%)",
-          width: "240px",
-          height: "240px",
-          border:
-            "4px solid rgba(255,255,255,0.9)",
-          borderRadius: "28px",
-          boxShadow:
-            "0 0 0 9999px rgba(0,0,0,0.45)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div
-        style={{
-          position: "absolute",
-          bottom: "20px",
-          left: 0,
-          right: 0,
-          textAlign: "center",
-          color: "#fff",
-          fontWeight: 600,
-          fontSize: "15px",
-          pointerEvents: "none",
-        }}
-      >
-        Наведите QR-код внутрь рамки
-      </div>
     </div>
   );
 }
