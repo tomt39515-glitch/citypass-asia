@@ -37,8 +37,13 @@ export default function PartnerScanner() {
 
       const data = await res.json();
 
+      console.log("STATUS:", res.status);
+      console.log("DATA:", data);
+
       if (!data.success) {
-        setMessage(data.error || "Ошибка");
+        setMessage(
+          JSON.stringify(data, null, 2)
+        );
         return;
       }
 
@@ -50,7 +55,10 @@ export default function PartnerScanner() {
       setAmount("");
     } catch (err) {
       console.error(err);
-      setMessage("Ошибка соединения");
+
+      setMessage(
+        err?.message || String(err)
+      );
     }
   }
 
@@ -109,7 +117,15 @@ export default function PartnerScanner() {
         </>
       )}
 
-      <p style={{ marginTop: 20 }}>{message}</p>
+      <pre
+        style={{
+          marginTop: 20,
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word",
+        }}
+      >
+        {message}
+      </pre>
     </div>
   );
 }
