@@ -1,100 +1,177 @@
-import { useState } from "react";
-import PartnerCard from "./PartnerCard";
-import PartnerDetails from "./PartnerDetails";
-
 export default function OffersTab() {
-  const [selectedPartner, setSelectedPartner] =
-    useState(null);
-
-  const offers = [
+  const partners = [
     {
       name: "Burger House",
-      discount: "15%",
       category: "Ресторан",
-      icon: "🍔",
+      discount: "10%",
+      address: "Нячанг",
     },
     {
       name: "Ocean SPA",
-      discount: "20%",
-      category: "SPA",
-      icon: "💆",
+      category: "СПА",
+      discount: "15%",
+      address: "Нячанг",
     },
     {
       name: "Seaside Hotel",
-      discount: "10%",
       category: "Отель",
-      icon: "🏨",
+      discount: "12%",
+      address: "Нячанг",
     },
     {
-      name: "Coffee Time",
-      discount: "10%",
+      name: "City Coffee",
       category: "Кафе",
-      icon: "☕",
+      discount: "7%",
+      address: "Нячанг",
     },
   ];
-
-  if (selectedPartner) {
-    return (
-      <div>
-        <button
-          onClick={() => setSelectedPartner(null)}
-          style={{
-            marginBottom: "16px",
-            border: "none",
-            background: "#2563eb",
-            color: "#fff",
-            padding: "10px 16px",
-            borderRadius: "12px",
-            cursor: "pointer",
-          }}
-        >
-          ← Назад
-        </button>
-
-        <PartnerDetails
-          partner={selectedPartner}
-          onGetDiscount={() =>
-            alert(
-              `Переход к QR для ${selectedPartner.name}`
-            )
-          }
-        />
-      </div>
-    );
-  }
 
   return (
     <div
       style={{
+        maxWidth: "560px",
+        margin: "0 auto",
+        padding: "16px",
         display: "flex",
         flexDirection: "column",
         gap: "16px",
       }}
     >
-      <h2>🎁 Скидки партнёров</h2>
+      {/* HEADER */}
+
+      <div
+        style={{
+          background:
+            "linear-gradient(135deg,#14B8A6,#0F766E)",
+          borderRadius: "28px",
+          padding: "24px",
+          color: "#fff",
+        }}
+      >
+        <div
+          style={{
+            opacity: 0.9,
+          }}
+        >
+          Партнёры CityPass Asia
+        </div>
+
+        <div
+          style={{
+            fontSize: "34px",
+            fontWeight: 800,
+            marginTop: "10px",
+          }}
+        >
+          127
+        </div>
+
+        <div
+          style={{
+            marginTop: "8px",
+            opacity: 0.85,
+          }}
+        >
+          активных партнёров
+        </div>
+      </div>
+
+      {/* SEARCH */}
 
       <input
-        placeholder="Поиск партнёра..."
+        placeholder="Поиск партнёров..."
         style={{
           width: "100%",
-          padding: "14px",
-          borderRadius: "14px",
-          border: "1px solid #ddd",
+          padding: "16px",
+          borderRadius: "18px",
+          border: "none",
+          background: "#fff",
+          fontSize: "15px",
           boxSizing: "border-box",
         }}
       />
 
-      {offers.map((offer, index) => (
-        <PartnerCard
+      {/* LIST */}
+
+      {partners.map((partner, index) => (
+        <div
           key={index}
-          name={offer.name}
-          discount={offer.discount}
-          category={offer.category}
-          icon={offer.icon}
-          onOpen={() =>
-            setSelectedPartner(offer)
-          }
-        />
+          style={{
+            background: "#fff",
+            borderRadius: "24px",
+            padding: "18px",
+            boxShadow:
+              "0 5px 15px rgba(15,23,42,.05)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent:
+                "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontWeight: 700,
+                  fontSize: "18px",
+                  color: "#0F172A",
+                }}
+              >
+                {partner.name}
+              </div>
+
+              <div
+                style={{
+                  marginTop: "4px",
+                  color: "#64748B",
+                }}
+              >
+                {partner.category}
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: "#ECFDF5",
+                color: "#14B8A6",
+                padding: "10px 14px",
+                borderRadius: "999px",
+                fontWeight: 700,
+              }}
+            >
+              {partner.discount}
+            </div>
+          </div>
+
+          <div
+            style={{
+              marginTop: "12px",
+              color: "#64748B",
+            }}
+          >
+            {partner.address}
+          </div>
+
+          <button
+            style={{
+              width: "100%",
+              marginTop: "14px",
+              border: "none",
+              borderRadius: "16px",
+              padding: "14px",
+              background:
+                "linear-gradient(135deg,#14B8A6,#0D9488)",
+              color: "#fff",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Подробнее
+          </button>
+        </div>
       ))}
     </div>
   );
