@@ -1,144 +1,194 @@
 export default function HistoryTab() {
   const history = [
     {
-      name: "Burger House",
-      discount: "120 000 ₫",
-      date: "Сегодня • 14:25",
-      icon: "🍔",
+      partner: "Burger House",
+      date: "29 мая 2026",
+      amount: "1 000 000 ₫",
+      saved: "100 000 ₫",
+      discount: "10%",
     },
     {
-      name: "Ocean SPA",
-      discount: "200 000 ₫",
-      date: "Сегодня • 11:10",
-      icon: "💆",
+      partner: "Ocean SPA",
+      date: "27 мая 2026",
+      amount: "2 000 000 ₫",
+      saved: "300 000 ₫",
+      discount: "15%",
     },
     {
-      name: "Seaside Hotel",
-      discount: "350 000 ₫",
-      date: "Вчера • 19:45",
-      icon: "🏨",
-    },
-    {
-      name: "Coffee Time",
-      discount: "80 000 ₫",
-      date: "Вчера • 10:20",
-      icon: "☕",
+      partner: "Seaside Hotel",
+      date: "24 мая 2026",
+      amount: "3 500 000 ₫",
+      saved: "350 000 ₫",
+      discount: "10%",
     },
   ];
 
   return (
     <div
       style={{
+        maxWidth: "560px",
+        margin: "0 auto",
         padding: "16px",
-        background: "#f5f7fb",
-        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
       }}
     >
-      <h1
-        style={{
-          marginBottom: "20px",
-        }}
-      >
-        История
-      </h1>
+      {/* HEADER */}
 
       <div
         style={{
           background:
-            "linear-gradient(135deg,#16a34a,#22c55e)",
-          borderRadius: "24px",
+            "linear-gradient(135deg,#14B8A6,#0F766E)",
+          borderRadius: "28px",
           padding: "24px",
           color: "#fff",
-          marginBottom: "20px",
         }}
       >
-        <div>Всего сэкономлено</div>
-
-        <h2
-          style={{
-            marginTop: "10px",
-            fontSize: "32px",
-          }}
-        >
-          12 458 000 ₫
-        </h2>
-
         <div
           style={{
             opacity: 0.9,
           }}
         >
-          за всё время использования
+          Всего сэкономлено
+        </div>
+
+        <div
+          style={{
+            fontSize: "34px",
+            fontWeight: 800,
+            marginTop: "10px",
+          }}
+        >
+          750 000 ₫
+        </div>
+
+        <div
+          style={{
+            marginTop: "10px",
+            opacity: 0.85,
+          }}
+        >
+          3 использованные скидки
         </div>
       </div>
 
-      <div
+      {/* TITLE */}
+
+      <h2
         style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "12px",
+          margin: 0,
+          color: "#0F172A",
         }}
       >
-        {history.map((item, index) => (
+        История операций
+      </h2>
+
+      {/* LIST */}
+
+      {history.map((item, index) => (
+        <div
+          key={index}
+          style={{
+            background: "#fff",
+            borderRadius: "22px",
+            padding: "18px",
+            boxShadow:
+              "0 5px 15px rgba(15,23,42,.05)",
+          }}
+        >
           <div
-            key={index}
             style={{
-              background: "#fff",
-              borderRadius: "20px",
-              padding: "18px",
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent:
+                "space-between",
               alignItems: "center",
-              boxShadow:
-                "0 5px 20px rgba(0,0,0,.05)",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                gap: "15px",
-                alignItems: "center",
-              }}
-            >
+            <div>
               <div
                 style={{
-                  fontSize: "28px",
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  color: "#0F172A",
                 }}
               >
-                {item.icon}
+                {item.partner}
               </div>
 
-              <div>
-                <div
-                  style={{
-                    fontWeight: "600",
-                  }}
-                >
-                  {item.name}
-                </div>
-
-                <div
-                  style={{
-                    color: "#777",
-                    fontSize: "14px",
-                  }}
-                >
-                  {item.date}
-                </div>
+              <div
+                style={{
+                  color: "#64748B",
+                  marginTop: "4px",
+                  fontSize: "13px",
+                }}
+              >
+                {item.date}
               </div>
             </div>
 
             <div
               style={{
-                color: "#16a34a",
-                fontWeight: "700",
+                background: "#ECFDF5",
+                color: "#14B8A6",
+                padding: "8px 12px",
+                borderRadius: "999px",
+                fontWeight: 700,
               }}
             >
-              +{item.discount}
+              -{item.saved}
             </div>
           </div>
-        ))}
-      </div>
+
+          <div
+            style={{
+              marginTop: "14px",
+              display: "flex",
+              justifyContent:
+                "space-between",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  color: "#64748B",
+                  fontSize: "12px",
+                }}
+              >
+                Сумма покупки
+              </div>
+
+              <div
+                style={{
+                  fontWeight: 600,
+                }}
+              >
+                {item.amount}
+              </div>
+            </div>
+
+            <div>
+              <div
+                style={{
+                  color: "#64748B",
+                  fontSize: "12px",
+                }}
+              >
+                Скидка
+              </div>
+
+              <div
+                style={{
+                  fontWeight: 700,
+                  color: "#14B8A6",
+                }}
+              >
+                {item.discount}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
