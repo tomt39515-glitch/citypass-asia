@@ -150,13 +150,15 @@ export default function ProfileTab({
           "Уведомления",
           "Поддержка",
           "О CityPass Asia",
-        ].map((item) => (
+        ].map((item, index, array) => (
           <div
             key={item}
             style={{
               padding: "18px 20px",
               borderBottom:
-                "1px solid #F1F5F9",
+                index !== array.length - 1
+                  ? "1px solid #F1F5F9"
+                  : "none",
               cursor: "pointer",
               color: "#0F172A",
               fontWeight: 500,
@@ -167,7 +169,7 @@ export default function ProfileTab({
         ))}
       </div>
 
-      {/* ROLE SWITCHER */}
+      {/* ROLES */}
 
       <div
         style={{
@@ -183,7 +185,7 @@ export default function ProfileTab({
             color: "#0F172A",
           }}
         >
-          Режим разработки
+          Мои роли
         </div>
 
         <div
@@ -213,9 +215,7 @@ export default function ProfileTab({
           ].map((item) => (
             <button
               key={item.key}
-              onClick={() =>
-                setRole(item.key)
-              }
+              onClick={() => setRole(item.key)}
               style={{
                 border: "none",
                 borderRadius: "16px",
@@ -228,13 +228,27 @@ export default function ProfileTab({
                     : "#F1F5F9",
                 color:
                   role === item.key
-                    ? "#fff"
+                    ? "#FFFFFF"
                     : "#0F172A",
               }}
             >
               {item.label}
             </button>
           ))}
+        </div>
+
+        <div
+          style={{
+            marginTop: "16px",
+            padding: "14px",
+            background: "#F8FAFC",
+            borderRadius: "16px",
+            color: "#64748B",
+            fontSize: "13px",
+            textAlign: "center",
+          }}
+        >
+          Владелец CityPass Asia
         </div>
       </div>
 
@@ -264,5 +278,6 @@ export default function ProfileTab({
           support@citypass.asia
         </div>
       </div>
-
- 
+    </div>
+  );
+}
