@@ -30,25 +30,77 @@ export default function AppLayout({
     ],
 
     partner: [
-      { key: "dashboard", label: "Главная", icon: LayoutDashboard },
-      { key: "scanner", label: "QR", icon: ScanLine },
-      { key: "transactions", label: "История", icon: History },
-      { key: "balance", label: "Баланс", icon: Wallet },
-      { key: "analytics", label: "Отчёты", icon: BarChart3 },
+      {
+        key: "dashboard",
+        label: "Главная",
+        icon: LayoutDashboard,
+      },
+      {
+        key: "scanner",
+        label: "QR",
+        icon: ScanLine,
+      },
+      {
+        key: "transactions",
+        label: "История",
+        icon: History,
+      },
+      {
+        key: "balance",
+        label: "Баланс",
+        icon: Wallet,
+      },
+      {
+        key: "analytics",
+        label: "Отчёты",
+        icon: BarChart3,
+      },
     ],
 
     admin: [
-      { key: "dashboard", label: "Панель", icon: Shield },
-      { key: "partners", label: "Партнёры", icon: Briefcase },
-      { key: "clients", label: "Клиенты", icon: Users },
-      { key: "topups", label: "Баланс", icon: Wallet },
-      { key: "transactions", label: "Операции", icon: CreditCard },
+      {
+        key: "dashboard",
+        label: "Панель",
+        icon: Shield,
+      },
+      {
+        key: "partners",
+        label: "Партнёры",
+        icon: Briefcase,
+      },
+      {
+        key: "clients",
+        label: "Клиенты",
+        icon: Users,
+      },
+      {
+        key: "topups",
+        label: "Баланс",
+        icon: Wallet,
+      },
+      {
+        key: "transactions",
+        label: "Операции",
+        icon: CreditCard,
+      },
     ],
 
     agent: [
-      { key: "dashboard", label: "Главная", icon: LayoutDashboard },
-      { key: "partners", label: "Партнёры", icon: Briefcase },
-      { key: "earnings", label: "Доход", icon: Wallet },
+      {
+        key: "dashboard",
+        label: "Главная",
+        icon: LayoutDashboard,
+      },
+      {
+        key: "partners",
+        label: "Партнёры",
+        icon: Briefcase,
+      },
+      {
+        key: "earnings",
+        label: "Доход",
+        icon: Wallet,
+      },
     ],
   };
 
@@ -57,8 +109,10 @@ export default function AppLayout({
   return (
     <div
       style={{
+        width: "100%",
         minHeight: "100vh",
         background: "#F4F7FB",
+        overflowX: "hidden",
       }}
     >
       {/* HEADER */}
@@ -69,14 +123,13 @@ export default function AppLayout({
           top: 0,
           zIndex: 100,
           background: "#FFFFFF",
-          padding: "16px 20px",
+          padding: "16px",
           borderBottom: "1px solid #E2E8F0",
         }}
       >
         <div
           style={{
-            maxWidth: "560px",
-            margin: "0 auto",
+            width: "100%",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -119,6 +172,7 @@ export default function AppLayout({
 
       <main
         style={{
+          width: "100%",
           paddingBottom: "110px",
         }}
       >
@@ -130,11 +184,9 @@ export default function AppLayout({
       <nav
         style={{
           position: "fixed",
-          bottom: "12px",
-          left: "12px",
-          right: "12px",
-          maxWidth: "560px",
-          margin: "0 auto",
+          bottom: "8px",
+          left: "8px",
+          right: "8px",
           background: "#FFFFFF",
           borderRadius: "28px",
           padding: "8px",
@@ -170,7 +222,6 @@ export default function AppLayout({
                 alignItems: "center",
                 gap: "4px",
                 cursor: "pointer",
-                transition: "all .2s ease",
               }}
             >
               <Icon size={22} />
