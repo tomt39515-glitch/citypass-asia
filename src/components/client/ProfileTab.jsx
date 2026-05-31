@@ -1,4 +1,7 @@
-export default function ProfileTab() {
+export default function ProfileTab({
+  role,
+  setRole,
+}) {
   return (
     <div
       style={{
@@ -164,6 +167,77 @@ export default function ProfileTab() {
         ))}
       </div>
 
+      {/* ROLE SWITCHER */}
+
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: "24px",
+          padding: "20px",
+        }}
+      >
+        <div
+          style={{
+            fontWeight: 700,
+            marginBottom: "14px",
+            color: "#0F172A",
+          }}
+        >
+          Режим разработки
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "10px",
+          }}
+        >
+          {[
+            {
+              key: "client",
+              label: "Клиент",
+            },
+            {
+              key: "partner",
+              label: "Партнёр",
+            },
+            {
+              key: "agent",
+              label: "Агент",
+            },
+            {
+              key: "admin",
+              label: "Администратор",
+            },
+          ].map((item) => (
+            <button
+              key={item.key}
+              onClick={() =>
+                setRole(item.key)
+              }
+              style={{
+                border: "none",
+                borderRadius: "16px",
+                padding: "14px",
+                cursor: "pointer",
+                fontWeight: 600,
+                background:
+                  role === item.key
+                    ? "#14B8A6"
+                    : "#F1F5F9",
+                color:
+                  role === item.key
+                    ? "#fff"
+                    : "#0F172A",
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* SUPPORT */}
 
       <div
@@ -191,22 +265,4 @@ export default function ProfileTab() {
         </div>
       </div>
 
-      {/* LOGOUT */}
-
-      <button
-        style={{
-          width: "100%",
-          border: "none",
-          borderRadius: "18px",
-          padding: "16px",
-          background: "#EF4444",
-          color: "#fff",
-          fontWeight: 700,
-          cursor: "pointer",
-        }}
-      >
-        Выйти из аккаунта
-      </button>
-    </div>
-  );
-}
+ 
