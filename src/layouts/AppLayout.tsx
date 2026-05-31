@@ -31,23 +31,23 @@ export default function AppLayout({
     ],
 
     partner: [
-      { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { key: "scanner", label: "Scanner", icon: ScanLine },
+      { key: "dashboard", label: "Главная", icon: LayoutDashboard },
+      { key: "scanner", label: "QR", icon: ScanLine },
       { key: "transactions", label: "История", icon: History },
       { key: "balance", label: "Баланс", icon: Wallet },
-      { key: "analytics", label: "Аналитика", icon: BarChart3 },
+      { key: "analytics", label: "Отчёты", icon: BarChart3 },
     ],
 
     admin: [
-      { key: "dashboard", label: "Dashboard", icon: Shield },
+      { key: "dashboard", label: "Панель", icon: Shield },
       { key: "partners", label: "Партнёры", icon: Briefcase },
       { key: "clients", label: "Клиенты", icon: Users },
-      { key: "topups", label: "Пополнения", icon: Wallet },
-      { key: "transactions", label: "Транзакции", icon: CreditCard },
+      { key: "topups", label: "Баланс", icon: Wallet },
+      { key: "transactions", label: "Операции", icon: CreditCard },
     ],
 
     agent: [
-      { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { key: "dashboard", label: "Главная", icon: LayoutDashboard },
       { key: "partners", label: "Партнёры", icon: Briefcase },
       { key: "earnings", label: "Доход", icon: Wallet },
     ],
@@ -56,28 +56,96 @@ export default function AppLayout({
   const tabs = tabsByRole[role] || [];
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col">
-      <header className="sticky top-0 z-50 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-bold text-slate-900">
-            CityPass Asia
-          </h1>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#F4F7FB",
+      }}
+    >
+      {/* HEADER */}
 
-          <p className="text-xs text-slate-500 capitalize">
-            {role} panel
-          </p>
-        </div>
+      <header
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          background: "#FFFFFF",
+          padding: "16px 20px",
+          borderBottom: "1px solid #E2E8F0",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "480px",
+            margin: "0 auto",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontSize: "22px",
+                fontWeight: 800,
+                color: "#14B8A6",
+              }}
+            >
+              CityPass Asia
+            </div>
 
-        <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
-          C
+            <div
+              style={{
+                fontSize: "12px",
+                color: "#64748B",
+              }}
+            >
+              Клуб привилегий
+            </div>
+          </div>
+
+          <div
+            style={{
+              width: "42px",
+              height: "42px",
+              borderRadius: "50%",
+              background:
+                "linear-gradient(135deg,#14B8A6,#0F766E)",
+            }}
+          />
         </div>
       </header>
 
-      <main className="flex-1 p-4 pb-28 overflow-y-auto">
+      {/* CONTENT */}
+
+      <main
+        style={{
+          paddingBottom: "100px",
+        }}
+      >
         {children}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around">
+      {/* BOTTOM MENU */}
+
+      <nav
+        style={{
+          position: "fixed",
+          bottom: "12px",
+          left: "12px",
+          right: "12px",
+          maxWidth: "480px",
+          margin: "0 auto",
+          background: "#FFFFFF",
+          borderRadius: "24px",
+          padding: "10px",
+          display: "flex",
+          justifyContent: "space-around",
+          boxShadow:
+            "0 10px 35px rgba(15,23,42,.12)",
+          zIndex: 1000,
+        }}
+      >
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const active = currentTab === tab.key;
@@ -85,16 +153,35 @@ export default function AppLayout({
           return (
             <button
               key={tab.key}
-              onClick={() => onChangeTab(tab.key)}
-              className={`flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all ${
-                active
-                  ? "bg-orange-500 text-white"
-                  : "text-slate-500"
-              }`}
+              onClick={() =>
+                onChangeTab(tab.key)
+              }
+              style={{
+                border: "none",
+                background: active
+                  ? "#14B8A6"
+                  : "transparent",
+                color: active
+                  ? "#FFFFFF"
+                  : "#64748B",
+                borderRadius: "16px",
+                padding: "10px 12px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "4px",
+                cursor: "pointer",
+                minWidth: "58px",
+              }}
             >
               <Icon size={20} />
 
-              <span className="text-[10px] mt-1">
+              <span
+                style={{
+                  fontSize: "10px",
+                  fontWeight: 600,
+                }}
+              >
                 {tab.label}
               </span>
             </button>
