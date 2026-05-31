@@ -1,5 +1,5 @@
 import PartnerHomeTab from "../components/partner/PartnerHomeTab";
-import ScannerTab from "../components/partner/ScannerTab";
+import PartnerScanner from "../components/partner/PartnerScanner";
 import TransactionsTab from "../components/partner/TransactionsTab";
 import PartnerProfileTab from "../components/partner/PartnerProfileTab";
 
@@ -11,7 +11,7 @@ export default function PartnerDashboard(props) {
       return <PartnerHomeTab {...props} />;
 
     case "scanner":
-      return <ScannerTab {...props} />;
+      return <PartnerScanner {...props} />;
 
     case "transactions":
       return <TransactionsTab {...props} />;

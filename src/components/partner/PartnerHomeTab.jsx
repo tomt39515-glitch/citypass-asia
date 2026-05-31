@@ -1,13 +1,10 @@
 import React, { useState } from "react";
-import QRScanner from "../components/QRScanner";
-import { supabase } from "../supabase";
+import QRScanner from "../QRScanner";
+import { supabase } from "../../supabase";
 
 export default function PartnerDashboard() {
-  const [showScanner, setShowScanner] =
-    useState(false);
-
-  const [selectedClient, setSelectedClient] =
-    useState(null);
+  const [showScanner, setShowScanner] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
 
   const handleScanSuccess = async (data) => {
     try {
@@ -40,6 +37,8 @@ export default function PartnerDashboard() {
         alert("❌ Клиент не найден");
         return;
       }
+
+      console.log("CLIENT:", client);
 
       setSelectedClient(client);
       setShowScanner(false);
@@ -154,7 +153,7 @@ export default function PartnerDashboard() {
               fontSize: "14px",
             }}
           >
-            💸 Скидок сегодня
+            💰 Скидок сегодня
           </div>
 
           <div
@@ -178,9 +177,7 @@ export default function PartnerDashboard() {
         }}
       >
         <button
-          onClick={() =>
-            setShowScanner(true)
-          }
+          onClick={() => setShowScanner(true)}
           style={{
             width: "100%",
             border: "none",
@@ -244,59 +241,34 @@ export default function PartnerDashboard() {
           }}
         >
           <h3 style={{ marginTop: 0 }}>
-            👤 {selectedClient.full_name}
+            Клиент найден ✅
           </h3>
 
-          <div
+          <pre
             style={{
-              padding: "16px",
               background: "#F8FAFC",
-              borderRadius: "16px",
-              marginBottom: "16px",
+              padding: "16px",
+              borderRadius: "12px",
+              overflow: "auto",
+              fontSize: "12px",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
             }}
           >
-            <div>
-              ID: {selectedClient.id}
-            </div>
-
-            <div
-              style={{
-                marginTop: "8px",
-              }}
-            >
-              💰 Бонусы:{" "}
-              {selectedClient.bonus_balance}
-            </div>
-
-            <div
-              style={{
-                marginTop: "8px",
-              }}
-            >
-              💳 Потрачено:{" "}
-              {selectedClient.total_spent}
-            </div>
-
-            <div
-              style={{
-                marginTop: "8px",
-              }}
-            >
-              📱 Telegram:{" "}
-              {selectedClient.telegram_id}
-            </div>
-          </div>
+            {JSON.stringify(
+              selectedClient,
+              null,
+              2
+            )}
+          </pre>
 
           <button
-            onClick={() => {
-              alert(
-                `✅ Скидка применена для ${selectedClient.full_name}`
-              );
-
-              setSelectedClient(null);
-            }}
+            onClick={() =>
+              setSelectedClient(null)
+            }
             style={{
               width: "100%",
+              marginTop: "16px",
               border: "none",
               borderRadius: "16px",
               padding: "16px",
@@ -308,7 +280,7 @@ export default function PartnerDashboard() {
               cursor: "pointer",
             }}
           >
-            Подтвердить скидку
+            Закрыть
           </button>
         </div>
       )}

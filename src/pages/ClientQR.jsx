@@ -2,12 +2,20 @@ import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 
 export default function ClientQR() {
+  const telegramId =
+    window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
   const [token, setToken] = useState("");
   const [qrImage, setQrImage] = useState("");
   const [seconds, setSeconds] = useState(60);
 
   async function generateQR() {
     try {
+      if (!telegramId) {
+        console.error("Telegram ID not found");
+        return;
+      }
+
       const response = await fetch(
         "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/generate-client-qr",
         {
@@ -16,7 +24,7 @@ export default function ClientQR() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            telegram_id: 8052071718,
+            telegram_id: telegramId,
           }),
         }
       );
@@ -32,9 +40,11 @@ export default function ClientQR() {
 
         setQrImage(image);
         setSeconds(60);
+      } else {
+        console.error(data.error);
       }
     } catch (err) {
-      console.error(err);
+      console.error("QR Error:", err);
     }
   }
 
@@ -90,6 +100,16 @@ export default function ClientQR() {
         >
           Покажите QR партнёру
         </p>
+
+        <div
+          style={{
+            marginBottom: "15px",
+            color: "#2563eb",
+            fontWeight: "600",
+          }}
+        >
+          Telegram ID: {telegramId}
+        </div>
 
         {qrImage && (
           <img
