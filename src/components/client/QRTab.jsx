@@ -1,4 +1,62 @@
+import QRCode from "qrcode";
+import { useEffect, useState } from "react";
+
 export default function QRTab() {
+  const [token, setToken] = useState("");
+  const [qrImage, setQrImage] = useState("");
+  const [seconds, setSeconds] = useState(60);
+
+  async function generateQR() {
+    try {
+      const response = await fetch(
+        "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/generate-client-qr",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            telegram_id: 8052071718,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setToken(data.token);
+
+        const image = await QRCode.toDataURL(data.token);
+
+        setQrImage(image);
+        setSeconds(60);
+      }
+    } catch (err) {
+      console.error("QR Error:", err);
+    }
+  }
+
+  useEffect(() => {
+    generateQR();
+  }, []);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const timer = setInterval(() => {
+      setSeconds((prev) => {
+        if (prev <= 1) {
+          generateQR();
+          return 60;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [token]);
+
   return (
     <div
       style={{
@@ -11,8 +69,6 @@ export default function QRTab() {
         gap: "16px",
       }}
     >
-      {/* CARD */}
-
       <div
         style={{
           background:
@@ -64,8 +120,6 @@ export default function QRTab() {
         </div>
       </div>
 
-      {/* QR */}
-
       <div
         style={{
           background: "#FFFFFF",
@@ -97,7 +151,7 @@ export default function QRTab() {
         <div
           style={{
             width: "280px",
-            height: "280px",
+            minHeight: "280px",
             margin: "0 auto",
             background: "#F8FAFC",
             borderRadius: "24px",
@@ -105,14 +159,36 @@ export default function QRTab() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "#94A3B8",
-            fontWeight: 600,
+            padding: "12px",
           }}
         >
-          QR CODE
+          {qrImage ? (
+            <img
+              src={qrImage}
+              alt="QR"
+              style={{
+                width: "240px",
+                height: "240px",
+              }}
+            />
+          ) : (
+            <div>Загрузка QR...</div>
+          )}
+        </div>
+
+        <div
+          style={{
+            marginTop: "16px",
+            fontSize: "18px",
+            fontWeight: "700",
+            color: "#14B8A6",
+          }}
+        >
+          Обновление через {seconds} сек
         </div>
 
         <button
+          onClick={generateQR}
           style={{
             marginTop: "20px",
             width: "100%",
@@ -130,8 +206,6 @@ export default function QRTab() {
           Обновить QR
         </button>
       </div>
-
-      {/* STATS */}
 
       <div
         style={{
@@ -194,37 +268,6 @@ export default function QRTab() {
           >
             341
           </div>
-        </div>
-      </div>
-
-      {/* HISTORY */}
-
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: "24px",
-          padding: "20px",
-        }}
-      >
-        <h3
-          style={{
-            marginTop: 0,
-            color: "#0F172A",
-          }}
-        >
-          Последние операции
-        </h3>
-
-        <div style={{ padding: "12px 0" }}>
-          Burger House — 120 000 ₫
-        </div>
-
-        <div style={{ padding: "12px 0" }}>
-          Ocean SPA — 200 000 ₫
-        </div>
-
-        <div style={{ padding: "12px 0" }}>
-          Seaside Hotel — 350 000 ₫
         </div>
       </div>
     </div>
