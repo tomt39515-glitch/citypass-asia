@@ -1,61 +1,39 @@
 export default function HomeTab() {
   const categories = [
-    "🍔 Рестораны",
-    "🏨 Отели",
-    "🏥 Медицина",
-    "💆 SPA",
-    "🚕 Такси",
-    "🛍 Магазины",
-    "🏝 Экскурсии",
-    "🛵 Байки",
-  ];
-
-  const offers = [
-    {
-      name: "Burger House",
-      discount: "15%",
-      image:
-        "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
-    },
-    {
-      name: "Ocean SPA",
-      discount: "20%",
-      image:
-        "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800",
-    },
-    {
-      name: "Coffee Time",
-      discount: "10%",
-      image:
-        "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800",
-    },
+    "Рестораны",
+    "Отели",
+    "Медицина",
+    "Магазины",
   ];
 
   return (
     <div
       style={{
-        padding: "16px",
-        background: "#f5f7fb",
+        background: "#F4F7FB",
         minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
+        width: "100%",
       }}
     >
-      {/* Header */}
       <div
         style={{
+          maxWidth: "480px",
+          margin: "0 auto",
+          padding: "16px",
+          paddingBottom: "90px",
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          flexDirection: "column",
+          gap: "14px",
         }}
       >
+        {/* LOGO */}
+
         <div>
           <h1
             style={{
               margin: 0,
-              color: "#ff7b00",
-              fontSize: "32px",
+              color: "#14B8A6",
+              fontSize: "30px",
+              fontWeight: 800,
             }}
           >
             CityPass Asia
@@ -63,213 +41,182 @@ export default function HomeTab() {
 
           <div
             style={{
-              color: "#666",
+              color: "#64748B",
               marginTop: "4px",
             }}
           >
-            Добро пожаловать 👋
+            Клуб привилегий и скидок
           </div>
         </div>
 
-        <div style={{ fontSize: "32px" }}>🔔</div>
-      </div>
+        {/* MEMBER CARD */}
 
-      {/* Banner */}
-      <div
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1528127269322-539801943592?w=1200')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          borderRadius: "24px",
-          padding: "24px",
-          minHeight: "220px",
-          color: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
         <div
           style={{
-            position: "absolute",
-            inset: 0,
             background:
-              "linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35))",
+              "linear-gradient(135deg,#14B8A6,#0F766E)",
+            borderRadius: "28px",
+            padding: "22px",
+            color: "#fff",
+          }}
+        >
+          <div
+            style={{
+              opacity: 0.9,
+              fontSize: "14px",
+            }}
+          >
+            CITYPASS ASIA
+          </div>
+
+          <div
+            style={{
+              marginTop: "12px",
+              fontSize: "26px",
+              fontWeight: 700,
+            }}
+          >
+            CLUB MEMBER
+          </div>
+
+          <div
+            style={{
+              marginTop: "12px",
+              display: "inline-block",
+              padding: "8px 14px",
+              borderRadius: "999px",
+              background: "rgba(255,255,255,.18)",
+            }}
+          >
+            Активный участник
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              marginTop: "18px",
+              flexWrap: "wrap",
+            }}
+          >
+            <div
+              style={{
+                background: "#fff",
+                color: "#0F172A",
+                padding: "10px 14px",
+                borderRadius: "14px",
+                fontWeight: 600,
+              }}
+            >
+              127 партнёров
+            </div>
+
+            <div
+              style={{
+                background: "#fff",
+                color: "#0F172A",
+                padding: "10px 14px",
+                borderRadius: "14px",
+                fontWeight: 600,
+              }}
+            >
+              До 50% скидок
+            </div>
+          </div>
+        </div>
+
+        {/* QR BUTTON */}
+
+        <button
+          style={{
+            width: "100%",
+            border: "none",
+            borderRadius: "20px",
+            padding: "18px",
+            background:
+              "linear-gradient(135deg,#14B8A6,#0D9488)",
+            color: "#fff",
+            fontSize: "18px",
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
+        >
+          Мой QR-код
+        </button>
+
+        {/* SEARCH */}
+
+        <input
+          placeholder="Поиск партнёров..."
+          style={{
+            width: "100%",
+            padding: "16px",
+            borderRadius: "18px",
+            border: "none",
+            fontSize: "15px",
+            boxSizing: "border-box",
+            background: "#fff",
+            boxShadow:
+              "0 5px 15px rgba(15,23,42,.05)",
           }}
         />
 
+        {/* CATEGORIES */}
+
         <div
           style={{
-            position: "relative",
-            zIndex: 2,
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "12px",
           }}
         >
-          <div style={{ fontSize: "18px" }}>
-            Доброе утро, Виталий ☀️
+          {categories.map((item) => (
+            <div
+              key={item}
+              style={{
+                background: "#fff",
+                borderRadius: "18px",
+                padding: "18px",
+                textAlign: "center",
+                fontWeight: 600,
+                color: "#0F172A",
+                boxShadow:
+                  "0 5px 15px rgba(15,23,42,.04)",
+              }}
+            >
+              {item}
+            </div>
+          ))}
+        </div>
+
+        {/* SAVINGS */}
+
+        <div
+          style={{
+            background:
+              "linear-gradient(135deg,#14B8A6,#0F766E)",
+            borderRadius: "22px",
+            padding: "20px",
+            color: "#fff",
+          }}
+        >
+          <div
+            style={{
+              opacity: 0.9,
+            }}
+          >
+            Экономия участников сегодня
           </div>
 
           <h2
             style={{
               marginTop: "10px",
-              fontSize: "34px",
-              lineHeight: 1.1,
+              marginBottom: 0,
+              fontSize: "28px",
             }}
           >
-            Выгодные предложения
-            <br />
-            во Вьетнаме
+            12 458 000 ₫
           </h2>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            flexWrap: "wrap",
-            position: "relative",
-            zIndex: 2,
-          }}
-        >
-          <div
-            style={{
-              background: "#fff",
-              color: "#000",
-              padding: "12px 16px",
-              borderRadius: "16px",
-            }}
-          >
-            🏪 127 партнёров
-          </div>
-
-          <div
-            style={{
-              background: "#fff",
-              color: "#000",
-              padding: "12px 16px",
-              borderRadius: "16px",
-            }}
-          >
-            🎁 До 50% скидок
-          </div>
-        </div>
-      </div>
-
-      {/* Search */}
-      <input
-        placeholder="Поиск ресторанов, отелей, услуг..."
-        style={{
-          width: "100%",
-          padding: "18px",
-          borderRadius: "18px",
-          border: "none",
-          fontSize: "16px",
-          boxSizing: "border-box",
-          boxShadow: "0 5px 15px rgba(0,0,0,.05)",
-        }}
-      />
-
-      {/* Categories */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "12px",
-        }}
-      >
-        {categories.map((item) => (
-          <div
-            key={item}
-            style={{
-              background: "#fff",
-              borderRadius: "20px",
-              padding: "24px",
-              textAlign: "center",
-              boxShadow: "0 5px 20px rgba(0,0,0,.05)",
-              fontWeight: "600",
-            }}
-          >
-            {item}
-          </div>
-        ))}
-      </div>
-
-      {/* Savings */}
-      <div
-        style={{
-          background:
-            "linear-gradient(135deg,#ffb800,#ff7b00)",
-          borderRadius: "24px",
-          padding: "24px",
-          color: "#fff",
-        }}
-      >
-        <div>Сегодня пользователи сэкономили</div>
-
-        <h2
-          style={{
-            marginTop: "10px",
-            marginBottom: 0,
-          }}
-        >
-          12 458 000 ₫
-        </h2>
-      </div>
-
-      {/* Popular */}
-      <div>
-        <h2>Популярное рядом</h2>
-
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            overflowX: "auto",
-            paddingBottom: "10px",
-          }}
-        >
-          {offers.map((item) => (
-            <div
-              key={item.name}
-              style={{
-                minWidth: "240px",
-                background: "#fff",
-                borderRadius: "20px",
-                overflow: "hidden",
-                boxShadow:
-                  "0 5px 20px rgba(0,0,0,.05)",
-              }}
-            >
-              <img
-                src={item.image}
-                alt={item.name}
-                style={{
-                  width: "100%",
-                  height: "140px",
-                  objectFit: "cover",
-                }}
-              />
-
-              <div
-                style={{
-                  padding: "16px",
-                }}
-              >
-                <h3>{item.name}</h3>
-
-                <div
-                  style={{
-                    color: "#ff7b00",
-                    fontWeight: "700",
-                  }}
-                >
-                  Скидка {item.discount}
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>
