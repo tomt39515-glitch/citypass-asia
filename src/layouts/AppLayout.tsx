@@ -30,12 +30,27 @@ export default function AppLayout({
     ],
 
     partner: [
-      { key: "dashboard", label: "Главная", icon: LayoutDashboard },
-      { key: "scanner", label: "QR", icon: ScanLine },
-      { key: "transactions", label: "История", icon: History },
-      { key: "balance", label: "Баланс", icon: Wallet },
-      { key: "analytics", label: "Отчёты", icon: BarChart3 },
-    ],
+  {
+    key: "home",
+    label: "Главная",
+    icon: LayoutDashboard,
+  },
+  {
+    key: "scanner",
+    label: "QR",
+    icon: ScanLine,
+  },
+  {
+    key: "transactions",
+    label: "История",
+    icon: History,
+  },
+  {
+    key: "profile",
+    label: "Профиль",
+    icon: User,
+  },
+],
 
     admin: [
       { key: "dashboard", label: "Панель", icon: Shield },

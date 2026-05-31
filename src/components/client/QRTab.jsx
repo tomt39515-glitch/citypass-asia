@@ -2,12 +2,20 @@ import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 
 export default function QRTab() {
+  const telegramId =
+    window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
   const [token, setToken] = useState("");
   const [qrImage, setQrImage] = useState("");
   const [seconds, setSeconds] = useState(60);
 
   async function generateQR() {
     try {
+      if (!telegramId) {
+        console.error("Telegram ID not found");
+        return;
+      }
+
       const response = await fetch(
         "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/generate-client-qr",
         {
@@ -16,7 +24,7 @@ export default function QRTab() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            telegram_id: 8052071718,
+            telegram_id: telegramId,
           }),
         }
       );
@@ -26,10 +34,14 @@ export default function QRTab() {
       if (data.success) {
         setToken(data.token);
 
-        const image = await QRCode.toDataURL(data.token);
+        const image = await QRCode.toDataURL(
+          data.token
+        );
 
         setQrImage(image);
         setSeconds(60);
+      } else {
+        console.error(data.error);
       }
     } catch (err) {
       console.error("QR Error:", err);
@@ -116,7 +128,7 @@ export default function QRTab() {
             opacity: 0.85,
           }}
         >
-          ID: CPA-000001
+          Telegram ID: {telegramId}
         </div>
       </div>
 
@@ -130,12 +142,7 @@ export default function QRTab() {
             "0 10px 25px rgba(15,23,42,.05)",
         }}
       >
-        <h2
-          style={{
-            marginTop: 0,
-            color: "#0F172A",
-          }}
-        >
+        <h2 style={{ marginTop: 0 }}>
           Мой QR-код
         </h2>
 
@@ -205,70 +212,6 @@ export default function QRTab() {
         >
           Обновить QR
         </button>
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "12px",
-        }}
-      >
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: "20px",
-            padding: "18px",
-          }}
-        >
-          <div
-            style={{
-              color: "#64748B",
-              fontSize: "14px",
-            }}
-          >
-            Сегодня сэкономлено
-          </div>
-
-          <div
-            style={{
-              marginTop: "8px",
-              fontSize: "24px",
-              fontWeight: 700,
-              color: "#14B8A6",
-            }}
-          >
-            245 000 ₫
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: "20px",
-            padding: "18px",
-          }}
-        >
-          <div
-            style={{
-              color: "#64748B",
-              fontSize: "14px",
-            }}
-          >
-            Получено скидок
-          </div>
-
-          <div
-            style={{
-              marginTop: "8px",
-              fontSize: "24px",
-              fontWeight: 700,
-              color: "#14B8A6",
-            }}
-          >
-            341
-          </div>
-        </div>
       </div>
     </div>
   );

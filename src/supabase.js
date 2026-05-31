@@ -1,53 +1,13 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../../supabase";
-import PartnerCard from "./PartnerCard";
+import { createClient } from "@supabase/supabase-js";
 
-export default function OffersTab() {
-  const [offers, setOffers] = useState([]);
-  const [loading, setLoading] = useState(true);
+const supabaseUrl =
+  "https://doswzyuumcwxjmltcgeh.supabase.co";
 
-  useEffect(() => {
-    loadPartners();
-  }, []);
+const supabaseAnonKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvc3d6eXV1bWN3eGptbHRjZ2VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTMwNzUsImV4cCI6MjA5NTEyOTA3NX0.y0CUPEoH7QZl0VbBBiugoHb2qHwx7m1olXM3GDlrPCc";
 
-  async function loadPartners() {
-    const { data, error } = await supabase
-      .from("partners")
-      .select("*")
-      .eq("is_active", true);
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setOffers(data || []);
-    setLoading(false);
-  }
-
-  if (loading) {
-    return <div>Загрузка партнёров...</div>;
-  }
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
-      }}
-    >
-      <h2>🎁 Скидки партнёров</h2>
-
-      {offers.map((offer) => (
-        <PartnerCard
-          key={offer.id}
-          name={offer.business_name}
-          category={offer.category}
-          discount={offer.discount || 0}
-          icon="🏪"
-        />
-      ))}
-    </div>
+export const supabase =
+  createClient(
+    supabaseUrl,
+    supabaseAnonKey
   );
-}
