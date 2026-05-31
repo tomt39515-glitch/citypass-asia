@@ -2,135 +2,128 @@ export default function QRTab() {
   return (
     <div
       style={{
+        maxWidth: "480px",
+        margin: "0 auto",
         padding: "16px",
-        background: "#f5f7fb",
-        minHeight: "100vh",
+        paddingBottom: "100px",
         display: "flex",
         flexDirection: "column",
         gap: "16px",
       }}
     >
-      {/* Premium Card */}
+      {/* CARD */}
+
       <div
         style={{
           background:
-            "linear-gradient(135deg,#ff7b00,#ffb347)",
+            "linear-gradient(135deg,#14B8A6,#0F766E)",
           borderRadius: "28px",
           padding: "24px",
           color: "#fff",
-          boxShadow:
-            "0 15px 35px rgba(255,123,0,.25)",
         }}
       >
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
+            fontSize: "14px",
+            opacity: 0.9,
           }}
         >
-          <div>
-            <div
-              style={{
-                opacity: 0.9,
-              }}
-            >
-              CityPass Asia
-            </div>
-
-            <h2
-              style={{
-                marginTop: "12px",
-                marginBottom: "8px",
-              }}
-            >
-              Виталий К.
-            </h2>
-
-            <div
-              style={{
-                display: "inline-block",
-                background:
-                  "rgba(255,255,255,.2)",
-                padding: "8px 14px",
-                borderRadius: "999px",
-              }}
-            >
-              ⭐ Premium
-            </div>
-          </div>
-
-          <div
-            style={{
-              fontSize: "48px",
-            }}
-          >
-            🎫
-          </div>
+          CITYPASS ASIA
         </div>
 
         <div
           style={{
-            marginTop: "30px",
-            opacity: 0.9,
+            marginTop: "12px",
+            fontSize: "26px",
+            fontWeight: 700,
           }}
         >
-          ID: CPA-458294
+          Участник клуба
+        </div>
+
+        <div
+          style={{
+            marginTop: "12px",
+            display: "inline-block",
+            padding: "8px 14px",
+            borderRadius: "999px",
+            background:
+              "rgba(255,255,255,.15)",
+          }}
+        >
+          Активный статус
+        </div>
+
+        <div
+          style={{
+            marginTop: "28px",
+            opacity: 0.85,
+          }}
+        >
+          ID: CPA-000001
         </div>
       </div>
 
       {/* QR */}
+
       <div
         style={{
-          background: "#fff",
+          background: "#FFFFFF",
           borderRadius: "28px",
           padding: "24px",
           textAlign: "center",
           boxShadow:
-            "0 5px 20px rgba(0,0,0,.05)",
+            "0 10px 25px rgba(15,23,42,.05)",
         }}
       >
-        <h2>Мой QR код</h2>
-
-        <p
+        <h2
           style={{
-            color: "#666",
+            marginTop: 0,
+            color: "#0F172A",
           }}
         >
-          Покажите QR партнёру для получения скидки
-        </p>
-
-        <img
-          src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=citypass-premium-user"
-          alt="QR"
-          style={{
-            width: "100%",
-            maxWidth: "280px",
-            marginTop: "15px",
-            borderRadius: "20px",
-          }}
-        />
+          Мой QR-код
+        </h2>
 
         <div
           style={{
-            marginTop: "20px",
-            fontSize: "32px",
-            fontWeight: "700",
-            color: "#2563eb",
+            color: "#64748B",
+            marginBottom: "20px",
           }}
         >
-          59 сек
+          Покажите код партнёру для получения скидки
+        </div>
+
+        <div
+          style={{
+            width: "280px",
+            height: "280px",
+            margin: "0 auto",
+            background: "#F8FAFC",
+            borderRadius: "24px",
+            border: "1px solid #E2E8F0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#94A3B8",
+            fontWeight: 600,
+          }}
+        >
+          QR CODE
         </div>
 
         <button
           style={{
-            marginTop: "15px",
-            background:
-              "linear-gradient(135deg,#2563eb,#1d4ed8)",
-            color: "#fff",
+            marginTop: "20px",
+            width: "100%",
             border: "none",
-            borderRadius: "16px",
-            padding: "14px 24px",
+            borderRadius: "18px",
+            padding: "16px",
+            background:
+              "linear-gradient(135deg,#14B8A6,#0D9488)",
+            color: "#fff",
             fontSize: "16px",
+            fontWeight: 700,
             cursor: "pointer",
           }}
         >
@@ -138,7 +131,8 @@ export default function QRTab() {
         </button>
       </div>
 
-      {/* Stats */}
+      {/* STATS */}
+
       <div
         style={{
           display: "grid",
@@ -150,54 +144,61 @@ export default function QRTab() {
           style={{
             background: "#fff",
             borderRadius: "20px",
-            padding: "20px",
-            textAlign: "center",
+            padding: "18px",
           }}
         >
           <div
             style={{
-              color: "#777",
+              color: "#64748B",
+              fontSize: "14px",
             }}
           >
-            Сегодня
+            Сегодня сэкономлено
           </div>
 
-          <h2
+          <div
             style={{
-              color: "#16a34a",
+              marginTop: "8px",
+              fontSize: "24px",
+              fontWeight: 700,
+              color: "#14B8A6",
             }}
           >
             245 000 ₫
-          </h2>
+          </div>
         </div>
 
         <div
           style={{
             background: "#fff",
             borderRadius: "20px",
-            padding: "20px",
-            textAlign: "center",
+            padding: "18px",
           }}
         >
           <div
             style={{
-              color: "#777",
+              color: "#64748B",
+              fontSize: "14px",
             }}
           >
-            Всего скидок
+            Получено скидок
           </div>
 
-          <h2
+          <div
             style={{
-              color: "#ff7b00",
+              marginTop: "8px",
+              fontSize: "24px",
+              fontWeight: 700,
+              color: "#14B8A6",
             }}
           >
             341
-          </h2>
+          </div>
         </div>
       </div>
 
-      {/* Recent */}
+      {/* HISTORY */}
+
       <div
         style={{
           background: "#fff",
@@ -205,30 +206,25 @@ export default function QRTab() {
           padding: "20px",
         }}
       >
-        <h3>Последние скидки</h3>
-
-        <div
+        <h3
           style={{
-            marginTop: "15px",
+            marginTop: 0,
+            color: "#0F172A",
           }}
         >
-          🍔 Burger House — 120 000 ₫
+          Последние операции
+        </h3>
+
+        <div style={{ padding: "12px 0" }}>
+          Burger House — 120 000 ₫
         </div>
 
-        <div
-          style={{
-            marginTop: "12px",
-          }}
-        >
-          💆 Ocean SPA — 200 000 ₫
+        <div style={{ padding: "12px 0" }}>
+          Ocean SPA — 200 000 ₫
         </div>
 
-        <div
-          style={{
-            marginTop: "12px",
-          }}
-        >
-          🏨 Seaside Hotel — 350 000 ₫
+        <div style={{ padding: "12px 0" }}>
+          Seaside Hotel — 350 000 ₫
         </div>
       </div>
     </div>
