@@ -8,46 +8,79 @@ import AgentDashboard from "./dashboards/AgentDashboard";
 import AdminDashboard from "./dashboards/AdminDashboard";
 
 function App() {
+  const telegramId =
+    window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
   const [role, setRole] = useState("client");
   const [currentTab, setCurrentTab] = useState("home");
 
+  const [userRoles] = useState(
+    telegramId === 8052071718
+      ? ["client", "partner", "agent", "admin"]
+      : ["client", "partner", "agent"]
+  );
+
+  const safeSetRole = (newRole) => {
+    if (
+      newRole === "admin" &&
+      telegramId !== 8052071718
+    ) {
+      return;
+    }
+
+    setRole(newRole);
+  };
+
   const renderContent = () => {
-    if (role === "client") {
-      return (
-        <ClientDashboard
-          currentTab={currentTab}
-          transactions={[]}
-          role={role}
-          setRole={setRole}
-        />
-      );
-    }
+    switch (role) {
+      case "client":
+        return (
+          <ClientDashboard
+            currentTab={currentTab}
+            transactions={[]}
+            role={role}
+            setRole={safeSetRole}
+            userRoles={userRoles}
+          />
+        );
 
-    if (role === "partner") {
-      return (
-        <PartnerDashboard
-          currentTab={currentTab}
-        />
-      );
-    }
+      case "partner":
+        return (
+          <PartnerDashboard
+            currentTab={currentTab}
+            role={role}
+            setRole={safeSetRole}
+            userRoles={userRoles}
+          />
+        );
 
-    if (role === "agent") {
-      return (
-        <AgentDashboard
-          currentTab={currentTab}
-        />
-      );
-    }
+      case "agent":
+        return (
+          <AgentDashboard
+            currentTab={currentTab}
+            role={role}
+            setRole={safeSetRole}
+            userRoles={userRoles}
+          />
+        );
 
-    if (role === "admin") {
-      return (
-        <AdminDashboard
-          currentTab={currentTab}
-        />
-      );
-    }
+      case "admin":
+        if (telegramId !== 8052071718) {
+          return null;
+        }
 
-    return null;
+        return (
+          <AdminDashboard
+            currentTab={currentTab}
+            role={role}
+            setRole={safeSetRole}
+            userRoles={userRoles}
+          />
+        );
+
+      default:
+        return null;
+    }
   };
 
   return (

@@ -1,7 +1,9 @@
 export default function ProfileTab({
   role,
   setRole,
+  userRoles = [],
 }) {
+
   return (
     <div
       style={{
@@ -172,86 +174,71 @@ export default function ProfileTab({
       {/* ROLES */}
 
       <div
+  style={{
+    background: "#fff",
+    borderRadius: "24px",
+    padding: "20px",
+  }}
+>
+  <div
+    style={{
+      fontWeight: 700,
+      marginBottom: "14px",
+      color: "#0F172A",
+    }}
+  >
+    Мои роли
+  </div>
+
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: "10px",
+    }}
+  >
+    {userRoles.map((item) => (
+      <button
+        key={item}
+        onClick={() => setRole(item)}
         style={{
-          background: "#fff",
-          borderRadius: "24px",
-          padding: "20px",
+          border: "none",
+          borderRadius: "16px",
+          padding: "14px",
+          cursor: "pointer",
+          fontWeight: 600,
+          background:
+            role === item
+              ? "#14B8A6"
+              : "#F1F5F9",
+          color:
+            role === item
+              ? "#FFFFFF"
+              : "#0F172A",
         }}
       >
-        <div
-          style={{
-            fontWeight: 700,
-            marginBottom: "14px",
-            color: "#0F172A",
-          }}
-        >
-          Мои роли
-        </div>
+        {item === "client" && "Клиент"}
+        {item === "partner" && "Партнёр"}
+        {item === "agent" && "Агент"}
+        {item === "admin" && "Администратор"}
+      </button>
+    ))}
+  </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "10px",
-          }}
-        >
-          {[
-            {
-              key: "client",
-              label: "Клиент",
-            },
-            {
-              key: "partner",
-              label: "Партнёр",
-            },
-            {
-              key: "agent",
-              label: "Агент",
-            },
-            {
-              key: "admin",
-              label: "Администратор",
-            },
-          ].map((item) => (
-            <button
-              key={item.key}
-              onClick={() => setRole(item.key)}
-              style={{
-                border: "none",
-                borderRadius: "16px",
-                padding: "14px",
-                cursor: "pointer",
-                fontWeight: 600,
-                background:
-                  role === item.key
-                    ? "#14B8A6"
-                    : "#F1F5F9",
-                color:
-                  role === item.key
-                    ? "#FFFFFF"
-                    : "#0F172A",
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-
-        <div
-          style={{
-            marginTop: "16px",
-            padding: "14px",
-            background: "#F8FAFC",
-            borderRadius: "16px",
-            color: "#64748B",
-            fontSize: "13px",
-            textAlign: "center",
-          }}
-        >
-          Владелец CityPass Asia
-        </div>
-      </div>
-
+  <div
+    style={{
+      marginTop: "16px",
+      padding: "14px",
+      background: "#F8FAFC",
+      borderRadius: "16px",
+      color: "#64748B",
+      fontSize: "13px",
+      textAlign: "center",
+    }}
+  >
+    Владелец CityPass Asia
+  </div>
+</div>
       {/* SUPPORT */}
 
       <div
