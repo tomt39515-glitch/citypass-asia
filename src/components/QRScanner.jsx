@@ -1,46 +1,56 @@
 import React, { useEffect } from "react";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 
 export default function QRScanner({
   onScanSuccess,
 }) {
   useEffect(() => {
-    const scanner =
-      new Html5QrcodeScanner(
-        "reader",
-        {
-          fps: 10,
-          qrbox: 250,
-          videoConstraints: {
-            facingMode: {
-              exact: "environment",
+    const html5QrCode =
+      new Html5Qrcode("reader");
+
+    const startScanner = async () => {
+      try {
+        await html5QrCode.start(
+          {
+            facingMode: "environment",
+          },
+          {
+            fps: 10,
+            qrbox: {
+              width: 250,
+              height: 250,
             },
           },
-        },
-        false
-      );
+          (decodedText) => {
+            console.log(
+              "QR SUCCESS:",
+              decodedText
+            );
 
-    scanner.render(
-      (decodedText) => {
-        try {
-          const parsed =
-            JSON.parse(decodedText);
+            onScanSuccess({
+              token: decodedText,
+            });
 
-          onScanSuccess(parsed);
-        } catch (e) {
-          console.log(
-            "QR parse error",
-            e
-          );
-        }
-      },
-      (error) => {
-        // не засоряем консоль
+            html5QrCode
+              .stop()
+              .catch(() => {});
+          },
+          () => {}
+        );
+      } catch (err) {
+        console.error(
+          "QR START ERROR:",
+          err
+        );
       }
-    );
+    };
+
+    startScanner();
 
     return () => {
-      scanner.clear().catch(() => {});
+      html5QrCode
+        .stop()
+        .catch(() => {});
     };
   }, [onScanSuccess]);
 
