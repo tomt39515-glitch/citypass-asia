@@ -12,34 +12,45 @@ function Transactions() {
   }, []);
 
   async function loadDeals() {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const { data: partner, error: partnerError } = await supabase
-      .from("partners")
-      .select("id")
-      .eq("telegram_id", TELEGRAM_ID)
-      .single();
+      const { data: partner, error: partnerError } =
+        await supabase
+          .from("partners")
+          .select("id")
+          .eq("telegram_id", TELEGRAM_ID)
+          .single();
 
-    if (partnerError || !partner) {
-      console.error(partnerError);
+      if (partnerError || !partner) {
+        console.error(partnerError);
+        setDeals([]);
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("partner_id", partner.id)
+        .order("created_at", {
+          ascending: false,
+        });
+
+      if (error) {
+        console.error(error);
+        setDeals([]);
+        setLoading(false);
+        return;
+      }
+
+      setDeals(data || []);
       setLoading(false);
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("transactions")
-      .select("*")
-      .eq("partner_id", partner.id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      setDeals([]);
       setLoading(false);
-      return;
     }
-
-    setDeals(data || []);
-    setLoading(false);
   }
 
   return (
@@ -51,19 +62,29 @@ function Transactions() {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ maxWidth: "420px", margin: "0 auto" }}>
-        <h1 style={{ marginBottom: "20px" }}>
+      <div
+        style={{
+          maxWidth: "420px",
+          margin: "0 auto",
+        }}
+      >
+        <h1
+          style={{
+            marginBottom: "20px",
+          }}
+        >
           История сделок
         </h1>
 
         {loading ? (
           <div
             style={{
-              background: "white",
+              background: "#fff",
               padding: "20px",
               borderRadius: "20px",
               textAlign: "center",
-              boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+              boxShadow:
+                "0 10px 25px rgba(0,0,0,0.08)",
             }}
           >
             Загрузка...
@@ -71,11 +92,12 @@ function Transactions() {
         ) : deals.length === 0 ? (
           <div
             style={{
-              background: "white",
+              background: "#fff",
               padding: "20px",
               borderRadius: "20px",
               textAlign: "center",
-              boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+              boxShadow:
+                "0 10px 25px rgba(0,0,0,0.08)",
             }}
           >
             Сделок пока нет
@@ -85,11 +107,12 @@ function Transactions() {
             <div
               key={deal.id}
               style={{
-                background: "white",
+                background: "#fff",
                 padding: "20px",
                 borderRadius: "20px",
                 marginBottom: "16px",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+                boxShadow:
+                  "0 10px 25px rgba(0,0,0,0.08)",
               }}
             >
               <div
@@ -97,6 +120,7 @@ function Transactions() {
                   fontWeight: "700",
                   marginBottom: "10px",
                   color: "#2563eb",
+                  fontSize: "18px",
                 }}
               >
                 Сделка #{deal.id}
@@ -119,7 +143,7 @@ function Transactions() {
               </div>
 
               <div>
-                Комиссия платформы:{" "}
+                Комиссия CityPass:{" "}
                 {Number(
                   deal.citypass_amount || 0
                 ).toLocaleString()}{" "}
