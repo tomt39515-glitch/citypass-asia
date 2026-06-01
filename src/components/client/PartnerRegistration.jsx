@@ -1,3 +1,4 @@
+```jsx
 import { useState } from "react";
 import { supabase } from "../../supabase";
 
@@ -8,6 +9,9 @@ export default function PartnerRegistration({
     window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
   const [businessName, setBusinessName] =
+    useState("");
+
+  const [contactName, setContactName] =
     useState("");
 
   const [category, setCategory] =
@@ -22,23 +26,41 @@ export default function PartnerRegistration({
     useState("");
 
   const [address, setAddress] =
-  useState("");
+    useState("");
 
-const [logoUrl, setLogoUrl] =
-  useState("");
+  const [logoUrl, setLogoUrl] =
+    useState("");
 
-const [success, setSuccess] =
-  useState(false);
+  const [success, setSuccess] =
+    useState(false);
+
   async function submitApplication() {
+    if (
+      !businessName ||
+      !contactName ||
+      !category
+    ) {
+      alert(
+        "Заполните обязательные поля"
+      );
+      return;
+    }
+
     const { error } =
       await supabase
         .from("partner_applications")
         .insert({
-          telegram_id: String(telegramId),
-          business_name: businessName,
+          telegram_id:
+            String(telegramId),
+          business_name:
+            businessName,
+          contact_name:
+            contactName,
           category,
           discount_percent:
-            Number(discountPercent),
+            Number(
+              discountPercent
+            ),
           description,
           address,
           logo_url: logoUrl,
@@ -74,7 +96,8 @@ const [success, setSuccess] =
         zIndex: 9999,
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent:
+          "center",
         padding: "20px",
       }}
     >
@@ -87,15 +110,14 @@ const [success, setSuccess] =
           overflow: "hidden",
           boxShadow:
             "0 20px 60px rgba(0,0,0,.2)",
-          maxHeight: "90vh",
-          overflowY: "auto",
         }}
       >
         {success ? (
           <div
             style={{
               padding: "30px",
-              textAlign: "center",
+              textAlign:
+                "center",
             }}
           >
             <div
@@ -110,12 +132,9 @@ const [success, setSuccess] =
               Заявка отправлена
             </h2>
 
-            <p
-              style={{
-                color: "#64748B",
-              }}
-            >
-              Статус: На модерации
+            <p>
+              Статус:
+              На модерации
             </p>
 
             <button
@@ -124,12 +143,8 @@ const [success, setSuccess] =
                 width: "100%",
                 padding: "16px",
                 border: "none",
-                borderRadius: "18px",
-                background:
-                  "linear-gradient(135deg,#14B8A6,#0D9488)",
-                color: "#fff",
-                fontWeight: "700",
-                fontSize: "16px",
+                borderRadius:
+                  "18px",
               }}
             >
               Закрыть
@@ -141,95 +156,118 @@ const [success, setSuccess] =
               style={{
                 background:
                   "linear-gradient(135deg,#14B8A6,#0F766E)",
-                padding: "24px",
+                padding:
+                  "24px",
                 color: "#fff",
               }}
             >
-              <div
-                style={{
-                  fontSize: "14px",
-                  opacity: 0.9,
-                }}
-              >
-                CITYPASS ASIA
-              </div>
-
-              <h2
-                style={{
-                  marginTop: "10px",
-                  marginBottom: "8px",
-                }}
-              >
+              <h2>
                 Стать партнёром
               </h2>
-
-              <div
-                style={{
-                  opacity: 0.85,
-                }}
-              >
-                Подайте заявку на подключение бизнеса
-              </div>
             </div>
 
             <div
               style={{
-                padding: "24px",
+                padding:
+                  "24px",
               }}
             >
               <input
                 placeholder="Название бизнеса"
-                value={businessName}
+                value={
+                  businessName
+                }
                 onChange={(e) =>
                   setBusinessName(
-                    e.target.value
+                    e.target
+                      .value
                   )
                 }
-                style={inputStyle}
+                style={
+                  inputStyle
+                }
               />
 
               <div
                 style={{
-                  height: "14px",
+                  height:
+                    "14px",
+                }}
+              />
+
+              <input
+                placeholder="Контактное лицо"
+                value={
+                  contactName
+                }
+                onChange={(e) =>
+                  setContactName(
+                    e.target
+                      .value
+                  )
+                }
+                style={
+                  inputStyle
+                }
+              />
+
+              <div
+                style={{
+                  height:
+                    "14px",
                 }}
               />
 
               <select
-                value={category}
+                value={
+                  category
+                }
                 onChange={(e) =>
                   setCategory(
-                    e.target.value
+                    e.target
+                      .value
                   )
                 }
-                style={inputStyle}
+                style={
+                  inputStyle
+                }
               >
                 <option value="">
                   Выберите категорию
                 </option>
+
                 <option>
                   🍽 Ресторан
                 </option>
+
                 <option>
                   ☕ Кафе
                 </option>
+
                 <option>
                   🏨 Отель
                 </option>
+
                 <option>
                   🛍 Магазин
                 </option>
+
                 <option>
                   💆 SPA
                 </option>
+
                 <option>
                   🏋 Фитнес
                 </option>
+
                 <option>
                   🚕 Транспорт
                 </option>
+
                 <option>
                   🎡 Развлечения
                 </option>
+
                 <option>
                   🏥 Услуги
                 </option>
@@ -237,7 +275,8 @@ const [success, setSuccess] =
 
               <div
                 style={{
-                  height: "14px",
+                  height:
+                    "14px",
                 }}
               />
 
@@ -246,103 +285,127 @@ const [success, setSuccess] =
                 min="5"
                 max="90"
                 placeholder="Размер скидки %"
-                value={discountPercent}
+                value={
+                  discountPercent
+                }
                 onChange={(e) =>
                   setDiscountPercent(
-                    e.target.value
+                    e.target
+                      .value
                   )
                 }
-                style={inputStyle}
+                style={
+                  inputStyle
+                }
               />
 
               <div
                 style={{
-                  height: "14px",
+                  height:
+                    "14px",
                 }}
               />
 
               <textarea
                 rows="4"
                 placeholder="Описание бизнеса"
-                value={description}
+                value={
+                  description
+                }
                 onChange={(e) =>
                   setDescription(
-                    e.target.value
+                    e.target
+                      .value
                   )
                 }
                 style={{
                   ...inputStyle,
-                  resize: "none",
+                  resize:
+                    "none",
                 }}
               />
 
               <div
                 style={{
-                  height: "14px",
+                  height:
+                    "14px",
                 }}
               />
 
               <input
                 placeholder="Адрес бизнеса"
-                value={address}
+                value={
+                  address
+                }
                 onChange={(e) =>
                   setAddress(
-                    e.target.value
+                    e.target
+                      .value
                   )
                 }
-                style={inputStyle}
+                style={
+                  inputStyle
+                }
               />
 
               <div
                 style={{
-                  height: "14px",
+                  height:
+                    "14px",
                 }}
               />
 
               <input
-  placeholder="Ссылка на логотип или фото"
-  value={logoUrl}
-  onChange={(e) =>
-    setLogoUrl(
-      e.target.value
-    )
-  }
-  style={inputStyle}
-/>
+                placeholder="Ссылка на логотип или фото"
+                value={
+                  logoUrl
+                }
+                onChange={(e) =>
+                  setLogoUrl(
+                    e.target
+                      .value
+                  )
+                }
+                style={
+                  inputStyle
+                }
+              />
 
               <button
                 onClick={
                   submitApplication
                 }
                 style={{
-                  width: "100%",
-                  marginTop: "20px",
-                  padding: "16px",
-                  border: "none",
-                  borderRadius: "18px",
-                  background:
-                    "linear-gradient(135deg,#14B8A6,#0D9488)",
-                  color: "#fff",
-                  fontWeight: "700",
-                  fontSize: "16px",
-                  cursor: "pointer",
+                  width:
+                    "100%",
+                  marginTop:
+                    "20px",
+                  padding:
+                    "16px",
+                  border:
+                    "none",
+                  borderRadius:
+                    "18px",
                 }}
               >
                 Отправить заявку
               </button>
 
               <button
-                onClick={onClose}
+                onClick={
+                  onClose
+                }
                 style={{
-                  width: "100%",
-                  marginTop: "10px",
-                  padding: "16px",
-                  border: "none",
-                  borderRadius: "18px",
-                  background: "#F1F5F9",
-                  color: "#0F172A",
-                  fontWeight: "600",
-                  cursor: "pointer",
+                  width:
+                    "100%",
+                  marginTop:
+                    "10px",
+                  padding:
+                    "16px",
+                  border:
+                    "none",
+                  borderRadius:
+                    "18px",
                 }}
               >
                 Отмена
@@ -354,3 +417,4 @@ const [success, setSuccess] =
     </div>
   );
 }
+```
