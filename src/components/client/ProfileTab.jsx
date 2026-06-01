@@ -178,7 +178,7 @@ export default function ProfileTab({
             color: "#0F172A",
           }}
         >
-          Мои роли
+          Мой статус
         </div>
 
         <div
@@ -211,23 +211,10 @@ export default function ProfileTab({
               {item === "client" && "Клиент"}
               {item === "partner" && "Партнёр"}
               {item === "agent" && "Агент"}
-              {item === "admin" && "Администратор"}
+              {item === "admin" &&
+                "Администратор"}
             </button>
           ))}
-        </div>
-
-        <div
-          style={{
-            marginTop: "16px",
-            padding: "14px",
-            background: "#F8FAFC",
-            borderRadius: "16px",
-            color: "#64748B",
-            fontSize: "13px",
-            textAlign: "center",
-          }}
-        >
-          Владелец CityPass Asia
         </div>
 
         <button
@@ -245,13 +232,37 @@ export default function ProfileTab({
             borderRadius: "16px",
             padding: "16px",
             cursor: "pointer",
-            fontWeight: 700,
+            fontWeight: "700",
             fontSize: "16px",
-            background: "#14B8A6",
+            background:
+              "linear-gradient(135deg,#14B8A6,#0D9488)",
             color: "#fff",
           }}
         >
           Стать партнёром CityPass
+        </button>
+
+        <button
+          onClick={() =>
+            alert(
+              "Форма агента будет подключена следующим этапом"
+            )
+          }
+          style={{
+            width: "100%",
+            marginTop: "10px",
+            border: "none",
+            borderRadius: "16px",
+            padding: "16px",
+            cursor: "pointer",
+            fontWeight: "700",
+            fontSize: "16px",
+            background:
+              "linear-gradient(135deg,#0F766E,#115E59)",
+            color: "#fff",
+          }}
+        >
+          Стать агентом CityPass
         </button>
       </div>
 
