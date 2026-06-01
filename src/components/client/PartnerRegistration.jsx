@@ -22,14 +22,13 @@ export default function PartnerRegistration({
     useState("");
 
   const [address, setAddress] =
-    useState("");
+  useState("");
 
-  const [photoUrl, setPhotoUrl] =
-    useState("");
+const [logoUrl, setLogoUrl] =
+  useState("");
 
-  const [success, setSuccess] =
-    useState(false);
-
+const [success, setSuccess] =
+  useState(false);
   async function submitApplication() {
     const { error } =
       await supabase
@@ -42,7 +41,7 @@ export default function PartnerRegistration({
             Number(discountPercent),
           description,
           address,
-          photo_url: photoUrl,
+          logo_url: logoUrl,
           status: "pending",
         });
 
@@ -301,15 +300,15 @@ export default function PartnerRegistration({
               />
 
               <input
-                placeholder="Ссылка на фото"
-                value={photoUrl}
-                onChange={(e) =>
-                  setPhotoUrl(
-                    e.target.value
-                  )
-                }
-                style={inputStyle}
-              />
+  placeholder="Ссылка на логотип или фото"
+  value={logoUrl}
+  onChange={(e) =>
+    setLogoUrl(
+      e.target.value
+    )
+  }
+  style={inputStyle}
+/>
 
               <button
                 onClick={
