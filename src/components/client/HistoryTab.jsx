@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../supabase";
+import { supabase } from "../../supabase";
 
 export default function HistoryTab() {
   const [history, setHistory] = useState([]);
@@ -47,15 +47,14 @@ export default function HistoryTab() {
 
       setHistory(data || []);
 
-      const saved =
-        (data || []).reduce(
-          (sum, item) =>
-            sum +
-            Number(
-              item.client_discount_amount || 0
-            ),
-          0
-        );
+      const saved = (data || []).reduce(
+        (sum, item) =>
+          sum +
+          Number(
+            item.client_discount_amount || 0
+          ),
+        0
+      );
 
       setTotalSaved(saved);
       setLoading(false);
@@ -199,9 +198,11 @@ export default function HistoryTab() {
                 fontWeight: 700,
               }}
             >
-              -{Number(
+              -
+              {Number(
                 item.client_discount_amount || 0
-              ).toLocaleString()} ₫
+              ).toLocaleString()}{" "}
+              ₫
             </div>
           </div>
 
@@ -230,7 +231,8 @@ export default function HistoryTab() {
               >
                 {Number(
                   item.original_amount || 0
-                ).toLocaleString()} ₫
+                ).toLocaleString()}{" "}
+                ₫
               </div>
             </div>
 
@@ -264,7 +266,8 @@ export default function HistoryTab() {
             Оплачено:{" "}
             {Number(
               item.final_amount || 0
-            ).toLocaleString()} ₫
+            ).toLocaleString()}{" "}
+            ₫
           </div>
         </div>
       ))}
