@@ -109,7 +109,9 @@ function Transactions() {
               <div>
                 Скидка клиенту:{" "}
                 {Number(
-                  deal.client_discount_percent || deal.discount || 0
+                  deal.client_discount_percent ||
+                    deal.discount ||
+                    0
                 )}
                 %
               </div>
@@ -117,9 +119,11 @@ function Transactions() {
               <div>
                 Комиссия платформы:{" "}
                 {Number(
-                  deal.citypass_amount || deal.commission || 0
+                  deal.citypass_amount ||
+                    deal.commission ||
+                    0
                 ).toLocaleString()}{" "}
-                баллов
+                донгов
               </div>
 
               <div>
@@ -143,7 +147,7 @@ function Transactions() {
               >
                 {new Date(
                   deal.created_at
-                ).toLocaleString()}
+                ).toLocaleString("ru-RU")}
               </div>
             </div>
           ))
