@@ -119,50 +119,28 @@ const fees = 0;
       alert(e.message);
     }
   }
-
-  async function approveApplication(app) {
-    try {
-      await safeFetch(`${SUPABASE_URL}/rest/v1/partners`, {
-        method: "POST",
+async function approveApplication(app) {
+  try {
+    await safeFetch(
+      `${SUPABASE_URL}/rest/v1/partner_applications?id=eq.${app.id}`,
+      {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Prefer: "return=representation",
         },
-        body: JSON.stringify([
-          {
-            name: app.business_name,
-            telegram_id: app.telegram_id,
-            phone: app.phone,
-            address: app.address,
-            category: app.category,
-            description: app.description,
-            discount_percent: app.discount_percent || 10,
-            deposit_balance: 0,
-            bonus_balance: 0,
-            status: "active",
-          },
-        ]),
-      });
+        body: JSON.stringify({
+          status: "approved",
+        }),
+      }
+    );
 
-      await safeFetch(
-        `${SUPABASE_URL}/rest/v1/partner_applications?id=eq.${app.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "approved",
-          }),
-        }
-      );
+    await loadData();
 
-      await loadData();
-      alert("Партнёр одобрен");
-    } catch (e) {
-      alert(e.message);
-    }
+    alert("Партнёр одобрен");
+  } catch (e) {
+    alert(e.message);
   }
+}
 
   async function rejectApplication(app) {
     try {
