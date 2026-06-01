@@ -417,4 +417,4 @@ export default function PartnerRegistration({
     </div>
   );
 }
-```
+
