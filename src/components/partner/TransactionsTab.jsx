@@ -5,41 +5,37 @@ function Transactions() {
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const TELEGRAM_ID = "8052071718";
-
   useEffect(() => {
     loadDeals();
   }, []);
 
   async function loadDeals() {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const { data: partner, error: partnerError } = await supabase
-      .from("partners")
-      .select("id")
-      .eq("telegram_id", TELEGRAM_ID)
-      .single();
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("partner_id", 1)
+        .order("created_at", { ascending: false });
 
-    if (partnerError || !partner) {
-      console.error(partnerError);
+      console.log("TRANSACTIONS:", data);
+      console.log("TRANSACTIONS ERROR:", error);
+
+      if (error) {
+        console.error(error);
+        setDeals([]);
+        setLoading(false);
+        return;
+      }
+
+      setDeals(data || []);
       setLoading(false);
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("transactions")
-      .select("*")
-      .eq("partner_id", partner.id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error(error);
+    } catch (e) {
+      console.error(e);
+      setDeals([]);
       setLoading(false);
-      return;
     }
-
-    setDeals(data || []);
-    setLoading(false);
   }
 
   return (
@@ -105,7 +101,7 @@ function Transactions() {
               <div>
                 Чек:{" "}
                 {Number(
-                  deal.original_amount
+                  deal.original_amount || deal.amount || 0
                 ).toLocaleString()}{" "}
                 донгов
               </div>
@@ -113,7 +109,7 @@ function Transactions() {
               <div>
                 Скидка клиенту:{" "}
                 {Number(
-                  deal.client_discount_percent
+                  deal.client_discount_percent || deal.discount || 0
                 )}
                 %
               </div>
@@ -121,7 +117,7 @@ function Transactions() {
               <div>
                 Комиссия платформы:{" "}
                 {Number(
-                  deal.citypass_amount
+                  deal.citypass_amount || deal.commission || 0
                 ).toLocaleString()}{" "}
                 баллов
               </div>
@@ -129,7 +125,11 @@ function Transactions() {
               <div>
                 Клиент оплатил:{" "}
                 {Number(
-                  deal.final_amount
+                  deal.final_amount ||
+                    ((deal.amount || 0) -
+                      ((deal.amount || 0) *
+                        (deal.discount || 0)) /
+                        100)
                 ).toLocaleString()}{" "}
                 донгов
               </div>
