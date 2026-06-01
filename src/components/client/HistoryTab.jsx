@@ -1,27 +1,69 @@
+import { useEffect, useState } from "react";
+import { supabase } from "../supabase";
+
 export default function HistoryTab() {
-  const history = [
-    {
-      partner: "Burger House",
-      date: "29 мая 2026",
-      amount: "1 000 000 ₫",
-      saved: "100 000 ₫",
-      discount: "10%",
-    },
-    {
-      partner: "Ocean SPA",
-      date: "27 мая 2026",
-      amount: "2 000 000 ₫",
-      saved: "300 000 ₫",
-      discount: "15%",
-    },
-    {
-      partner: "Seaside Hotel",
-      date: "24 мая 2026",
-      amount: "3 500 000 ₫",
-      saved: "350 000 ₫",
-      discount: "10%",
-    },
-  ];
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalSaved, setTotalSaved] = useState(0);
+
+  useEffect(() => {
+    loadHistory();
+  }, []);
+
+  async function loadHistory() {
+    try {
+      const telegramId =
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+      if (!telegramId) {
+        setLoading(false);
+        return;
+      }
+
+      const { data: client } = await supabase
+        .from("clients")
+        .select("*")
+        .eq("telegram_id", String(telegramId))
+        .single();
+
+      if (!client) {
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("client_transactions_view")
+        .select("*")
+        .eq("user_id", client.id)
+        .order("created_at", {
+          ascending: false,
+        });
+
+      if (error) {
+        console.error(error);
+        setLoading(false);
+        return;
+      }
+
+      setHistory(data || []);
+
+      const saved =
+        (data || []).reduce(
+          (sum, item) =>
+            sum +
+            Number(
+              item.client_discount_amount || 0
+            ),
+          0
+        );
+
+      setTotalSaved(saved);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  }
 
   return (
     <div
@@ -34,8 +76,6 @@ export default function HistoryTab() {
         gap: "16px",
       }}
     >
-      {/* HEADER */}
-
       <div
         style={{
           background:
@@ -60,7 +100,7 @@ export default function HistoryTab() {
             marginTop: "10px",
           }}
         >
-          750 000 ₫
+          {totalSaved.toLocaleString()} ₫
         </div>
 
         <div
@@ -69,11 +109,9 @@ export default function HistoryTab() {
             opacity: 0.85,
           }}
         >
-          3 использованные скидки
+          {history.length} использованных скидок
         </div>
       </div>
-
-      {/* TITLE */}
 
       <h2
         style={{
@@ -84,11 +122,34 @@ export default function HistoryTab() {
         История операций
       </h2>
 
-      {/* LIST */}
-
-      {history.map((item, index) => (
+      {loading && (
         <div
-          key={index}
+          style={{
+            background: "#fff",
+            padding: "20px",
+            borderRadius: "22px",
+          }}
+        >
+          Загрузка...
+        </div>
+      )}
+
+      {!loading &&
+        history.length === 0 && (
+          <div
+            style={{
+              background: "#fff",
+              padding: "20px",
+              borderRadius: "22px",
+            }}
+          >
+            История пока пуста
+          </div>
+        )}
+
+      {history.map((item) => (
+        <div
+          key={item.id}
           style={{
             background: "#fff",
             borderRadius: "22px",
@@ -113,7 +174,7 @@ export default function HistoryTab() {
                   color: "#0F172A",
                 }}
               >
-                {item.partner}
+                {item.partner_name}
               </div>
 
               <div
@@ -123,7 +184,9 @@ export default function HistoryTab() {
                   fontSize: "13px",
                 }}
               >
-                {item.date}
+                {new Date(
+                  item.created_at
+                ).toLocaleString("ru-RU")}
               </div>
             </div>
 
@@ -136,7 +199,9 @@ export default function HistoryTab() {
                 fontWeight: 700,
               }}
             >
-              -{item.saved}
+              -{Number(
+                item.client_discount_amount || 0
+              ).toLocaleString()} ₫
             </div>
           </div>
 
@@ -163,7 +228,9 @@ export default function HistoryTab() {
                   fontWeight: 600,
                 }}
               >
-                {item.amount}
+                {Number(
+                  item.original_amount || 0
+                ).toLocaleString()} ₫
               </div>
             </div>
 
@@ -183,9 +250,21 @@ export default function HistoryTab() {
                   color: "#14B8A6",
                 }}
               >
-                {item.discount}
+                {item.client_discount_percent}%
               </div>
             </div>
+          </div>
+
+          <div
+            style={{
+              marginTop: "10px",
+              fontWeight: 700,
+            }}
+          >
+            Оплачено:{" "}
+            {Number(
+              item.final_amount || 0
+            ).toLocaleString()} ₫
           </div>
         </div>
       ))}

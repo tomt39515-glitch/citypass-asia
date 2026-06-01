@@ -14,26 +14,27 @@ function Transactions() {
       setLoading(true);
 
       const { data, error } = await supabase
-        .from("transactions")
+        .from("partner_transactions_view")
         .select("*")
         .eq("partner_id", 1)
-        .order("created_at", { ascending: false });
+        .order("created_at", {
+          ascending: false,
+        });
 
-      console.log("TRANSACTIONS:", data);
-      console.log("TRANSACTIONS ERROR:", error);
+      console.log("PARTNER DEALS:", data);
+      console.log("PARTNER DEALS ERROR:", error);
 
       if (error) {
         console.error(error);
         setDeals([]);
-        setLoading(false);
         return;
       }
 
       setDeals(data || []);
-      setLoading(false);
     } catch (e) {
       console.error(e);
       setDeals([]);
+    } finally {
       setLoading(false);
     }
   }
@@ -47,8 +48,17 @@ function Transactions() {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <div style={{ maxWidth: "420px", margin: "0 auto" }}>
-        <h1 style={{ marginBottom: "20px" }}>
+      <div
+        style={{
+          maxWidth: "420px",
+          margin: "0 auto",
+        }}
+      >
+        <h1
+          style={{
+            marginBottom: "20px",
+          }}
+        >
           История сделок
         </h1>
 
@@ -59,7 +69,6 @@ function Transactions() {
               padding: "20px",
               borderRadius: "20px",
               textAlign: "center",
-              boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
             }}
           >
             Загрузка...
@@ -71,7 +80,6 @@ function Transactions() {
               padding: "20px",
               borderRadius: "20px",
               textAlign: "center",
-              boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
             }}
           >
             Сделок пока нет
@@ -85,57 +93,69 @@ function Transactions() {
                 padding: "20px",
                 borderRadius: "20px",
                 marginBottom: "16px",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+                boxShadow:
+                  "0 10px 25px rgba(0,0,0,0.08)",
               }}
             >
               <div
                 style={{
                   fontWeight: "700",
-                  marginBottom: "10px",
                   color: "#2563eb",
+                  marginBottom: "10px",
                 }}
               >
                 Сделка #{deal.id}
               </div>
 
               <div>
+                Клиент:{" "}
+                <b>
+                  {deal.client_name ||
+                    "Неизвестный клиент"}
+                </b>
+              </div>
+
+              <div>
+                Telegram ID:{" "}
+                {deal.telegram_id}
+              </div>
+
+              <div>
                 Чек:{" "}
                 {Number(
-                  deal.original_amount || deal.amount || 0
+                  deal.original_amount || 0
                 ).toLocaleString()}{" "}
-                донгов
+                VND
               </div>
 
               <div>
                 Скидка клиенту:{" "}
                 {Number(
-                  deal.client_discount_percent ||
-                    deal.discount ||
-                    0
-                )}
-                %
+                  deal.client_discount_amount || 0
+                ).toLocaleString()}{" "}
+                VND
               </div>
 
               <div>
-                Комиссия платформы:{" "}
+                Комиссия CityPass:{" "}
                 {Number(
-                  deal.citypass_amount ||
-                    deal.commission ||
-                    0
+                  deal.citypass_amount || 0
                 ).toLocaleString()}{" "}
-                донгов
+                VND
               </div>
 
               <div>
                 Клиент оплатил:{" "}
-                {Number(
-                  deal.final_amount ||
-                    ((deal.amount || 0) -
-                      ((deal.amount || 0) *
-                        (deal.discount || 0)) /
-                        100)
-                ).toLocaleString()}{" "}
-                донгов
+                <b>
+                  {Number(
+                    deal.final_amount || 0
+                  ).toLocaleString()}{" "}
+                  VND
+                </b>
+              </div>
+
+              <div>
+                Статус: {deal.status}
               </div>
 
               <div
