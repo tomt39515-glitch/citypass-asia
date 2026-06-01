@@ -52,7 +52,9 @@ function Transactions() {
       }}
     >
       <div style={{ maxWidth: "420px", margin: "0 auto" }}>
-        <h1 style={{ marginBottom: "20px" }}>История сделок</h1>
+        <h1 style={{ marginBottom: "20px" }}>
+          История сделок
+        </h1>
 
         {loading ? (
           <div
@@ -101,19 +103,35 @@ function Transactions() {
               </div>
 
               <div>
-                Чек: {Number(deal.original_amount).toLocaleString()} донгов
+                Чек:{" "}
+                {Number(
+                  deal.original_amount || 0
+                ).toLocaleString()}{" "}
+                донгов
               </div>
 
               <div>
-                Скидка клиенту: {Number(deal.client_discount_percent)}%
+                Скидка клиенту:{" "}
+                {Number(
+                  deal.client_discount_percent || 0
+                )}
+                %
               </div>
 
               <div>
-                Комиссия платформы: {Number(deal.citypass_amount).toLocaleString()} баллов
+                Комиссия платформы:{" "}
+                {Number(
+                  deal.citypass_amount || 0
+                ).toLocaleString()}{" "}
+                донгов
               </div>
 
               <div>
-                Клиент оплатил: {Number(deal.final_amount).toLocaleString()} донгов
+                Клиент оплатил:{" "}
+                {Number(
+                  deal.final_amount || 0
+                ).toLocaleString()}{" "}
+                донгов
               </div>
 
               <div
@@ -123,7 +141,9 @@ function Transactions() {
                   fontSize: "14px",
                 }}
               >
-                {new Date(deal.created_at).toLocaleString()}
+                {new Date(
+                  deal.created_at
+                ).toLocaleString("ru-RU")}
               </div>
             </div>
           ))
