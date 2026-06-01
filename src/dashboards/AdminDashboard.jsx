@@ -85,8 +85,10 @@ if (currentTab === "transactions") {
       );
 
       const partnersData = await safeFetch(
-        `${SUPABASE_URL}/rest/v1/partners?select=*`
-      );
+  `${SUPABASE_URL}/rest/v1/partner_applications?select=*&status=eq.approved`
+);
+
+console.log("partnersData", partnersData);
 
       const applicationsData = await safeFetch(
         `${SUPABASE_URL}/rest/v1/partner_applications?select=*`
@@ -279,7 +281,7 @@ async function approveApplication(app) {
 
       {partners.map((partner) => (
         <div key={partner.id}>
-          <h3>{partner.name || `Партнёр #${partner.id}`}</h3>
+          <h3>{partner.business_name || `Партнёр #${partner.id}`}</h3>
           <button onClick={() => onOpenPartner(partner)}>Открыть</button>
         </div>
       ))}
