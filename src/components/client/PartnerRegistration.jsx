@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "../../supabase";
 
@@ -58,9 +57,7 @@ export default function PartnerRegistration({
             contactName,
           category,
           discount_percent:
-            Number(
-              discountPercent
-            ),
+            Number(discountPercent),
           description,
           address,
           logo_url: logoUrl,
@@ -96,8 +93,7 @@ export default function PartnerRegistration({
         zIndex: 9999,
         display: "flex",
         alignItems: "center",
-        justifyContent:
-          "center",
+        justifyContent: "center",
         padding: "20px",
       }}
     >
@@ -107,17 +103,17 @@ export default function PartnerRegistration({
           maxWidth: "520px",
           background: "#fff",
           borderRadius: "28px",
-          overflow: "hidden",
           boxShadow:
             "0 20px 60px rgba(0,0,0,.2)",
+          maxHeight: "90vh",
+          overflowY: "auto",
         }}
       >
         {success ? (
           <div
             style={{
               padding: "30px",
-              textAlign:
-                "center",
+              textAlign: "center",
             }}
           >
             <div
@@ -132,9 +128,12 @@ export default function PartnerRegistration({
               Заявка отправлена
             </h2>
 
-            <p>
-              Статус:
-              На модерации
+            <p
+              style={{
+                color: "#64748B",
+              }}
+            >
+              Статус: На модерации
             </p>
 
             <button
@@ -143,8 +142,12 @@ export default function PartnerRegistration({
                 width: "100%",
                 padding: "16px",
                 border: "none",
-                borderRadius:
-                  "18px",
+                borderRadius: "18px",
+                background:
+                  "#14B8A6",
+                color: "#fff",
+                fontWeight: "700",
+                cursor: "pointer",
               }}
             >
               Закрыть
@@ -156,219 +159,157 @@ export default function PartnerRegistration({
               style={{
                 background:
                   "linear-gradient(135deg,#14B8A6,#0F766E)",
-                padding:
-                  "24px",
+                padding: "24px",
                 color: "#fff",
               }}
             >
-              <h2>
+              <h2
+                style={{
+                  margin: 0,
+                }}
+              >
                 Стать партнёром
               </h2>
             </div>
 
             <div
               style={{
-                padding:
-                  "24px",
+                padding: "24px",
               }}
             >
               <input
                 placeholder="Название бизнеса"
-                value={
-                  businessName
-                }
+                value={businessName}
                 onChange={(e) =>
                   setBusinessName(
-                    e.target
-                      .value
+                    e.target.value
                   )
                 }
-                style={
-                  inputStyle
-                }
+                style={inputStyle}
               />
 
-              <div
-                style={{
-                  height:
-                    "14px",
-                }}
-              />
+              <div style={{ height: 14 }} />
 
               <input
                 placeholder="Контактное лицо"
-                value={
-                  contactName
-                }
+                value={contactName}
                 onChange={(e) =>
                   setContactName(
-                    e.target
-                      .value
+                    e.target.value
                   )
                 }
-                style={
-                  inputStyle
-                }
+                style={inputStyle}
               />
 
-              <div
-                style={{
-                  height:
-                    "14px",
-                }}
-              />
+              <div style={{ height: 14 }} />
 
               <select
-                value={
-                  category
-                }
+                value={category}
                 onChange={(e) =>
                   setCategory(
-                    e.target
-                      .value
+                    e.target.value
                   )
                 }
-                style={
-                  inputStyle
-                }
+                style={inputStyle}
               >
                 <option value="">
                   Выберите категорию
                 </option>
 
-                <option>
+                <option value="Ресторан">
                   🍽 Ресторан
                 </option>
 
-                <option>
+                <option value="Кафе">
                   ☕ Кафе
                 </option>
 
-                <option>
+                <option value="Отель">
                   🏨 Отель
                 </option>
 
-                <option>
+                <option value="Магазин">
                   🛍 Магазин
                 </option>
 
-                <option>
+                <option value="SPA">
                   💆 SPA
                 </option>
 
-                <option>
+                <option value="Фитнес">
                   🏋 Фитнес
                 </option>
 
-                <option>
+                <option value="Транспорт">
                   🚕 Транспорт
                 </option>
 
-                <option>
+                <option value="Развлечения">
                   🎡 Развлечения
                 </option>
 
-                <option>
+                <option value="Услуги">
                   🏥 Услуги
                 </option>
               </select>
 
-              <div
-                style={{
-                  height:
-                    "14px",
-                }}
-              />
+              <div style={{ height: 14 }} />
 
               <input
                 type="number"
                 min="5"
                 max="90"
                 placeholder="Размер скидки %"
-                value={
-                  discountPercent
-                }
+                value={discountPercent}
                 onChange={(e) =>
                   setDiscountPercent(
-                    e.target
-                      .value
+                    e.target.value
                   )
                 }
-                style={
-                  inputStyle
-                }
+                style={inputStyle}
               />
 
-              <div
-                style={{
-                  height:
-                    "14px",
-                }}
-              />
+              <div style={{ height: 14 }} />
 
               <textarea
-                rows="4"
+                rows={4}
                 placeholder="Описание бизнеса"
-                value={
-                  description
-                }
+                value={description}
                 onChange={(e) =>
                   setDescription(
-                    e.target
-                      .value
+                    e.target.value
                   )
                 }
                 style={{
                   ...inputStyle,
-                  resize:
-                    "none",
+                  resize: "none",
                 }}
               />
 
-              <div
-                style={{
-                  height:
-                    "14px",
-                }}
-              />
+              <div style={{ height: 14 }} />
 
               <input
                 placeholder="Адрес бизнеса"
-                value={
-                  address
-                }
+                value={address}
                 onChange={(e) =>
                   setAddress(
-                    e.target
-                      .value
+                    e.target.value
                   )
                 }
-                style={
-                  inputStyle
-                }
+                style={inputStyle}
               />
 
-              <div
-                style={{
-                  height:
-                    "14px",
-                }}
-              />
+              <div style={{ height: 14 }} />
 
               <input
                 placeholder="Ссылка на логотип или фото"
-                value={
-                  logoUrl
-                }
+                value={logoUrl}
                 onChange={(e) =>
                   setLogoUrl(
-                    e.target
-                      .value
+                    e.target.value
                   )
                 }
-                style={
-                  inputStyle
-                }
+                style={inputStyle}
               />
 
               <button
@@ -376,36 +317,34 @@ export default function PartnerRegistration({
                   submitApplication
                 }
                 style={{
-                  width:
-                    "100%",
-                  marginTop:
-                    "20px",
-                  padding:
-                    "16px",
-                  border:
-                    "none",
-                  borderRadius:
-                    "18px",
+                  width: "100%",
+                  marginTop: "20px",
+                  padding: "16px",
+                  border: "none",
+                  borderRadius: "18px",
+                  background:
+                    "#14B8A6",
+                  color: "#fff",
+                  fontWeight: "700",
+                  cursor: "pointer",
                 }}
               >
                 Отправить заявку
               </button>
 
               <button
-                onClick={
-                  onClose
-                }
+                onClick={onClose}
                 style={{
-                  width:
-                    "100%",
-                  marginTop:
-                    "10px",
-                  padding:
-                    "16px",
-                  border:
-                    "none",
-                  borderRadius:
-                    "18px",
+                  width: "100%",
+                  marginTop: "10px",
+                  padding: "16px",
+                  border: "none",
+                  borderRadius: "18px",
+                  background:
+                    "#F1F5F9",
+                  color: "#0F172A",
+                  fontWeight: "600",
+                  cursor: "pointer",
                 }}
               >
                 Отмена
@@ -417,4 +356,3 @@ export default function PartnerRegistration({
     </div>
   );
 }
-
