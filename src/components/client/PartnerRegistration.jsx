@@ -54,13 +54,24 @@ export default function PartnerRegistration({
     setSuccess(true);
   }
 
+  const inputStyle = {
+    width: "100%",
+    padding: "16px",
+    borderRadius: "16px",
+    border: "1px solid #E2E8F0",
+    background: "#F8FAFC",
+    fontSize: "16px",
+    boxSizing: "border-box",
+    outline: "none",
+  };
+
   return (
     <div
       style={{
         position: "fixed",
         inset: 0,
         background:
-          "rgba(0,0,0,.5)",
+          "rgba(15,23,42,.65)",
         zIndex: 9999,
         display: "flex",
         alignItems: "center",
@@ -71,150 +82,273 @@ export default function PartnerRegistration({
       <div
         style={{
           width: "100%",
-          maxWidth: "500px",
+          maxWidth: "520px",
           background: "#fff",
-          borderRadius: "24px",
-          padding: "24px",
+          borderRadius: "28px",
+          overflow: "hidden",
+          boxShadow:
+            "0 20px 60px rgba(0,0,0,.2)",
           maxHeight: "90vh",
           overflowY: "auto",
         }}
       >
         {success ? (
-          <>
+          <div
+            style={{
+              padding: "30px",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "56px",
+              }}
+            >
+              ✅
+            </div>
+
             <h2>
-              ✅ Заявка отправлена
+              Заявка отправлена
             </h2>
 
-            <p>
-              Статус:
-              На модерации
+            <p
+              style={{
+                color: "#64748B",
+              }}
+            >
+              Статус: На модерации
             </p>
 
             <button
               onClick={onClose}
               style={{
                 width: "100%",
-                padding: "14px",
+                padding: "16px",
                 border: "none",
-                borderRadius: "14px",
-                background: "#14B8A6",
+                borderRadius: "18px",
+                background:
+                  "linear-gradient(135deg,#14B8A6,#0D9488)",
                 color: "#fff",
                 fontWeight: "700",
+                fontSize: "16px",
               }}
             >
               Закрыть
             </button>
-          </>
+          </div>
         ) : (
           <>
-            <h2>
-              Стать партнёром CityPass
-            </h2>
-
-            <input
-              placeholder="Название бизнеса"
-              value={businessName}
-              onChange={(e) =>
-                setBusinessName(
-                  e.target.value
-                )
-              }
-            />
-
-            <br /><br />
-
-            <input
-              placeholder="Категория"
-              value={category}
-              onChange={(e) =>
-                setCategory(
-                  e.target.value
-                )
-              }
-            />
-
-            <br /><br />
-
-            <input
-              type="number"
-              min="5"
-              placeholder="Скидка %"
-              value={discountPercent}
-              onChange={(e) =>
-                setDiscountPercent(
-                  e.target.value
-                )
-              }
-            />
-
-            <br /><br />
-
-            <textarea
-              placeholder="Описание"
-              value={description}
-              onChange={(e) =>
-                setDescription(
-                  e.target.value
-                )
-              }
-            />
-
-            <br /><br />
-
-            <input
-              placeholder="Адрес"
-              value={address}
-              onChange={(e) =>
-                setAddress(
-                  e.target.value
-                )
-              }
-            />
-
-            <br /><br />
-
-            <input
-              placeholder="Ссылка на фото"
-              value={photoUrl}
-              onChange={(e) =>
-                setPhotoUrl(
-                  e.target.value
-                )
-              }
-            />
-
-            <br /><br />
-
-            <button
-              onClick={
-                submitApplication
-              }
+            <div
               style={{
-                width: "100%",
-                padding: "14px",
-                border: "none",
-                borderRadius: "14px",
-                background: "#14B8A6",
+                background:
+                  "linear-gradient(135deg,#14B8A6,#0F766E)",
+                padding: "24px",
                 color: "#fff",
-                fontWeight: "700",
               }}
             >
-              Отправить заявку
-            </button>
+              <div
+                style={{
+                  fontSize: "14px",
+                  opacity: 0.9,
+                }}
+              >
+                CITYPASS ASIA
+              </div>
 
-            <button
-              onClick={onClose}
+              <h2
+                style={{
+                  marginTop: "10px",
+                  marginBottom: "8px",
+                }}
+              >
+                Стать партнёром
+              </h2>
+
+              <div
+                style={{
+                  opacity: 0.85,
+                }}
+              >
+                Подайте заявку на подключение бизнеса
+              </div>
+            </div>
+
+            <div
               style={{
-                width: "100%",
-                marginTop: "10px",
-                padding: "14px",
-                border: "none",
-                borderRadius: "14px",
-                background: "#E2E8F0",
+                padding: "24px",
               }}
             >
-              Отмена
-            </button>
+              <input
+                placeholder="Название бизнеса"
+                value={businessName}
+                onChange={(e) =>
+                  setBusinessName(
+                    e.target.value
+                  )
+                }
+                style={inputStyle}
+              />
+
+              <div
+                style={{
+                  height: "14px",
+                }}
+              />
+
+              <select
+                value={category}
+                onChange={(e) =>
+                  setCategory(
+                    e.target.value
+                  )
+                }
+                style={inputStyle}
+              >
+                <option value="">
+                  Выберите категорию
+                </option>
+                <option>
+                  🍽 Ресторан
+                </option>
+                <option>
+                  ☕ Кафе
+                </option>
+                <option>
+                  🏨 Отель
+                </option>
+                <option>
+                  🛍 Магазин
+                </option>
+                <option>
+                  💆 SPA
+                </option>
+                <option>
+                  🏋 Фитнес
+                </option>
+                <option>
+                  🚕 Транспорт
+                </option>
+                <option>
+                  🎡 Развлечения
+                </option>
+                <option>
+                  🏥 Услуги
+                </option>
+              </select>
+
+              <div
+                style={{
+                  height: "14px",
+                }}
+              />
+
+              <input
+                type="number"
+                min="5"
+                max="90"
+                placeholder="Размер скидки %"
+                value={discountPercent}
+                onChange={(e) =>
+                  setDiscountPercent(
+                    e.target.value
+                  )
+                }
+                style={inputStyle}
+              />
+
+              <div
+                style={{
+                  height: "14px",
+                }}
+              />
+
+              <textarea
+                rows="4"
+                placeholder="Описание бизнеса"
+                value={description}
+                onChange={(e) =>
+                  setDescription(
+                    e.target.value
+                  )
+                }
+                style={{
+                  ...inputStyle,
+                  resize: "none",
+                }}
+              />
+
+              <div
+                style={{
+                  height: "14px",
+                }}
+              />
+
+              <input
+                placeholder="Адрес бизнеса"
+                value={address}
+                onChange={(e) =>
+                  setAddress(
+                    e.target.value
+                  )
+                }
+                style={inputStyle}
+              />
+
+              <div
+                style={{
+                  height: "14px",
+                }}
+              />
+
+              <input
+                placeholder="Ссылка на фото"
+                value={photoUrl}
+                onChange={(e) =>
+                  setPhotoUrl(
+                    e.target.value
+                  )
+                }
+                style={inputStyle}
+              />
+
+              <button
+                onClick={
+                  submitApplication
+                }
+                style={{
+                  width: "100%",
+                  marginTop: "20px",
+                  padding: "16px",
+                  border: "none",
+                  borderRadius: "18px",
+                  background:
+                    "linear-gradient(135deg,#14B8A6,#0D9488)",
+                  color: "#fff",
+                  fontWeight: "700",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+              >
+                Отправить заявку
+              </button>
+
+              <button
+                onClick={onClose}
+                style={{
+                  width: "100%",
+                  marginTop: "10px",
+                  padding: "16px",
+                  border: "none",
+                  borderRadius: "18px",
+                  background: "#F1F5F9",
+                  color: "#0F172A",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                Отмена
+              </button>
+            </div>
           </>
         )}
       </div>
