@@ -2,17 +2,30 @@ import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 
 export default function ClientQR() {
-  const telegramId =
-    window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-
+  const [telegramId, setTelegramId] = useState(null);
   const [token, setToken] = useState("");
   const [qrImage, setQrImage] = useState("");
   const [seconds, setSeconds] = useState(60);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const tg =
+      window.Telegram?.WebApp?.initDataUnsafe;
+
+    const id =
+      tg?.user?.id ||
+      tg?.receiver?.id ||
+      null;
+
+    setTelegramId(id);
+  }, []);
 
   async function generateQR() {
     try {
+      setError("");
+
       if (!telegramId) {
-        console.error("Telegram ID not found");
+        setError("Telegram ID не найден");
         return;
       }
 
@@ -21,7 +34,8 @@ export default function ClientQR() {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
           body: JSON.stringify({
             telegram_id: telegramId,
@@ -29,28 +43,46 @@ export default function ClientQR() {
         }
       );
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
-      if (data.success) {
-        setToken(data.token);
+      console.log(
+        "QR RESPONSE:",
+        data
+      );
 
-        const image = await QRCode.toDataURL(
+      if (!data.success) {
+        setError(
+          data.error ||
+            "Ошибка генерации QR"
+        );
+        return;
+      }
+
+      setToken(data.token);
+
+      const image =
+        await QRCode.toDataURL(
           data.token
         );
 
-        setQrImage(image);
-        setSeconds(60);
-      } else {
-        console.error(data.error);
-      }
+      setQrImage(image);
+      setSeconds(60);
     } catch (err) {
-      console.error("QR Error:", err);
+      console.error(err);
+
+      setError(
+        err.message ||
+          "Ошибка загрузки QR"
+      );
     }
   }
 
   useEffect(() => {
+    if (!telegramId) return;
+
     generateQR();
-  }, []);
+  }, [telegramId]);
 
   useEffect(() => {
     if (!token) return;
@@ -66,7 +98,8 @@ export default function ClientQR() {
       });
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () =>
+      clearInterval(timer);
   }, [token]);
 
   return (
@@ -75,7 +108,8 @@ export default function ClientQR() {
         minHeight: "100vh",
         background: "#f4f7fb",
         padding: "20px",
-        fontFamily: "Arial, sans-serif",
+        fontFamily:
+          "Arial, sans-serif",
       }}
     >
       <div
@@ -90,12 +124,12 @@ export default function ClientQR() {
           textAlign: "center",
         }}
       >
-        <h1>Мой QR</h1>
+        <h1>Мой QR-код</h1>
 
         <p
           style={{
             color: "#666",
-            marginBottom: "24px",
+            marginBottom: "20px",
           }}
         >
           Покажите QR партнёру
@@ -103,13 +137,43 @@ export default function ClientQR() {
 
         <div
           style={{
-            marginBottom: "15px",
+            marginBottom: "20px",
             color: "#2563eb",
-            fontWeight: "600",
+            fontWeight: "700",
           }}
         >
-          Telegram ID: {telegramId}
+          Telegram ID:{" "}
+          {String(telegramId)}
         </div>
+
+        {error && (
+          <div
+            style={{
+              background:
+                "#fee2e2",
+              color: "#dc2626",
+              padding: "12px",
+              borderRadius: "12px",
+              marginBottom: "15px",
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        {!qrImage && !error && (
+          <div
+            style={{
+              height: "240px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent:
+                "center",
+            }}
+          >
+            Загрузка QR...
+          </div>
+        )}
 
         {qrImage && (
           <img
@@ -140,10 +204,13 @@ export default function ClientQR() {
           onClick={generateQR}
           style={{
             marginTop: "20px",
-            padding: "12px 24px",
+            padding:
+              "12px 24px",
             border: "none",
-            borderRadius: "12px",
-            background: "#2563eb",
+            borderRadius:
+              "12px",
+            background:
+              "#2563eb",
             color: "#fff",
             cursor: "pointer",
           }}
