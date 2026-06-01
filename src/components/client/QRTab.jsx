@@ -8,13 +8,21 @@ export default function QRTab() {
   const [token, setToken] = useState("");
   const [qrImage, setQrImage] = useState("");
   const [seconds, setSeconds] = useState(60);
+  const [loading, setLoading] = useState(false);
 
   async function generateQR() {
     try {
+      setLoading(true);
+
       if (!telegramId) {
         console.error("Telegram ID not found");
         return;
       }
+
+      console.log(
+        "GENERATE QR FOR TELEGRAM ID:",
+        telegramId
+      );
 
       const response = await fetch(
         "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/generate-client-qr",
@@ -22,6 +30,10 @@ export default function QRTab() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            apikey:
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvc3d6eXV1bWN3eGptbHRjZ2VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTMwNzUsImV4cCI6MjA5NTEyOTA3NX0.y0CUPEoH7QZl0VbBBiugoHb2qHwx7m1olXM3GDlrPCc",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvc3d6eXV1bWN3eGptbHRjZ2VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTMwNzUsImV4cCI6MjA5NTEyOTA3NX0.y0CUPEoH7QZl0VbBBiugoHb2qHwx7m1olXM3GDlrPCc",
           },
           body: JSON.stringify({
             telegram_id: telegramId,
@@ -29,22 +41,40 @@ export default function QRTab() {
         }
       );
 
+      console.log(
+        "RESPONSE STATUS:",
+        response.status
+      );
+
       const data = await response.json();
 
-      if (data.success) {
-        setToken(data.token);
+      console.log(
+        "FUNCTION RESPONSE:",
+        data
+      );
 
-        const image = await QRCode.toDataURL(
-          data.token
-        );
-
-        setQrImage(image);
-        setSeconds(60);
-      } else {
+      if (!data.success) {
         console.error(data.error);
+        return;
       }
-    } catch (err) {
-      console.error("QR Error:", err);
+
+      setToken(data.token);
+
+      const qr =
+        await QRCode.toDataURL(data.token);
+
+      setQrImage(qr);
+
+      setSeconds(
+        data.ttl_seconds || 60
+      );
+    } catch (error) {
+      console.error(
+        "QR ERROR:",
+        error
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -66,7 +96,8 @@ export default function QRTab() {
       });
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () =>
+      clearInterval(timer);
   }, [token]);
 
   return (
@@ -76,9 +107,6 @@ export default function QRTab() {
         margin: "0 auto",
         padding: "16px",
         paddingBottom: "100px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
       }}
     >
       <div
@@ -88,6 +116,7 @@ export default function QRTab() {
           borderRadius: "28px",
           padding: "24px",
           color: "#fff",
+          marginBottom: "20px",
         }}
       >
         <div
@@ -103,7 +132,7 @@ export default function QRTab() {
           style={{
             marginTop: "12px",
             fontSize: "26px",
-            fontWeight: 700,
+            fontWeight: "700",
           }}
         >
           Участник клуба
@@ -112,20 +141,6 @@ export default function QRTab() {
         <div
           style={{
             marginTop: "12px",
-            display: "inline-block",
-            padding: "8px 14px",
-            borderRadius: "999px",
-            background:
-              "rgba(255,255,255,.15)",
-          }}
-        >
-          Активный статус
-        </div>
-
-        <div
-          style={{
-            marginTop: "28px",
-            opacity: 0.85,
           }}
         >
           Telegram ID: {telegramId}
@@ -134,42 +149,36 @@ export default function QRTab() {
 
       <div
         style={{
-          background: "#FFFFFF",
+          background: "#fff",
           borderRadius: "28px",
           padding: "24px",
           textAlign: "center",
-          boxShadow:
-            "0 10px 25px rgba(15,23,42,.05)",
         }}
       >
-        <h2 style={{ marginTop: 0 }}>
-          Мой QR-код
-        </h2>
+        <h2>Мой QR-код</h2>
 
-        <div
-          style={{
-            color: "#64748B",
-            marginBottom: "20px",
-          }}
-        >
-          Покажите код партнёру для получения скидки
-        </div>
+        <p>
+          Покажите QR партнёру
+        </p>
 
         <div
           style={{
             width: "280px",
-            minHeight: "280px",
+            height: "280px",
             margin: "0 auto",
-            background: "#F8FAFC",
-            borderRadius: "24px",
             border: "1px solid #E2E8F0",
+            borderRadius: "20px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "12px",
+            overflow: "hidden",
           }}
         >
-          {qrImage ? (
+          {loading ? (
+            <div>
+              Генерация QR...
+            </div>
+          ) : qrImage ? (
             <img
               src={qrImage}
               alt="QR"
@@ -179,15 +188,17 @@ export default function QRTab() {
               }}
             />
           ) : (
-            <div>Загрузка QR...</div>
+            <div>
+              QR не получен
+            </div>
           )}
         </div>
 
         <div
           style={{
-            marginTop: "16px",
-            fontSize: "18px",
+            marginTop: "20px",
             fontWeight: "700",
+            fontSize: "18px",
             color: "#14B8A6",
           }}
         >
@@ -197,16 +208,15 @@ export default function QRTab() {
         <button
           onClick={generateQR}
           style={{
-            marginTop: "20px",
             width: "100%",
+            marginTop: "20px",
+            padding: "16px",
             border: "none",
             borderRadius: "18px",
-            padding: "16px",
             background:
-              "linear-gradient(135deg,#14B8A6,#0D9488)",
+              "#14B8A6",
             color: "#fff",
-            fontSize: "16px",
-            fontWeight: 700,
+            fontWeight: "700",
             cursor: "pointer",
           }}
         >
