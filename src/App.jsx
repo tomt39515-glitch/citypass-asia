@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
+
 import { supabase } from "./supabase";
 
 import AppLayout from "./layouts/AppLayout";
@@ -8,32 +12,64 @@ import PartnerDashboard from "./dashboards/PartnerDashboard";
 import AgentDashboard from "./dashboards/AgentDashboard";
 import AdminDashboard from "./dashboards/AdminDashboard";
 
+import PartnerRegistration from "./components/client/PartnerRegistration";
+
 function App() {
   const telegramUser =
     window.Telegram?.WebApp?.initDataUnsafe?.user;
 
   const telegramId = telegramUser?.id;
 
-  const [role, setRole] = useState("client");
-  const [currentTab, setCurrentTab] = useState("home");
+  const [role, setRole] =
+    useState("client");
+
+  const [currentTab, setCurrentTab] =
+    useState("home");
+
+  const [
+    showPartnerRegistration,
+    setShowPartnerRegistration,
+  ] = useState(false);
 
   useEffect(() => {
     registerClient();
+  }, []);
+
+  useEffect(() => {
+    const openPartnerRegistration =
+      () => {
+        setShowPartnerRegistration(
+          true
+        );
+      };
+
+    window.addEventListener(
+      "open-partner-registration",
+      openPartnerRegistration
+    );
+
+    return () => {
+      window.removeEventListener(
+        "open-partner-registration",
+        openPartnerRegistration
+      );
+    };
   }, []);
 
   async function registerClient() {
     try {
       if (!telegramId) return;
 
-      const { data: existingClient } =
-        await supabase
-          .from("clients")
-          .select("id")
-          .eq(
-            "telegram_id",
-            String(telegramId)
-          )
-          .maybeSingle();
+      const {
+        data: existingClient,
+      } = await supabase
+        .from("clients")
+        .select("id")
+        .eq(
+          "telegram_id",
+          String(telegramId)
+        )
+        .maybeSingle();
 
       if (existingClient) {
         console.log(
@@ -90,10 +126,13 @@ function App() {
         ]
   );
 
-  const safeSetRole = (newRole) => {
+  const safeSetRole = (
+    newRole
+  ) => {
     if (
       newRole === "admin" &&
-      telegramId !== 8052071718
+      telegramId !==
+        8052071718
     ) {
       return;
     }
@@ -106,31 +145,49 @@ function App() {
       case "client":
         return (
           <ClientDashboard
-            currentTab={currentTab}
+            currentTab={
+              currentTab
+            }
             transactions={[]}
             role={role}
-            setRole={safeSetRole}
-            userRoles={userRoles}
+            setRole={
+              safeSetRole
+            }
+            userRoles={
+              userRoles
+            }
           />
         );
 
       case "partner":
         return (
           <PartnerDashboard
-            currentTab={currentTab}
+            currentTab={
+              currentTab
+            }
             role={role}
-            setRole={safeSetRole}
-            userRoles={userRoles}
+            setRole={
+              safeSetRole
+            }
+            userRoles={
+              userRoles
+            }
           />
         );
 
       case "agent":
         return (
           <AgentDashboard
-            currentTab={currentTab}
+            currentTab={
+              currentTab
+            }
             role={role}
-            setRole={safeSetRole}
-            userRoles={userRoles}
+            setRole={
+              safeSetRole
+            }
+            userRoles={
+              userRoles
+            }
           />
         );
 
@@ -144,10 +201,16 @@ function App() {
 
         return (
           <AdminDashboard
-            currentTab={currentTab}
+            currentTab={
+              currentTab
+            }
             role={role}
-            setRole={safeSetRole}
-            userRoles={userRoles}
+            setRole={
+              safeSetRole
+            }
+            userRoles={
+              userRoles
+            }
           />
         );
 
@@ -157,13 +220,27 @@ function App() {
   };
 
   return (
-    <AppLayout
-      role={role}
-      currentTab={currentTab}
-      onChangeTab={setCurrentTab}
-    >
-      {renderContent()}
-    </AppLayout>
+    <>
+      <AppLayout
+        role={role}
+        currentTab={currentTab}
+        onChangeTab={
+          setCurrentTab
+        }
+      >
+        {renderContent()}
+      </AppLayout>
+
+      {showPartnerRegistration && (
+        <PartnerRegistration
+          onClose={() =>
+            setShowPartnerRegistration(
+              false
+            )
+          }
+        />
+      )}
+    </>
   );
 }
 

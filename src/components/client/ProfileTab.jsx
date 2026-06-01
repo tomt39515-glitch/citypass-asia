@@ -3,7 +3,6 @@ export default function ProfileTab({
   setRole,
   userRoles = [],
 }) {
-
   return (
     <div
       style={{
@@ -15,8 +14,6 @@ export default function ProfileTab({
         gap: "16px",
       }}
     >
-      {/* CARD */}
-
       <div
         style={{
           background:
@@ -67,8 +64,6 @@ export default function ProfileTab({
           ID: CPA-000001
         </div>
       </div>
-
-      {/* STATS */}
 
       <div
         style={{
@@ -136,8 +131,6 @@ export default function ProfileTab({
         </div>
       </div>
 
-      {/* MENU */}
-
       <div
         style={{
           background: "#fff",
@@ -171,75 +164,96 @@ export default function ProfileTab({
         ))}
       </div>
 
-      {/* ROLES */}
-
       <div
-  style={{
-    background: "#fff",
-    borderRadius: "24px",
-    padding: "20px",
-  }}
->
-  <div
-    style={{
-      fontWeight: 700,
-      marginBottom: "14px",
-      color: "#0F172A",
-    }}
-  >
-    Мои роли
-  </div>
-
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: "10px",
-    }}
-  >
-    {userRoles.map((item) => (
-      <button
-        key={item}
-        onClick={() => setRole(item)}
         style={{
-          border: "none",
-          borderRadius: "16px",
-          padding: "14px",
-          cursor: "pointer",
-          fontWeight: 600,
-          background:
-            role === item
-              ? "#14B8A6"
-              : "#F1F5F9",
-          color:
-            role === item
-              ? "#FFFFFF"
-              : "#0F172A",
+          background: "#fff",
+          borderRadius: "24px",
+          padding: "20px",
         }}
       >
-        {item === "client" && "Клиент"}
-        {item === "partner" && "Партнёр"}
-        {item === "agent" && "Агент"}
-        {item === "admin" && "Администратор"}
-      </button>
-    ))}
-  </div>
+        <div
+          style={{
+            fontWeight: 700,
+            marginBottom: "14px",
+            color: "#0F172A",
+          }}
+        >
+          Мои роли
+        </div>
 
-  <div
-    style={{
-      marginTop: "16px",
-      padding: "14px",
-      background: "#F8FAFC",
-      borderRadius: "16px",
-      color: "#64748B",
-      fontSize: "13px",
-      textAlign: "center",
-    }}
-  >
-    Владелец CityPass Asia
-  </div>
-</div>
-      {/* SUPPORT */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "10px",
+          }}
+        >
+          {userRoles.map((item) => (
+            <button
+              key={item}
+              onClick={() => setRole(item)}
+              style={{
+                border: "none",
+                borderRadius: "16px",
+                padding: "14px",
+                cursor: "pointer",
+                fontWeight: 600,
+                background:
+                  role === item
+                    ? "#14B8A6"
+                    : "#F1F5F9",
+                color:
+                  role === item
+                    ? "#FFFFFF"
+                    : "#0F172A",
+              }}
+            >
+              {item === "client" && "Клиент"}
+              {item === "partner" && "Партнёр"}
+              {item === "agent" && "Агент"}
+              {item === "admin" && "Администратор"}
+            </button>
+          ))}
+        </div>
+
+        <div
+          style={{
+            marginTop: "16px",
+            padding: "14px",
+            background: "#F8FAFC",
+            borderRadius: "16px",
+            color: "#64748B",
+            fontSize: "13px",
+            textAlign: "center",
+          }}
+        >
+          Владелец CityPass Asia
+        </div>
+
+        <button
+          onClick={() =>
+            window.dispatchEvent(
+              new CustomEvent(
+                "open-partner-registration"
+              )
+            )
+          }
+          style={{
+            width: "100%",
+            marginTop: "16px",
+            border: "none",
+            borderRadius: "16px",
+            padding: "16px",
+            cursor: "pointer",
+            fontWeight: 700,
+            fontSize: "16px",
+            background: "#14B8A6",
+            color: "#fff",
+          }}
+        >
+          Стать партнёром CityPass
+        </button>
+      </div>
 
       <div
         style={{
