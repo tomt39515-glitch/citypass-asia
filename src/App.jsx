@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "./supabase";
 
 import AppLayout from "./layouts/AppLayout";
 
@@ -8,16 +9,85 @@ import AgentDashboard from "./dashboards/AgentDashboard";
 import AdminDashboard from "./dashboards/AdminDashboard";
 
 function App() {
-  const telegramId =
-    window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+  const telegramUser =
+    window.Telegram?.WebApp?.initDataUnsafe?.user;
+
+  const telegramId = telegramUser?.id;
 
   const [role, setRole] = useState("client");
   const [currentTab, setCurrentTab] = useState("home");
 
+  useEffect(() => {
+    registerClient();
+  }, []);
+
+  async function registerClient() {
+    try {
+      if (!telegramId) return;
+
+      const { data: existingClient } =
+        await supabase
+          .from("clients")
+          .select("id")
+          .eq(
+            "telegram_id",
+            String(telegramId)
+          )
+          .maybeSingle();
+
+      if (existingClient) {
+        console.log(
+          "Client already exists"
+        );
+        return;
+      }
+
+      const fullName =
+        [
+          telegramUser?.first_name,
+          telegramUser?.last_name,
+        ]
+          .filter(Boolean)
+          .join(" ") ||
+        telegramUser?.username ||
+        "CityPass User";
+
+      const { error } =
+        await supabase
+          .from("clients")
+          .insert({
+            telegram_id: String(
+              telegramId
+            ),
+            full_name: fullName,
+            total_spent: 0,
+          });
+
+      console.log(
+        "CLIENT CREATE ERROR:",
+        error
+      );
+    } catch (err) {
+      console.error(
+        "REGISTER ERROR:",
+        err
+      );
+    }
+  }
+
   const [userRoles] = useState(
     telegramId === 8052071718
-      ? ["client", "partner", "agent", "admin"]
-      : ["client", "partner", "agent"]
+      ? [
+          "client",
+          "partner",
+          "agent",
+          "admin",
+        ]
+      : [
+          "client",
+          "partner",
+          "agent",
+        ]
   );
 
   const safeSetRole = (newRole) => {
@@ -65,7 +135,10 @@ function App() {
         );
 
       case "admin":
-        if (telegramId !== 8052071718) {
+        if (
+          telegramId !==
+          8052071718
+        ) {
           return null;
         }
 
