@@ -21,41 +21,7 @@ export default function AdminDashboard({
 
   const [partners, setPartners] = useState([]);
   const [applications, setApplications] = useState([]);
-if (currentTab === "dashboard") {
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Dashboard</h1>
-      <p>Главная панель администратора</p>
-    </div>
-  );
-}
 
-if (currentTab === "partners") {
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Партнёры</h1>
-      <p>Управление партнёрами</p>
-    </div>
-  );
-}
-
-if (currentTab === "clients") {
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Клиенты</h1>
-      <p>Список клиентов</p>
-    </div>
-  );
-}
-
-if (currentTab === "transactions") {
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Транзакции</h1>
-      <p>История транзакций</p>
-    </div>
-  );
-}
 
   async function safeFetch(url, options = {}) {
     const response = await fetch(url, {
@@ -274,7 +240,7 @@ async function approveApplication(app) {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Админ панель</h1>
+      <h1>АДМИН ПАНЕЛЬ TEST 777</h1>
 
       <div>Клиенты: {stats.clients}</div>
       <div>Партнёры: {stats.partners}</div>
@@ -296,7 +262,14 @@ async function approveApplication(app) {
       {partners.map((partner) => (
         <div key={partner.id}>
           <h3>{partner.business_name || `Партнёр #${partner.id}`}</h3>
-          <button onClick={() => onOpenPartner(partner)}>Открыть</button>
+         <button
+  onClick={() => {
+    alert("OPEN");
+    onOpenPartner(partner);
+  }}
+>
+  Открыть
+</button>
         </div>
       ))}
     </div>

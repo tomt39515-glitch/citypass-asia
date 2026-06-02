@@ -13,6 +13,7 @@ import AgentDashboard from "./dashboards/AgentDashboard";
 import AdminDashboard from "./dashboards/AdminDashboard";
 
 import PartnerRegistration from "./components/client/PartnerRegistration";
+import PartnerDetailsPage from "./pages/PartnerDetailsPage";
 
 function App() {
   const telegramUser =
@@ -37,6 +38,15 @@ function App() {
 
   const [currentTab, setCurrentTab] =
     useState("home");
+
+  const [selectedPartner, setSelectedPartner] =
+    useState(null);
+useEffect(() => {
+  console.log(
+    "SELECTED PARTNER =",
+    selectedPartner
+  );
+}, [selectedPartner]);
 
   const [
     showPartnerRegistration,
@@ -175,6 +185,28 @@ function App() {
         ) {
           return null;
         }
+if (selectedPartner) {
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>ПАРТНЕР ВЫБРАН</h1>
+      <pre>
+        {JSON.stringify(selectedPartner, null, 2)}
+      </pre>
+    </div>
+  );
+}
+       if (selectedPartner) {
+  alert("PARTNER PAGE OPEN");
+
+  return (
+    <PartnerDetailsPage
+      partner={selectedPartner}
+      onBack={() =>
+        setSelectedPartner(null)
+      }
+    />
+  );
+}
 
         return (
           <AdminDashboard
@@ -188,6 +220,10 @@ function App() {
             userRoles={
               userRoles
             }
+          onOpenPartner={(partner) => {
+  alert("SET PARTNER");
+  setSelectedPartner(partner);
+}}
           />
         );
 
@@ -200,7 +236,9 @@ function App() {
     <>
       <AppLayout
         role={role}
-        currentTab={currentTab}
+        currentTab={
+          currentTab
+        }
         onChangeTab={
           setCurrentTab
         }
