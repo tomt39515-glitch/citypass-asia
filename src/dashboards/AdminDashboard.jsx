@@ -136,6 +136,21 @@ async function approveApplication(app) {
       }
     );
 
+    await safeFetch(
+      `${SUPABASE_URL}/rest/v1/user_roles`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({
+          telegram_id: String(app.telegram_id),
+          role: "partner",
+        }),
+      }
+    );
+
     await loadData();
 
     alert("Партнёр одобрен");
@@ -143,7 +158,6 @@ async function approveApplication(app) {
     alert(e.message);
   }
 }
-
   async function rejectApplication(app) {
     try {
       await safeFetch(
