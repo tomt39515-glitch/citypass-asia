@@ -19,13 +19,21 @@ function App() {
     window.Telegram?.WebApp?.initDataUnsafe?.user;
 
   const telegramId = telegramUser?.id;
-console.log("TELEGRAM ID =", telegramId);
+
+  console.log(
+    "TELEGRAM ID =",
+    telegramId
+  );
 
   const [role, setRole] =
     useState("client");
 
-  const [userRoles, setUserRoles] =
-    useState(["client"]);
+  const [userRoles] = useState([
+    "client",
+    "partner",
+    "agent",
+    "admin",
+  ]);
 
   const [currentTab, setCurrentTab] =
     useState("home");
@@ -38,10 +46,6 @@ console.log("TELEGRAM ID =", telegramId);
   useEffect(() => {
     registerClient();
   }, []);
-
-  useEffect(() => {
-    loadRoles();
-  }, [telegramId]);
 
   useEffect(() => {
     const openPartnerRegistration =
@@ -63,54 +67,6 @@ console.log("TELEGRAM ID =", telegramId);
       );
     };
   }, []);
-
-  async function loadRoles() {
-    try {
-      if (!telegramId) return;
-
-      const { data, error } =
-        await supabase
-          .from("user_roles")
-          .select("role")
-          .eq(
-            "telegram_id",
-            String(telegramId)
-          );
-
-      if (error) {
-        console.error(error);
-        return;
-      }
-
-      const roles =
-        data?.map(
-          (item) => item.role
-        ) || [];
-
-      if (
-        roles.length === 0
-      ) {
-        setUserRoles([
-          "client",
-        ]);
-        return;
-      }
-
-      setUserRoles(roles);
-
-      if (
-        roles.includes(
-          "partner"
-        )
-      ) {
-        setRole(
-          "partner"
-        );
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
 
   async function registerClient() {
     try {
@@ -158,14 +114,6 @@ console.log("TELEGRAM ID =", telegramId);
   const safeSetRole = (
     newRole
   ) => {
-    if (
-      !userRoles.includes(
-        newRole
-      )
-    ) {
-      return;
-    }
-
     setRole(newRole);
   };
 
@@ -222,9 +170,8 @@ console.log("TELEGRAM ID =", telegramId);
 
       case "admin":
         if (
-          !userRoles.includes(
-            "admin"
-          )
+          String(telegramId) !==
+          "8052071718"
         ) {
           return null;
         }
