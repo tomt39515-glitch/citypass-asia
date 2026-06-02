@@ -240,7 +240,7 @@ async function approveApplication(app) {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>АДМИН ПАНЕЛЬ TEST 777</h1>
+      <h1>Админ панель</h1>
 
       <div>Клиенты: {stats.clients}</div>
       <div>Партнёры: {stats.partners}</div>
@@ -264,7 +264,6 @@ async function approveApplication(app) {
           <h3>{partner.business_name || `Партнёр #${partner.id}`}</h3>
          <button
   onClick={() => {
-    alert("OPEN");
     onOpenPartner(partner);
   }}
 >

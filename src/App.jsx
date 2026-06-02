@@ -21,11 +21,6 @@ function App() {
 
   const telegramId = telegramUser?.id;
 
-  console.log(
-    "TELEGRAM ID =",
-    telegramId
-  );
-
   const [role, setRole] =
     useState("client");
 
@@ -41,12 +36,6 @@ function App() {
 
   const [selectedPartner, setSelectedPartner] =
     useState(null);
-useEffect(() => {
-  console.log(
-    "SELECTED PARTNER =",
-    selectedPartner
-  );
-}, [selectedPartner]);
 
   const [
     showPartnerRegistration,
@@ -132,49 +121,31 @@ useEffect(() => {
       case "client":
         return (
           <ClientDashboard
-            currentTab={
-              currentTab
-            }
+            currentTab={currentTab}
             transactions={[]}
             role={role}
-            setRole={
-              safeSetRole
-            }
-            userRoles={
-              userRoles
-            }
+            setRole={safeSetRole}
+            userRoles={userRoles}
           />
         );
 
       case "partner":
         return (
           <PartnerDashboard
-            currentTab={
-              currentTab
-            }
+            currentTab={currentTab}
             role={role}
-            setRole={
-              safeSetRole
-            }
-            userRoles={
-              userRoles
-            }
+            setRole={safeSetRole}
+            userRoles={userRoles}
           />
         );
 
       case "agent":
         return (
           <AgentDashboard
-            currentTab={
-              currentTab
-            }
+            currentTab={currentTab}
             role={role}
-            setRole={
-              safeSetRole
-            }
-            userRoles={
-              userRoles
-            }
+            setRole={safeSetRole}
+            userRoles={userRoles}
           />
         );
 
@@ -185,45 +156,29 @@ useEffect(() => {
         ) {
           return null;
         }
-if (selectedPartner) {
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>ПАРТНЕР ВЫБРАН</h1>
-      <pre>
-        {JSON.stringify(selectedPartner, null, 2)}
-      </pre>
-    </div>
-  );
-}
-       if (selectedPartner) {
-  alert("PARTNER PAGE OPEN");
 
-  return (
-    <PartnerDetailsPage
-      partner={selectedPartner}
-      onBack={() =>
-        setSelectedPartner(null)
-      }
-    />
-  );
-}
+        if (selectedPartner) {
+          return (
+            <PartnerDetailsPage
+              partner={selectedPartner}
+              onBack={() =>
+                setSelectedPartner(
+                  null
+                )
+              }
+            />
+          );
+        }
 
         return (
           <AdminDashboard
-            currentTab={
-              currentTab
-            }
+            currentTab={currentTab}
             role={role}
-            setRole={
-              safeSetRole
-            }
-            userRoles={
-              userRoles
-            }
-          onOpenPartner={(partner) => {
-  alert("SET PARTNER");
-  setSelectedPartner(partner);
-}}
+            setRole={safeSetRole}
+            userRoles={userRoles}
+            onOpenPartner={(partner) => {
+              setSelectedPartner(partner);
+            }}
           />
         );
 
@@ -236,12 +191,8 @@ if (selectedPartner) {
     <>
       <AppLayout
         role={role}
-        currentTab={
-          currentTab
-        }
-        onChangeTab={
-          setCurrentTab
-        }
+        currentTab={currentTab}
+        onChangeTab={setCurrentTab}
       >
         {renderContent()}
       </AppLayout>
