@@ -19,6 +19,7 @@ function App() {
     window.Telegram?.WebApp?.initDataUnsafe?.user;
 
   const telegramId = telegramUser?.id;
+console.log("TELEGRAM ID =", telegramId);
 
   const [role, setRole] =
     useState("client");
