@@ -23,6 +23,9 @@ function App() {
   const [role, setRole] =
     useState("client");
 
+  const [userRoles, setUserRoles] =
+    useState(["client"]);
+
   const [currentTab, setCurrentTab] =
     useState("home");
 
@@ -34,6 +37,10 @@ function App() {
   useEffect(() => {
     registerClient();
   }, []);
+
+  useEffect(() => {
+    loadRoles();
+  }, [telegramId]);
 
   useEffect(() => {
     const openPartnerRegistration =
@@ -56,6 +63,54 @@ function App() {
     };
   }, []);
 
+  async function loadRoles() {
+    try {
+      if (!telegramId) return;
+
+      const { data, error } =
+        await supabase
+          .from("user_roles")
+          .select("role")
+          .eq(
+            "telegram_id",
+            String(telegramId)
+          );
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      const roles =
+        data?.map(
+          (item) => item.role
+        ) || [];
+
+      if (
+        roles.length === 0
+      ) {
+        setUserRoles([
+          "client",
+        ]);
+        return;
+      }
+
+      setUserRoles(roles);
+
+      if (
+        roles.includes(
+          "partner"
+        )
+      ) {
+        setRole(
+          "partner"
+        );
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   async function registerClient() {
     try {
       if (!telegramId) return;
@@ -72,9 +127,6 @@ function App() {
         .maybeSingle();
 
       if (existingClient) {
-        console.log(
-          "Client already exists"
-        );
         return;
       }
 
@@ -88,49 +140,27 @@ function App() {
         telegramUser?.username ||
         "CityPass User";
 
-      const { error } =
-        await supabase
-          .from("clients")
-          .insert({
-            telegram_id: String(
-              telegramId
-            ),
-            full_name: fullName,
-            total_spent: 0,
-          });
-
-      console.log(
-        "CLIENT CREATE ERROR:",
-        error
-      );
+      await supabase
+        .from("clients")
+        .insert({
+          telegram_id: String(
+            telegramId
+          ),
+          full_name: fullName,
+          total_spent: 0,
+        });
     } catch (err) {
-      console.error(
-        "REGISTER ERROR:",
-        err
-      );
+      console.error(err);
     }
   }
-
-  const [userRoles] = useState(
-    telegramId === 8052071718
-      ? [
-          "client",
-          "partner",
-          "agent",
-          "admin",
-        ]
-      : [
-          "client",
-        ]
-  );
 
   const safeSetRole = (
     newRole
   ) => {
     if (
-      newRole === "admin" &&
-      telegramId !==
-        8052071718
+      !userRoles.includes(
+        newRole
+      )
     ) {
       return;
     }
@@ -191,8 +221,9 @@ function App() {
 
       case "admin":
         if (
-          telegramId !==
-          8052071718
+          !userRoles.includes(
+            "admin"
+          )
         ) {
           return null;
         }
