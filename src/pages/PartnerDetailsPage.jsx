@@ -32,16 +32,35 @@ export default function PartnerDetailsPage({
   }
 
   async function loadTransactions() {
-    if (!partner?.id) return;
+    if (!partner?.telegram_id) {
+      setTransactions([]);
+      return;
+    }
 
     try {
+      const partnerData = await safeFetch(
+        `${SUPABASE_URL}/rest/v1/partners?telegram_id=eq.${partner.telegram_id}&select=id`
+      );
+
+      if (!partnerData?.length) {
+        setTransactions([]);
+        return;
+      }
+
+      const realPartnerId = partnerData[0].id;
+
       const data = await safeFetch(
-        `${SUPABASE_URL}/rest/v1/transactions?partner_id=eq.${partner.id}&select=original_amount,client_discount_amount,citypass_amount,final_amount,created_at&order=created_at.desc`
+        `${SUPABASE_URL}/rest/v1/transactions?partner_id=eq.${realPartnerId}&select=original_amount,client_discount_amount,citypass_amount,final_amount,created_at&order=created_at.desc`
       );
 
       setTransactions(data || []);
-    } catch (e) {
-      alert(e.message);
+    } catch (error) {
+      console.error(
+        "Ошибка загрузки транзакций:",
+        error
+      );
+
+      setTransactions([]);
     }
   }
 

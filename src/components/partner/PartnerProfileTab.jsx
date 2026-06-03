@@ -1,19 +1,98 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "../../supabase";
 
 export default function PartnerProfileTab() {
+  const [partner, setPartner] = useState(null);
+
+  useEffect(() => {
+    loadPartner();
+  }, []);
+
+  async function loadPartner() {
+    try {
+      const telegramId =
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+      if (!telegramId) return;
+
+      const { data, error } = await supabase
+        .from("partners")
+        .select("*")
+        .eq("telegram_id", telegramId)
+        .single();
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      setPartner(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   return (
     <div
       style={{
-        padding: "20px",
-        background: "#fff",
-        borderRadius: "20px",
+        padding: "16px",
       }}
     >
-      <h2>Профиль партнёра</h2>
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: "24px",
+          padding: "24px",
+        }}
+      >
+        <h2
+          style={{
+            marginTop: 0,
+            marginBottom: "20px",
+          }}
+        >
+          Профиль партнёра
+        </h2>
 
-      <p>
-        Раздел находится в разработке
-      </p>
+        <div style={{ marginBottom: "12px" }}>
+          <b>Название:</b><br />
+          {partner?.business_name || "-"}
+        </div>
+
+        <div style={{ marginBottom: "12px" }}>
+          <b>Телефон:</b><br />
+          {partner?.phone || "-"}
+        </div>
+
+        <div style={{ marginBottom: "12px" }}>
+          <b>Адрес:</b><br />
+          {partner?.address || "-"}
+        </div>
+
+        <div style={{ marginBottom: "12px" }}>
+          <b>Категория:</b><br />
+          {partner?.category || "-"}
+        </div>
+
+        <div style={{ marginBottom: "12px" }}>
+          <b>Депозит:</b><br />
+          {Number(
+            partner?.deposit_balance || 0
+          ).toLocaleString()} ₫
+        </div>
+
+        <div style={{ marginBottom: "12px" }}>
+          <b>Бонусный баланс:</b><br />
+          {Number(
+            partner?.bonus_balance || 0
+          ).toLocaleString()} ₫
+        </div>
+
+        <div>
+          <b>Статус:</b><br />
+          Активный партнёр
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,52 +1,36 @@
-import React, { useState } from "react";
-import QRScanner from "../QRScanner";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabase";
 
-export default function PartnerDashboard() {
-  const [showScanner, setShowScanner] = useState(false);
-  const [selectedClient, setSelectedClient] = useState(null);
+export default function PartnerHomeTab() {
+  const [partnerInfo, setPartnerInfo] = useState(null);
 
-  const handleScanSuccess = async (data) => {
+  useEffect(() => {
+    loadPartner();
+  }, []);
+
+  async function loadPartner() {
     try {
-      console.log("QR DATA:", data);
+      const telegramId =
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
-      const {
-        data: qrData,
-        error: qrError,
-      } = await supabase
-        .from("active_qr_tokens")
+      if (!telegramId) return;
+
+      const { data, error } = await supabase
+        .from("partners")
         .select("*")
-        .eq("token", data.token)
+        .eq("telegram_id", telegramId)
         .single();
 
-      if (qrError || !qrData) {
-        alert("❌ QR код не найден");
+      if (error) {
+        console.error(error);
         return;
       }
 
-      const {
-        data: client,
-        error: clientError,
-      } = await supabase
-        .from("clients")
-        .select("*")
-        .eq("id", qrData.client_id)
-        .single();
-
-      if (clientError || !client) {
-        alert("❌ Клиент не найден");
-        return;
-      }
-
-      console.log("CLIENT:", client);
-
-      setSelectedClient(client);
-      setShowScanner(false);
+      setPartnerInfo(data);
     } catch (error) {
       console.error(error);
-      alert("❌ Ошибка проверки QR");
     }
-  };
+  }
 
   return (
     <div
@@ -59,6 +43,7 @@ export default function PartnerDashboard() {
         gap: "16px",
       }}
     >
+      {/* Карточка партнёра */}
       <div
         style={{
           background:
@@ -84,7 +69,7 @@ export default function PartnerDashboard() {
             fontWeight: 700,
           }}
         >
-          🏪 Burger House
+          🏪 {partnerInfo?.business_name || "Партнёр"}
         </div>
 
         <div style={{ marginTop: "10px" }}>
@@ -105,6 +90,76 @@ export default function PartnerDashboard() {
         </div>
       </div>
 
+      {/* Балансы */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "12px",
+        }}
+      >
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "20px",
+            padding: "20px",
+          }}
+        >
+          <div
+            style={{
+              color: "#64748B",
+              fontSize: "14px",
+            }}
+          >
+            💳 Депозит
+          </div>
+
+          <div
+            style={{
+              marginTop: "8px",
+              fontSize: "24px",
+              fontWeight: 700,
+              color: "#14B8A6",
+            }}
+          >
+            {Number(
+              partnerInfo?.deposit_balance || 0
+            ).toLocaleString()} ₫
+          </div>
+        </div>
+
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "20px",
+            padding: "20px",
+          }}
+        >
+          <div
+            style={{
+              color: "#64748B",
+              fontSize: "14px",
+            }}
+          >
+            🎁 Бонусный баланс
+          </div>
+
+          <div
+            style={{
+              marginTop: "8px",
+              fontSize: "24px",
+              fontWeight: 700,
+              color: "#14B8A6",
+            }}
+          >
+            {Number(
+              partnerInfo?.bonus_balance || 0
+            ).toLocaleString()} ₫
+          </div>
+        </div>
+      </div>
+
+      {/* Статистика */}
       <div
         style={{
           display: "grid",
@@ -136,7 +191,7 @@ export default function PartnerDashboard() {
               color: "#14B8A6",
             }}
           >
-            24
+            0
           </div>
         </div>
 
@@ -164,126 +219,10 @@ export default function PartnerDashboard() {
               color: "#14B8A6",
             }}
           >
-            1 250 000 ₫
+            0 ₫
           </div>
         </div>
       </div>
-
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: "24px",
-          padding: "24px",
-        }}
-      >
-        <button
-          onClick={() => setShowScanner(true)}
-          style={{
-            width: "100%",
-            border: "none",
-            borderRadius: "18px",
-            padding: "18px",
-            background:
-              "linear-gradient(135deg,#14B8A6,#0D9488)",
-            color: "#fff",
-            fontSize: "18px",
-            fontWeight: 700,
-            cursor: "pointer",
-          }}
-        >
-          📷 Сканировать QR
-        </button>
-      </div>
-
-      {showScanner && (
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: "24px",
-            padding: "20px",
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>
-            Сканирование QR
-          </h3>
-
-          <QRScanner
-            onScanSuccess={handleScanSuccess}
-          />
-
-          <button
-            onClick={() =>
-              setShowScanner(false)
-            }
-            style={{
-              marginTop: "16px",
-              width: "100%",
-              border: "none",
-              borderRadius: "16px",
-              padding: "14px",
-              background: "#EF4444",
-              color: "#fff",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            Закрыть сканер
-          </button>
-        </div>
-      )}
-
-      {selectedClient && (
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: "24px",
-            padding: "20px",
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>
-            Клиент найден ✅
-          </h3>
-
-          <pre
-            style={{
-              background: "#F8FAFC",
-              padding: "16px",
-              borderRadius: "12px",
-              overflow: "auto",
-              fontSize: "12px",
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-word",
-            }}
-          >
-            {JSON.stringify(
-              selectedClient,
-              null,
-              2
-            )}
-          </pre>
-
-          <button
-            onClick={() =>
-              setSelectedClient(null)
-            }
-            style={{
-              width: "100%",
-              marginTop: "16px",
-              border: "none",
-              borderRadius: "16px",
-              padding: "16px",
-              background:
-                "linear-gradient(135deg,#14B8A6,#0D9488)",
-              color: "#fff",
-              fontSize: "16px",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            Закрыть
-          </button>
-        </div>
-      )}
     </div>
   );
 }
