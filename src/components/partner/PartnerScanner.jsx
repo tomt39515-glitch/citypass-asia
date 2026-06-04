@@ -6,6 +6,9 @@ export default function PartnerScanner() {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
 
+  const telegramId =
+    window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
   async function processTransaction() {
     try {
       if (!token) {
@@ -29,7 +32,7 @@ export default function PartnerScanner() {
           },
           body: JSON.stringify({
             token,
-            partner_telegram_id: 8052071718,
+            partner_telegram_id: Number(telegramId),
             amount: Number(amount),
           }),
         }
