@@ -1,3 +1,4 @@
+import PartnerDepositsTab from "../components/partner/PartnerDepositsTab";
 import PartnerHomeTab from "../components/partner/PartnerHomeTab";
 import PartnerScanner from "../components/partner/PartnerScanner";
 import TransactionsTab from "../components/partner/TransactionsTab";
@@ -15,6 +16,9 @@ export default function PartnerDashboard(props) {
 
     case "transactions":
       return <TransactionsTab {...props} />;
+
+    case "deposits":
+      return <PartnerDepositsTab {...props} />;
 
     case "profile":
       return <PartnerProfileTab {...props} />;

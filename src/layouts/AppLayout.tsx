@@ -45,6 +45,11 @@ export default function AppLayout({
     label: "История",
     icon: History,
   },
+{
+  key: "deposits",
+  label: "Депозит",
+  icon: Wallet,
+},
   {
     key: "profile",
     label: "Профиль",
