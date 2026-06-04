@@ -14,6 +14,7 @@ import AdminDashboard from "./dashboards/AdminDashboard";
 
 import PartnerRegistration from "./components/client/PartnerRegistration";
 import PartnerDetailsPage from "./pages/PartnerDetailsPage";
+import PartnerTopupPage from "./pages/PartnerTopupPage";
 
 function App() {
   const telegramUser =
@@ -36,6 +37,12 @@ function App() {
 
   const [selectedPartner, setSelectedPartner] =
     useState(null);
+
+  const [topupPartner, setTopupPartner] =
+    useState(null);
+
+  const [showTopupPage, setShowTopupPage] =
+    useState(false);
 
   const [
     showPartnerRegistration,
@@ -130,12 +137,38 @@ function App() {
         );
 
       case "partner":
+        if (
+          showTopupPage &&
+          topupPartner
+        ) {
+          return (
+            <PartnerTopupPage
+              partner={topupPartner}
+              onBack={() => {
+                setShowTopupPage(false);
+                setTopupPartner(null);
+              }}
+              onSuccess={() => {
+                setShowTopupPage(false);
+                setTopupPartner(null);
+                alert(
+                  "Заявка на пополнение отправлена"
+                );
+              }}
+            />
+          );
+        }
+
         return (
           <PartnerDashboard
             currentTab={currentTab}
             role={role}
             setRole={safeSetRole}
             userRoles={userRoles}
+            onOpenTopup={(partner) => {
+              setTopupPartner(partner);
+              setShowTopupPage(true);
+            }}
           />
         );
 

@@ -32,7 +32,7 @@ headers: {
 },
 });
 
-```
+
 if (!response.ok) {
   const errorText = await response.text();
   throw new Error(errorText || "Ошибка");
@@ -43,102 +43,125 @@ if (response.status === 204) {
 }
 
 return response.json();
-```
+
 
 }
 
 async function loadData() {
-try {
-const clients = await safeFetch(
-`${SUPABASE_URL}/rest/v1/clients?select=id`
+  try {
+    console.log("LOAD START");
+
+    const clients = await safeFetch(
+      `${SUPABASE_URL}/rest/v1/clients?select=id`
+    );
+
+    console.log("CLIENTS", clients);
+
+    const partnersData = await safeFetch(
+      `${SUPABASE_URL}/rest/v1/partners?select=*`
+    );
+
+    console.log("PARTNERS", partnersData);
+
+    const applicationsData = await safeFetch(
+      `${SUPABASE_URL}/rest/v1/partner_applications?select=*`
+    );
+
+    console.log("APPLICATIONS", applicationsData);
+
+    const topupsData = await safeFetch(
+  `${SUPABASE_URL}/rest/v1/deposit_topups?select=*`
 );
 
+console.log("TOPUPS DATA:", topupsData);
+setStats({
+  clients: clients?.length || 0,
+  partners: partnersData?.length || 0,
+  turnover: 0,
+  fees: 0,
+});
+setPartners(partnersData || []);
 
-  const partnersData = await safeFetch(
-    `${SUPABASE_URL}/rest/v1/partners?select=*`
-  );
+setTopups(
+  (topupsData || []).filter(
+    (topup) =>
+      String(topup.status).trim().toLowerCase() === "pending"
+  )
+);
 
-  const applicationsData = await safeFetch(
-    `${SUPABASE_URL}/rest/v1/partner_applications?select=*`
-  );
-
-  const topupsData = await safeFetch(
-    `${SUPABASE_URL}/rest/v1/deposit_topups?status=eq.pending&select=*`
-  );
-
-  setStats({
-    clients: clients.length,
-    partners: partnersData.length,
-    turnover: 0,
-    fees: 0,
-  });
-
-  setPartners(partnersData || []);
-  setTopups(topupsData || []);
-
-  setApplications(
-    (applicationsData || []).filter(
-      (app) =>
-        app.status !== "approved" &&
-        app.status !== "rejected"
-    )
-  );
-} catch (e) {
-  alert(e.message);
-}
-
-
+    setApplications(
+      (applicationsData || []).filter(
+        (app) =>
+          app.status !== "approved" &&
+          app.status !== "rejected"
+      )
+    );
+  } catch (e) {
+    console.error("LOAD ERROR:", e);
+    alert(
+      e?.message ||
+      JSON.stringify(e) ||
+      "Ошибка загрузки"
+    );
+  }
 }
 
 async function approveApplication(app) {
-try {
-await safeFetch(
-`${SUPABASE_URL}/rest/v1/partner_applications?id=eq.${app.id}`,
-{
-method: "PATCH",
-headers: {
-"Content-Type": "application/json",
-},
-body: JSON.stringify({
-status: "approved",
-}),
+  try {
+    console.log("APP:", app);
+
+    await safeFetch(
+      `${SUPABASE_URL}/rest/v1/partner_applications?id=eq.${encodeURIComponent(app.id)}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: "approved",
+        }),
+      }
+    );
+
+    const partnerPayload = {
+      telegram_id: String(app.telegram_id || ""),
+      business_name: String(app.business_name || ""),
+      category: String(app.category || ""),
+      status: "approved",
+      is_active: true,
+      contact_person: app.contact_name || null,
+      phone: app.phone || null,
+      address: app.address || null,
+      deposit_balance: 0,
+      bonus_balance: 0,
+    };
+
+    console.log("PARTNER PAYLOAD:", partnerPayload);
+
+    await safeFetch(
+      `${SUPABASE_URL}/rest/v1/partners`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Prefer: "return=representation",
+        },
+        body: JSON.stringify(partnerPayload),
+      }
+    );
+
+    await loadData();
+
+    alert("Партнёр одобрен");
+  } catch (e) {
+    console.error("APPROVE ERROR:", e);
+    alert(e.message || JSON.stringify(e));
+  }
 }
-);
 
 
-  await safeFetch(
-    `${SUPABASE_URL}/rest/v1/partners`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Prefer: "return=minimal",
-      },
-      body: JSON.stringify({
-        telegram_id: app.telegram_id,
-        business_name: app.business_name,
-        category: app.category,
-        status: "approved",
-        is_active: true,
-        contact_person: app.contact_name || null,
-        phone: app.phone || null,
-        address: app.address || null,
-        deposit_balance: 0,
-        bonus_balance: 0,
-      }),
-    }
-  );
-
-  await loadData();
-
-  alert("Партнёр одобрен");
-} catch (e) {
-  console.error(e);
-  alert(e.message);
-}
 
 
-}
 
 async function rejectApplication(app) {
 try {

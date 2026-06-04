@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../supabase";
 
-export default function PartnerProfileTab() {
+export default function PartnerProfileTab({
+  onOpenTopup,
+}) {
   const [partner, setPartner] = useState(null);
 
   useEffect(() => {
@@ -18,7 +20,7 @@ export default function PartnerProfileTab() {
       const { data, error } = await supabase
         .from("partners")
         .select("*")
-        .eq("telegram_id", telegramId)
+        .eq("telegram_id", String(telegramId))
         .single();
 
       if (error) {
@@ -55,41 +57,69 @@ export default function PartnerProfileTab() {
         </h2>
 
         <div style={{ marginBottom: "12px" }}>
-          <b>Название:</b><br />
+          <b>Название:</b>
+          <br />
           {partner?.business_name || "-"}
         </div>
 
         <div style={{ marginBottom: "12px" }}>
-          <b>Телефон:</b><br />
+          <b>Телефон:</b>
+          <br />
           {partner?.phone || "-"}
         </div>
 
         <div style={{ marginBottom: "12px" }}>
-          <b>Адрес:</b><br />
+          <b>Адрес:</b>
+          <br />
           {partner?.address || "-"}
         </div>
 
         <div style={{ marginBottom: "12px" }}>
-          <b>Категория:</b><br />
+          <b>Категория:</b>
+          <br />
           {partner?.category || "-"}
         </div>
 
         <div style={{ marginBottom: "12px" }}>
-          <b>Депозит:</b><br />
+          <b>Депозит:</b>
+          <br />
           {Number(
             partner?.deposit_balance || 0
           ).toLocaleString()} ₫
         </div>
 
+        <button
+          onClick={() =>
+            onOpenTopup?.(partner)
+          }
+          disabled={!partner}
+          style={{
+            width: "100%",
+            padding: "14px",
+            marginBottom: "20px",
+            border: "none",
+            borderRadius: "14px",
+            background:
+              "linear-gradient(135deg,#14B8A6,#0D9488)",
+            color: "#fff",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Пополнить депозит
+        </button>
+
         <div style={{ marginBottom: "12px" }}>
-          <b>Бонусный баланс:</b><br />
+          <b>Бонусный баланс:</b>
+          <br />
           {Number(
             partner?.bonus_balance || 0
           ).toLocaleString()} ₫
         </div>
 
         <div>
-          <b>Статус:</b><br />
+          <b>Статус:</b>
+          <br />
           Активный партнёр
         </div>
       </div>
