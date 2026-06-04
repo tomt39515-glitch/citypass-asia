@@ -259,31 +259,50 @@ export default function AdminDashboard({
         }
       );
 
-      await safeFetch(
-        `${SUPABASE_URL}/rest/v1/deposit_transactions`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-            Prefer:
-              "return=representation",
-          },
-          body: JSON.stringify({
-            partner_id: partner.id,
-            type: "topup",
-            amount: amount,
-            balance_before:
-              balanceBefore,
-            balance_after:
-              balanceAfter,
-            description:
-              "Пополнение депозита",
-            reference_id:
-              topup.id,
-          }),
-        }
-      );
+await safeFetch(
+  `${SUPABASE_URL}/rest/v1/deposit_transactions`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type":
+        "application/json",
+      Prefer:
+        "return=representation",
+    },
+    body: JSON.stringify({
+      partner_id: partner.id,
+      type: "topup",
+      amount: amount,
+      balance_before:
+        balanceBefore,
+      balance_after:
+        balanceAfter,
+      description:
+        "Пополнение депозита",
+    }),
+  }
+);
+
+await safeFetch(
+  `${SUPABASE_URL}/rest/v1/partner_balance_logs`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type":
+        "application/json",
+      Prefer:
+        "return=representation",
+    },
+    body: JSON.stringify({
+      partner_id: partner.id,
+      amount: amount,
+      operation_type:
+        "credit",
+      description:
+        "Admin approved topup",
+    }),
+  }
+);
 
       const response =
         await fetch(
