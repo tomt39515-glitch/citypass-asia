@@ -322,6 +322,12 @@ export default function AdminDashboard({
         responseText
       );
 
+      if (!response.ok) {
+        throw new Error(
+          `PATCH ERROR ${response.status}: ${responseText}`
+        );
+      }
+
       const verify =
         await safeFetch(
           `${SUPABASE_URL}/rest/v1/deposit_topups?id=eq.${topup.id}&select=*`
