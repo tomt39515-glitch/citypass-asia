@@ -211,15 +211,8 @@ export default function AdminDashboard({
         `${SUPABASE_URL}/rest/v1/deposit_topups?id=eq.${topup.id}&select=*`
       );
 
-      console.log(
-        "TOPUP DATA:",
-        topupData
-      );
-
       if (!topupData?.length) {
-        throw new Error(
-          "Заявка не найдена"
-        );
+        throw new Error("Заявка не найдена");
       }
 
       if (
@@ -227,40 +220,29 @@ export default function AdminDashboard({
           .trim()
           .toLowerCase() !== "pending"
       ) {
-        throw new Error(
-          "Заявка уже обработана"
-        );
+        throw new Error("Заявка уже обработана");
       }
 
-      const partnerData =
-        await safeFetch(
-          `${SUPABASE_URL}/rest/v1/partners?id=eq.${topup.partner_id}&select=*`
-        );
-
-      console.log(
-        "PARTNER DATA:",
-        partnerData
+      const partnerData = await safeFetch(
+        `${SUPABASE_URL}/rest/v1/partners?id=eq.${topup.partner_id}&select=*`
       );
 
       if (!partnerData?.length) {
-        throw new Error(
-          "Партнёр не найден"
-        );
+        throw new Error("Партнёр не найден");
       }
 
-      const partner =
-        partnerData[0];
+      const partner = partnerData[0];
 
-      const newBalance =
-        Number(
-          partner.deposit_balance || 0
-        ) +
-        Number(topup.amount || 0);
-
-      console.log(
-        "NEW BALANCE:",
-        newBalance
+      const balanceBefore = Number(
+        partner.deposit_balance || 0
       );
+
+      const amount = Number(
+        topup.amount || 0
+      );
+
+      const balanceAfter =
+        balanceBefore + amount;
 
       await safeFetch(
         `${SUPABASE_URL}/rest/v1/partners?id=eq.${partner.id}`,
@@ -272,18 +254,35 @@ export default function AdminDashboard({
           },
           body: JSON.stringify({
             deposit_balance:
-              newBalance,
+              balanceAfter,
           }),
         }
       );
 
-      console.log(
-        "PARTNER UPDATED"
-      );
-
-      console.log(
-        "UPDATING TOPUP:",
-        topup.id
+      await safeFetch(
+        `${SUPABASE_URL}/rest/v1/deposit_transactions`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Prefer:
+              "return=representation",
+          },
+          body: JSON.stringify({
+            partner_id: partner.id,
+            type: "topup",
+            amount: amount,
+            balance_before:
+              balanceBefore,
+            balance_after:
+              balanceAfter,
+            description:
+              "Пополнение депозита",
+            reference_id:
+              topup.id,
+          }),
+        }
       );
 
       const response =
@@ -309,18 +308,8 @@ export default function AdminDashboard({
           }
         );
 
-      console.log(
-        "PATCH STATUS:",
-        response.status
-      );
-
       const responseText =
         await response.text();
-
-      console.log(
-        "PATCH RESPONSE:",
-        responseText
-      );
 
       if (!response.ok) {
         throw new Error(
@@ -328,26 +317,15 @@ export default function AdminDashboard({
         );
       }
 
-      const verify =
-        await safeFetch(
-          `${SUPABASE_URL}/rest/v1/deposit_topups?id=eq.${topup.id}&select=*`
-        );
-
-      console.log(
-        "VERIFY TOPUP:",
-        verify
-      );
-
       setTopups((prev) =>
         prev.filter(
           (item) =>
-            item.id !==
-            topup.id
+            item.id !== topup.id
         )
       );
 
       alert(
-        "Депозит начислен"
+        "Депозит начислен и записан в историю"
       );
     } catch (e) {
       console.error(
