@@ -23,12 +23,12 @@ export default function PartnerProfileTab({
         return;
       }
 
-      const { data, error } = await supabase
-        .from("partners")
-        .select("*")
-        .eq("telegram_id", Number(telegramId))
-        .order("id", { ascending: true })
-        .limit(1);
+     const { data, error } = await supabase
+  .from("partners")
+  .select("*")
+  .eq("telegram_id", Number(telegramId))
+  .order("id", { ascending: false })
+  .limit(1);
 
       console.log("PARTNER QUERY RESULT:", data);
       console.log("PARTNER QUERY ERROR:", error);
