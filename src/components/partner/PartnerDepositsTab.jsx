@@ -57,6 +57,8 @@ window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
   }
 
   setLogs(logsData || []);
+console.log("LOGS:", logsData);
+console.log("PARTNER ID:", currentPartner.id);
 } catch (err) {
   console.error(err);
   alert(err.message);
