@@ -15,7 +15,10 @@ export default function PartnerProfileTab({
       const telegramId =
         window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
-      if (!telegramId) return;
+      if (!telegramId) {
+        console.log("Telegram ID not found");
+        return;
+      }
 
       const { data, error } = await supabase
         .from("partners")
@@ -24,9 +27,11 @@ export default function PartnerProfileTab({
         .single();
 
       if (error) {
-        console.error(error);
+        console.error("Partner load error:", error);
         return;
       }
+
+      console.log("Partner loaded:", data);
 
       setPartner(data);
     } catch (err) {
@@ -89,10 +94,25 @@ export default function PartnerProfileTab({
         </div>
 
         <button
-          onClick={() =>
-            onOpenTopup?.(partner)
-          }
-          disabled={!partner}
+          onClick={() => {
+            console.log(
+              "BUTTON CLICK. PARTNER:",
+              partner
+            );
+
+            if (!partner) {
+              alert(
+                "Партнёр не найден. Проверьте таблицу partners."
+              );
+              return;
+            }
+
+            alert(
+              `Открываем пополнение для партнёра ID ${partner.id}`
+            );
+
+            onOpenTopup?.(partner);
+          }}
           style={{
             width: "100%",
             padding: "14px",
