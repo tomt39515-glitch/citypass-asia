@@ -15,27 +15,40 @@ export default function PartnerProfileTab({
       const telegramId =
         window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
+      alert(`Telegram ID: ${telegramId}`);
+      console.log("TELEGRAM ID:", telegramId);
+
       if (!telegramId) {
-        console.log("Telegram ID not found");
+        alert("Telegram ID не найден");
         return;
       }
 
       const { data, error } = await supabase
         .from("partners")
         .select("*")
-        .eq("telegram_id", String(telegramId))
-        .single();
+        .eq("telegram_id", Number(telegramId))
+        .maybeSingle();
+
+      console.log("PARTNER QUERY RESULT:", data);
+      console.log("PARTNER QUERY ERROR:", error);
 
       if (error) {
-        console.error("Partner load error:", error);
+        console.error(error);
+        alert(error.message);
         return;
       }
 
-      console.log("Partner loaded:", data);
+      if (!data) {
+        alert(
+          `Партнёр не найден для Telegram ID ${telegramId}`
+        );
+        return;
+      }
 
       setPartner(data);
     } catch (err) {
       console.error(err);
+      alert(err.message);
     }
   }
 
@@ -113,6 +126,7 @@ export default function PartnerProfileTab({
 
             onOpenTopup?.(partner);
           }}
+          disabled={!partner}
           style={{
             width: "100%",
             padding: "14px",
@@ -123,7 +137,10 @@ export default function PartnerProfileTab({
               "linear-gradient(135deg,#14B8A6,#0D9488)",
             color: "#fff",
             fontWeight: 600,
-            cursor: "pointer",
+            cursor: partner
+              ? "pointer"
+              : "not-allowed",
+            opacity: partner ? 1 : 0.5,
           }}
         >
           Пополнить депозит
