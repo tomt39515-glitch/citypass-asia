@@ -15,7 +15,7 @@ try {
 const telegramId =
 window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
-```
+
   if (!telegramId) {
     alert("Telegram ID не найден");
     return;
@@ -63,7 +63,7 @@ window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 } finally {
   setLoading(false);
 }
-```
+
 
 }
 
@@ -98,7 +98,7 @@ marginTop: 0,
 >
 Депозиты </h2>
 
-```
+
     <div
       style={{
         marginTop: "20px",
@@ -217,7 +217,7 @@ marginTop: 0,
     </div>
   </div>
 </div>
-```
+
 
 );
 }
