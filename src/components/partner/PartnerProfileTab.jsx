@@ -27,7 +27,8 @@ export default function PartnerProfileTab({
         .from("partners")
         .select("*")
         .eq("telegram_id", Number(telegramId))
-        .maybeSingle();
+        .order("id", { ascending: true })
+        .limit(1);
 
       console.log("PARTNER QUERY RESULT:", data);
       console.log("PARTNER QUERY ERROR:", error);
@@ -38,14 +39,14 @@ export default function PartnerProfileTab({
         return;
       }
 
-      if (!data) {
+      if (!data || data.length === 0) {
         alert(
           `Партнёр не найден для Telegram ID ${telegramId}`
         );
         return;
       }
 
-      setPartner(data);
+      setPartner(data[0]);
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -120,8 +121,9 @@ export default function PartnerProfileTab({
               return;
             }
 
-            alert(
-              `Открываем пополнение для партнёра ID ${partner.id}`
+            console.log(
+              "OPEN TOPUP FOR PARTNER:",
+              partner
             );
 
             onOpenTopup?.(partner);
