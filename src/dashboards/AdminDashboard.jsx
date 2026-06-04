@@ -190,58 +190,103 @@ status: "rejected",
 }
 
 async function approveTopup(topup) {
-try {
-const partnerData = await safeFetch(
-`${SUPABASE_URL}/rest/v1/partners?id=eq.${topup.partner_id}&select=*`
-);
+  try {
+    const topupData = await safeFetch(
+      `${SUPABASE_URL}/rest/v1/deposit_topups?id=eq.${topup.id}&select=*`
+    );
 
+    if (!topupData?.length) {
+      throw new Error("Заявка не найдена");
+    }
 
-  if (!partnerData?.length) {
-    throw new Error("Партнёр не найден");
+    if (
+      String(topupData[0].status)
+        .trim()
+        .toLowerCase() !== "pending"
+    ) {
+      throw new Error(
+        "Заявка уже обработана"
+      );
+    }
+
+    const partnerData = await safeFetch(
+      `${SUPABASE_URL}/rest/v1/partners?id=eq.${topup.partner_id}&select=*`
+    );
+
+    if (!partnerData?.length) {
+      throw new Error("Партнёр не найден");
+    }
+
+    const partner = partnerData[0];
+
+    await safeFetch(
+      `${SUPABASE_URL}/rest/v1/partners?id=eq.${partner.id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          deposit_balance:
+            Number(partner.deposit_balance || 0) +
+            Number(topup.amount || 0),
+        }),
+      }
+    );
+
+    await safeFetch(
+      `${SUPABASE_URL}/rest/v1/deposit_topups?id=eq.${topup.id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: "approved",
+          approved_at: new Date().toISOString(),
+        }),
+      }
+    );
+
+    setTopups((prev) =>
+      prev.filter(
+        (item) => item.id !== topup.id
+      )
+    );
+
+    alert("Депозит начислен");
+  } catch (e) {
+    console.error(e);
+    alert(e.message);
   }
-
-  const partner = partnerData[0];
-
-  await safeFetch(
-    `${SUPABASE_URL}/rest/v1/partners?id=eq.${partner.id}`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        deposit_balance:
-          Number(partner.deposit_balance || 0) +
-          Number(topup.amount || 0),
-      }),
-    }
-  );
-
-  await safeFetch(
-    `${SUPABASE_URL}/rest/v1/deposit_topups?id=eq.${topup.id}`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        status: "approved",
-        approved_at: new Date().toISOString(),
-      }),
-    }
-  );
-
-  await loadData();
-
-  alert("Депозит начислен");
-} catch (e) {
-  console.error(e);
-  alert(e.message);
 }
+async function rejectTopup(topup) {
+  try {
+    await safeFetch(
+      `${SUPABASE_URL}/rest/v1/deposit_topups?id=eq.${topup.id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: "rejected",
+        }),
+      }
+    );
 
+    setTopups((prev) =>
+      prev.filter(
+        (item) => item.id !== topup.id
+      )
+    );
 
+    alert("Заявка отклонена");
+  } catch (e) {
+    console.error(e);
+    alert(e.message);
+  }
 }
-
 useEffect(() => {
 loadData();
 }, []);
@@ -321,13 +366,29 @@ return (
         </div>
       )}
 
-      <button
-        onClick={() =>
-          approveTopup(topup)
-        }
-      >
-        Одобрить пополнение
-      </button>
+      <div
+  style={{
+    display: "flex",
+    gap: 10,
+    marginTop: 10,
+  }}
+>
+  <button
+    onClick={() =>
+      approveTopup(topup)
+    }
+  >
+    Одобрить
+  </button>
+
+  <button
+    onClick={() =>
+      rejectTopup(topup)
+    }
+  >
+    Отклонить
+  </button>
+</div>
     </div>
   ))}
 
