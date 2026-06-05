@@ -158,9 +158,7 @@ export default function MapTab({ onOpenPartner }) {
         </div>
 
         <div>
-          Найдено партнёров:
-          {" "}
-          {partners.length}
+          Найдено партнёров: {partners.length}
         </div>
       </div>
 
@@ -236,28 +234,20 @@ export default function MapTab({ onOpenPartner }) {
                 }}
               >
                 <strong>
-                  {
-                    selectedPartner.business_name
-                  }
+                  {selectedPartner.business_name}
                 </strong>
 
                 <div>
-                  {
-                    selectedPartner.category
-                  }
+                  {selectedPartner.category}
                 </div>
 
                 <div>
-                  Скидка:
-                  {" "}
-                  {selectedPartner.discount_percent ||
-                    0}
-                  %
+                  Скидка:{" "}
+                  {selectedPartner.discount_percent || 0}%
                 </div>
 
                 <div>
-                  📍 Расстояние:
-                  {" "}
+                  📍 Расстояние:{" "}
                   {formatDistance(
                     selectedPartner.distance
                   )}
@@ -301,7 +291,7 @@ export default function MapTab({ onOpenPartner }) {
           style={{
             fontSize: 18,
             fontWeight: 700,
-            marginBottom: 12,
+            marginBottom: 16,
           }}
         >
           📍 Ближайшие партнёры
@@ -313,36 +303,100 @@ export default function MapTab({ onOpenPartner }) {
             <div
               key={partner.id}
               onClick={() =>
-                onOpenPartner?.(
-                  partner
-                )
+                onOpenPartner?.(partner)
               }
               style={{
-                padding: 12,
-                borderBottom:
-                  "1px solid #eee",
+                background: "#fff",
+                borderRadius: 20,
+                overflow: "hidden",
+                marginBottom: 18,
                 cursor: "pointer",
+                boxShadow:
+                  "0 4px 12px rgba(0,0,0,0.08)",
+                border:
+                  "1px solid rgba(0,0,0,0.05)",
               }}
             >
               <div
                 style={{
-                  fontWeight: 600,
+                  height: 180,
+                  background:
+                    partner.image_url
+                      ? `url(${partner.image_url}) center center / cover`
+                      : "linear-gradient(135deg,#14B8A6,#0F766E)",
+                  position: "relative",
                 }}
               >
-                {
-                  partner.business_name
-                }
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 12,
+                    right: 12,
+                    background: "#14B8A6",
+                    color: "#fff",
+                    padding: "6px 12px",
+                    borderRadius: 999,
+                    fontSize: 14,
+                    fontWeight: 700,
+                  }}
+                >
+                  🎁 {partner.discount_percent || 0}%
+                </div>
               </div>
 
               <div
                 style={{
-                  color: "#666",
-                  fontSize: 14,
+                  padding: 16,
                 }}
               >
-                {formatDistance(
-                  partner.distance
-                )}
+                <div
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 700,
+                    marginBottom: 8,
+                    color: "#111827",
+                  }}
+                >
+                  {partner.business_name}
+                </div>
+
+                <div
+                  style={{
+                    color: "#6B7280",
+                    marginBottom: 10,
+                    fontSize: 14,
+                  }}
+                >
+                  {partner.category || "Партнёр"}
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent:
+                      "space-between",
+                    alignItems:
+                      "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      color: "#14B8A6",
+                      fontWeight: 600,
+                    }}
+                  >
+                    📍 {formatDistance(partner.distance)}
+                  </div>
+
+                  <div
+                    style={{
+                      color: "#14B8A6",
+                      fontWeight: 700,
+                    }}
+                  >
+                    Подробнее →
+                  </div>
+                </div>
               </div>
             </div>
           ))}
