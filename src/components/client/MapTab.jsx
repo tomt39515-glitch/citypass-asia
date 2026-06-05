@@ -5,6 +5,7 @@ import Map, {
   Marker,
   Popup,
 } from "react-map-gl/maplibre";
+
 import "maplibre-gl/dist/maplibre-gl.css";
 
 export default function MapTab({ onOpenPartner }) {
@@ -17,6 +18,44 @@ export default function MapTab({ onOpenPartner }) {
     getLocation();
     loadPartners();
   }, []);
+
+  function getDistance(
+    lat1,
+    lon1,
+    lat2,
+    lon2
+  ) {
+    const R = 6371;
+
+    const dLat =
+      ((lat2 - lat1) * Math.PI) / 180;
+
+    const dLon =
+      ((lon2 - lon1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(dLat / 2) *
+        Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c =
+      2 *
+      Math.atan2(
+        Math.sqrt(a),
+        Math.sqrt(1 - a)
+      );
+
+    return R * c;
+  }
+
+  function formatDistance(distance) {
+    return distance < 1
+      ? `${Math.round(distance * 1000)} м`
+      : `${distance.toFixed(1)} км`;
+  }
 
   function getLocation() {
     navigator.geolocation.getCurrentPosition(
@@ -33,6 +72,7 @@ export default function MapTab({ onOpenPartner }) {
             " " +
             error.message
         );
+
         console.error(error);
       },
       {
@@ -43,13 +83,17 @@ export default function MapTab({ onOpenPartner }) {
 
   async function loadPartners() {
     try {
-      const { data, error } = await supabase
-        .from("partners")
-        .select("*")
-        .eq("is_active", true)
-        .in("status", ["approved", "active"])
-        .not("latitude", "is", null)
-        .not("longitude", "is", null);
+      const { data, error } =
+        await supabase
+          .from("partners")
+          .select("*")
+          .eq("is_active", true)
+          .in("status", [
+            "approved",
+            "active",
+          ])
+          .not("latitude", "is", null)
+          .not("longitude", "is", null);
 
       if (error) throw error;
 
@@ -62,7 +106,11 @@ export default function MapTab({ onOpenPartner }) {
   }
 
   if (loading) {
-    return <div style={{ padding: 20 }}>Загрузка карты...</div>;
+    return (
+      <div style={{ padding: 20 }}>
+        Загрузка карты...
+      </div>
+    );
   }
 
   if (!userLocation) {
@@ -73,21 +121,47 @@ export default function MapTab({ onOpenPartner }) {
     );
   }
 
+  const partnersWithDistance = partners
+    .map((partner) => ({
+      ...partner,
+      distance: getDistance(
+        userLocation.lat,
+        userLocation.lng,
+        Number(partner.latitude),
+        Number(partner.longitude)
+      ),
+    }))
+    .sort(
+      (a, b) =>
+        a.distance - b.distance
+    );
+
   return (
     <div style={{ padding: 12 }}>
       <div
         style={{
-          background: "linear-gradient(135deg,#14B8A6,#0F766E)",
+          background:
+            "linear-gradient(135deg,#14B8A6,#0F766E)",
           color: "#fff",
           padding: 16,
           borderRadius: 20,
           marginBottom: 12,
         }}
       >
-        <div style={{ fontSize: 24, fontWeight: 700 }}>
+        <div
+          style={{
+            fontSize: 24,
+            fontWeight: 700,
+          }}
+        >
           📍 Карта партнёров
         </div>
-        <div>Найдено партнёров: {partners.length}</div>
+
+        <div>
+          Найдено партнёров:
+          {" "}
+          {partners.length}
+        </div>
       </div>
 
       <div
@@ -109,56 +183,99 @@ export default function MapTab({ onOpenPartner }) {
             longitude={userLocation.lng}
             latitude={userLocation.lat}
           >
-            <div style={{ fontSize: 28 }}>🔵</div>
+            <div style={{ fontSize: 28 }}>
+              🔵
+            </div>
           </Marker>
 
-          {partners.map((partner) => (
-            <Marker
-              key={partner.id}
-              longitude={Number(partner.longitude)}
-              latitude={Number(partner.latitude)}
-              onClick={(e) => {
-                e.originalEvent.stopPropagation();
-                setSelectedPartner(partner);
-              }}
-            >
-              <div style={{ fontSize: 30, cursor: "pointer" }}>
-                🟢
-              </div>
-            </Marker>
-          ))}
+          {partnersWithDistance.map(
+            (partner) => (
+              <Marker
+                key={partner.id}
+                longitude={Number(
+                  partner.longitude
+                )}
+                latitude={Number(
+                  partner.latitude
+                )}
+                onClick={(e) => {
+                  e.originalEvent.stopPropagation();
+                  setSelectedPartner(
+                    partner
+                  );
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 30,
+                    cursor: "pointer",
+                  }}
+                >
+                  🟢
+                </div>
+              </Marker>
+            )
+          )}
 
           {selectedPartner && (
             <Popup
-              longitude={Number(selectedPartner.longitude)}
-              latitude={Number(selectedPartner.latitude)}
+              longitude={Number(
+                selectedPartner.longitude
+              )}
+              latitude={Number(
+                selectedPartner.latitude
+              )}
               anchor="bottom"
-              onClose={() => setSelectedPartner(null)}
+              onClose={() =>
+                setSelectedPartner(null)
+              }
             >
-              <div style={{ minWidth: 220 }}>
+              <div
+                style={{
+                  minWidth: 220,
+                }}
+              >
                 <strong>
-                  {selectedPartner.business_name}
+                  {
+                    selectedPartner.business_name
+                  }
                 </strong>
 
                 <div>
-                  {selectedPartner.category}
+                  {
+                    selectedPartner.category
+                  }
                 </div>
 
                 <div>
-                  Скидка:{" "}
-                  {selectedPartner.discount_percent || 0}%
+                  Скидка:
+                  {" "}
+                  {selectedPartner.discount_percent ||
+                    0}
+                  %
+                </div>
+
+                <div>
+                  📍 Расстояние:
+                  {" "}
+                  {formatDistance(
+                    selectedPartner.distance
+                  )}
                 </div>
 
                 <button
                   onClick={() =>
-                    onOpenPartner?.(selectedPartner)
+                    onOpenPartner?.(
+                      selectedPartner
+                    )
                   }
                   style={{
                     marginTop: 10,
                     border: "none",
                     padding: 10,
                     borderRadius: 10,
-                    background: "#14B8A6",
+                    background:
+                      "#14B8A6",
                     color: "#fff",
                     cursor: "pointer",
                     width: "100%",
@@ -170,6 +287,65 @@ export default function MapTab({ onOpenPartner }) {
             </Popup>
           )}
         </Map>
+      </div>
+
+      <div
+        style={{
+          marginTop: 16,
+          background: "#fff",
+          borderRadius: 20,
+          padding: 16,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 18,
+            fontWeight: 700,
+            marginBottom: 12,
+          }}
+        >
+          📍 Ближайшие партнёры
+        </div>
+
+        {partnersWithDistance
+          .slice(0, 10)
+          .map((partner) => (
+            <div
+              key={partner.id}
+              onClick={() =>
+                onOpenPartner?.(
+                  partner
+                )
+              }
+              style={{
+                padding: 12,
+                borderBottom:
+                  "1px solid #eee",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                style={{
+                  fontWeight: 600,
+                }}
+              >
+                {
+                  partner.business_name
+                }
+              </div>
+
+              <div
+                style={{
+                  color: "#666",
+                  fontSize: 14,
+                }}
+              >
+                {formatDistance(
+                  partner.distance
+                )}
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );
