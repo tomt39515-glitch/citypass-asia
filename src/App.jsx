@@ -15,7 +15,7 @@ import AdminDashboard from "./dashboards/AdminDashboard";
 import PartnerRegistration from "./components/client/PartnerRegistration";
 import PartnerDetailsPage from "./pages/PartnerDetailsPage";
 import PartnerTopupPage from "./pages/PartnerTopupPage";
-import ClientPartnerPage from "./pages/ClientPartnerPage";
+import ClientPartnerPage from "./pages/ClientPartnersPage";
 
 function App() {
   const telegramUser =
