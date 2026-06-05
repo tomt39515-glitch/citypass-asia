@@ -17,7 +17,7 @@ export default function OffersTab({
         .from("partners")
         .select("*")
         .eq("is_active", true)
-        .eq("status", "approved")
+        .in("status", ["approved", "active"])
         .order("business_name");
 
       if (error) throw error;
