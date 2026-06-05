@@ -13,6 +13,7 @@ export default function MapTab({ onOpenPartner }) {
   const [userLocation, setUserLocation] = useState(null);
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("Все");
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -151,11 +152,24 @@ export default function MapTab({ onOpenPartner }) {
   ];
 
   const filteredPartners =
-    selectedCategory === "Все"
-      ? partnersWithDistance
-      : partnersWithDistance.filter(
-          (p) => p.category === selectedCategory
-        );
+    partnersWithDistance.filter(
+      (partner) => {
+        const categoryMatch =
+          selectedCategory === "Все" ||
+          partner.category === selectedCategory;
+
+        const searchMatch =
+          !search ||
+          partner.business_name
+            ?.toLowerCase()
+            .includes(search.toLowerCase()) ||
+          partner.category
+            ?.toLowerCase()
+            .includes(search.toLowerCase());
+
+        return categoryMatch && searchMatch;
+      }
+    );
 
   return (
     <div style={{ padding: 12 }}>
@@ -181,6 +195,27 @@ export default function MapTab({ onOpenPartner }) {
         <div>
           Найдено партнёров: {filteredPartners.length}
         </div>
+      </div>
+
+      <div
+        style={{
+          marginBottom: 12,
+        }}
+      >
+        <input
+          type="text"
+          placeholder="🔍 Поиск партнёров..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            width: "100%",
+            padding: 14,
+            borderRadius: 14,
+            border: "1px solid #ddd",
+            fontSize: 16,
+            boxSizing: "border-box",
+          }}
+        />
       </div>
 
       <div
