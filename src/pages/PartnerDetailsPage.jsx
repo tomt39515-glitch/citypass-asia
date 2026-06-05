@@ -15,6 +15,7 @@ export default function PartnerDetailsPage({
   const [transactions, setTransactions] = useState([]);
   const [bonusAmount, setBonusAmount] =
     useState("");
+  const [products, setProducts] = useState([]);
 
   async function safeFetch(url) {
     const response = await fetch(url, {
@@ -135,8 +136,25 @@ export default function PartnerDetailsPage({
     }
   }
 
+
+  async function loadProducts() {
+    if (!partner?.id) return;
+
+    try {
+      const data = await safeFetch(
+        `${SUPABASE_URL}/rest/v1/partner_products?partner_id=eq.${partner.id}&is_active=eq.true&select=*&order=created_at.desc`
+      );
+
+      setProducts(data || []);
+    } catch (error) {
+      console.error("Ошибка загрузки товаров:", error);
+      setProducts([]);
+    }
+  }
+
   useEffect(() => {
     loadTransactions();
+    loadProducts();
   }, [partner]);
 
   if (!partner) {
@@ -298,6 +316,58 @@ export default function PartnerDetailsPage({
           {partner.description ||
             "Описание отсутствует"}
         </div>
+      </div>
+
+
+      <div
+        style={{
+          background: "#fff",
+          padding: 16,
+          borderRadius: 14,
+          marginBottom: 20,
+        }}
+      >
+        <h2>Товары и услуги</h2>
+
+        {products.length === 0 && (
+          <div>Активных товаров нет</div>
+        )}
+
+        {products.map((item) => (
+          <div
+            key={item.id}
+            style={{
+              border: "1px solid #e5e7eb",
+              borderRadius: 12,
+              padding: 12,
+              marginBottom: 12,
+            }}
+          >
+            {item.photo_url && (
+              <img
+                src={item.photo_url}
+                alt={item.name}
+                style={{
+                  width: "100%",
+                  maxHeight: 220,
+                  objectFit: "cover",
+                  borderRadius: 10,
+                  marginBottom: 10,
+                }}
+              />
+            )}
+
+            <div><strong>{item.name}</strong></div>
+            <div>Категория: {item.category || "-"}</div>
+            <div>Цена: {item.price || 0} VND</div>
+
+            {item.description && (
+              <div style={{ marginTop: 8 }}>
+                {item.description}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       <div
