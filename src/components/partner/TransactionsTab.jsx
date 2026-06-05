@@ -9,28 +9,61 @@ function Transactions() {
     loadDeals();
   }, []);
 
+
+  const [stats, setStats] = useState({
+    sales: 0,
+    commission: 0,
+    dealsCount: 0,
+  });
+
   async function loadDeals() {
     try {
       setLoading(true);
 
-      const { data, error } = await supabase
-        .from("partner_transactions_view")
-        .select("*")
-        .eq("partner_id", 1)
-        .order("created_at", {
-          ascending: false,
-        });
+      const telegramId =
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
-      console.log("PARTNER DEALS:", data);
-      console.log("PARTNER DEALS ERROR:", error);
+      const { data: partner } = await supabase
+        .from("partners")
+        .select("id")
+        .eq("telegram_id", Number(telegramId))
+        .order("id", { ascending: false })
+        .limit(1)
+        .single();
 
-      if (error) {
-        console.error(error);
+      if (!partner) {
         setDeals([]);
         return;
       }
 
-      setDeals(data || []);
+      const { data, error } = await supabase
+        .from("partner_transactions_view")
+        .select("*")
+        .eq("partner_id", partner.id)
+        .order("created_at", {
+          ascending: false,
+        });
+
+      if (error) {
+        setDeals([]);
+        return;
+      }
+
+      const rows = data || [];
+
+      setDeals(rows);
+
+      setStats({
+        sales: rows.reduce(
+          (s, x) => s + Number(x.original_amount || 0),
+          0
+        ),
+        commission: rows.reduce(
+          (s, x) => s + Number(x.citypass_amount || 0),
+          0
+        ),
+        dealsCount: rows.length,
+      });
     } catch (e) {
       console.error(e);
       setDeals([]);
@@ -61,6 +94,19 @@ function Transactions() {
         >
           История сделок
         </h1>
+        <div
+          style={{
+            background: "white",
+            padding: "20px",
+            borderRadius: "20px",
+            marginBottom: "20px",
+          }}
+        >
+          <div><b>Продаж:</b> {stats.sales.toLocaleString()} VND</div>
+          <div><b>Комиссия CityPass:</b> {stats.commission.toLocaleString()} VND</div>
+          <div><b>Сделок:</b> {stats.dealsCount}</div>
+        </div>
+
 
         {loading ? (
           <div
