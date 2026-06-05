@@ -47,9 +47,16 @@ export default function MapTab({
           lng: position.coords.longitude,
         });
       },
-      (error) => {
-        console.error(error);
-      },
+     (error) => {
+  alert(
+    "GPS ERROR: " +
+    error.code +
+    " " +
+    error.message
+  );
+
+  console.error(error);
+},
       {
         enableHighAccuracy: true,
       }
