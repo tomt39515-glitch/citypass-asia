@@ -6,6 +6,11 @@ export default function PartnerScanner() {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
 
+  const amountNumber = Number(amount || 0);
+  const discountAmount = amountNumber * 0.10;
+  const citypassAmount = amountNumber * 0.05;
+  const finalAmount = amountNumber - discountAmount;
+
   const telegramId =
     window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
@@ -103,6 +108,27 @@ export default function PartnerScanner() {
               maxWidth: 300,
             }}
           />
+
+          {amountNumber > 0 && (
+            <div
+              style={{
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: 12,
+                padding: 15,
+                marginBottom: 15,
+                maxWidth: 350,
+              }}
+            >
+              <div>Сумма покупки: {amountNumber} VND</div>
+              <div>Скидка клиенту 10%: {discountAmount} VND</div>
+              <div>Комиссия CityPass 5%: {citypassAmount} VND</div>
+              <hr />
+              <div style={{ fontWeight: "700" }}>
+                Клиент оплатит: {finalAmount} VND
+              </div>
+            </div>
+          )}
 
           <button
             onClick={processTransaction}
