@@ -1,266 +1,145 @@
-import React, { useEffect, useState } from "react";
-import { supabase } from "../../supabase";
+import { useState } from "react";
+import { supabase } from "../../lib/supabase";
 
-export default function PartnerProductsTab() {
-  const [partner, setPartner] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+export default function PartnerProductsTab({ partner }) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [photo, setPhoto] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    loadPartner();
-  }, []);
-
-  async function loadPartner() {
+  const saveProduct = async () => {
     try {
-      const telegramId =
-        window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+      setLoading(true);
 
-      if (!telegramId) {
-        alert("Telegram ID не найден");
-        return;
+      let photoUrl = null;
+
+      if (photo) {
+        const fileName =
+          `${Date.now()}-${photo.name}`;
+
+        const { error: uploadError } =
+          await supabase.storage
+            .from("partner-products")
+            .upload(fileName, photo);
+
+        if (uploadError) throw uploadError;
+
+        photoUrl =
+          `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/partner-products/${fileName}`;
       }
 
-      const { data, error } = await supabase
-        .from("partners")
-        .select("*")
-        .eq("telegram_id", Number(telegramId))
-        .order("id", { ascending: false })
-        .limit(1);
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        alert("Партнёр не найден");
-        return;
-      }
-
-      const currentPartner = data[0];
-
-      setPartner(currentPartner);
-
-      await loadProducts(currentPartner.id);
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadProducts(partnerId) {
-    const { data, error } = await supabase
-      .from("partner_products")
-      .select("*")
-      .eq("partner_id", partnerId)
-      .order("created_at", {
-        ascending: false,
-      });
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setProducts(data || []);
-  }
-
-  async function addProduct() {
-    if (!name.trim()) {
-      alert("Введите название");
-      return;
-    }
-
-    if (!partner) {
-      alert("Партнёр не найден");
-      return;
-    }
-
-    try {
       const { error } = await supabase
         .from("partner_products")
         .insert({
           partner_id: partner.id,
-          name,
           category,
+          name,
           description,
-          price: Number(price || 0),
-          is_active: true,
+          price: Number(price),
+          photo_url: photoUrl,
         });
 
       if (error) throw error;
+
+      alert("Товар добавлен");
 
       setName("");
       setCategory("");
       setDescription("");
       setPrice("");
-
-      await loadProducts(partner.id);
-
-      alert("Товар добавлен");
+      setPhoto(null);
     } catch (err) {
-      console.error(err);
       alert(err.message);
+    } finally {
+      setLoading(false);
     }
-  }
-
-  if (loading) {
-    return (
-      <div style={{ padding: "16px" }}>
-        Загрузка...
-      </div>
-    );
-  }
+  };
 
   return (
-    <div style={{ padding: "16px" }}>
-      <div
+    <div style={{ padding: 15 }}>
+      <h2>📦 Товары и услуги</h2>
+
+      <input
+        placeholder="Категория"
+        value={category}
+        onChange={(e) =>
+          setCategory(e.target.value)
+        }
         style={{
-          background: "#fff",
-          borderRadius: "24px",
-          padding: "24px",
+          width: "100%",
+          marginBottom: 10,
+          padding: 10,
+        }}
+      />
+
+      <input
+        placeholder="Название"
+        value={name}
+        onChange={(e) =>
+          setName(e.target.value)
+        }
+        style={{
+          width: "100%",
+          marginBottom: 10,
+          padding: 10,
+        }}
+      />
+
+      <textarea
+        placeholder="Описание"
+        value={description}
+        onChange={(e) =>
+          setDescription(e.target.value)
+        }
+        style={{
+          width: "100%",
+          marginBottom: 10,
+          padding: 10,
+          minHeight: 100,
+        }}
+      />
+
+      <input
+        type="number"
+        placeholder="Цена"
+        value={price}
+        onChange={(e) =>
+          setPrice(e.target.value)
+        }
+        style={{
+          width: "100%",
+          marginBottom: 10,
+          padding: 10,
+        }}
+      />
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) =>
+          setPhoto(e.target.files[0])
+        }
+      />
+
+      <button
+        onClick={saveProduct}
+        disabled={loading}
+        style={{
+          width: "100%",
+          marginTop: 15,
+          padding: 12,
+          background: "#009688",
+          color: "#fff",
+          border: "none",
+          borderRadius: 8,
         }}
       >
-        <h2 style={{ marginTop: 0 }}>
-          🛍️ Товары и услуги
-        </h2>
-
-        <input
-          value={name}
-          onChange={(e) =>
-            setName(e.target.value)
-          }
-          placeholder="Название"
-          style={inputStyle}
-        />
-
-        <input
-          value={category}
-          onChange={(e) =>
-            setCategory(e.target.value)
-          }
-          placeholder="Категория"
-          style={inputStyle}
-        />
-
-        <textarea
-          value={description}
-          onChange={(e) =>
-            setDescription(e.target.value)
-          }
-          placeholder="Описание"
-          style={{
-            ...inputStyle,
-            minHeight: "90px",
-          }}
-        />
-
-        <input
-          type="number"
-          value={price}
-          onChange={(e) =>
-            setPrice(e.target.value)
-          }
-          placeholder="Цена"
-          style={inputStyle}
-        />
-
-        <button
-          onClick={addProduct}
-          style={{
-            width: "100%",
-            padding: "14px",
-            border: "none",
-            borderRadius: "14px",
-            background:
-              "linear-gradient(135deg,#14B8A6,#0D9488)",
-            color: "#fff",
-            fontWeight: 600,
-            cursor: "pointer",
-            marginBottom: "24px",
-          }}
-        >
-          + Добавить товар
-        </button>
-
-        <h3>Мои товары</h3>
-
-        {products.length === 0 ? (
-          <div
-            style={{
-              color: "#64748B",
-            }}
-          >
-            Товаров пока нет
-          </div>
-        ) : (
-          products.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                background: "#F8FAFC",
-                borderRadius: "16px",
-                padding: "16px",
-                marginBottom: "12px",
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: 700,
-                  fontSize: "18px",
-                }}
-              >
-                {item.name}
-              </div>
-
-              {item.category && (
-                <div
-                  style={{
-                    color: "#14B8A6",
-                    marginTop: "4px",
-                  }}
-                >
-                  {item.category}
-                </div>
-              )}
-
-              {item.description && (
-                <div
-                  style={{
-                    marginTop: "8px",
-                  }}
-                >
-                  {item.description}
-                </div>
-              )}
-
-              <div
-                style={{
-                  marginTop: "10px",
-                  fontWeight: 700,
-                }}
-              >
-                {Number(
-                  item.price || 0
-                ).toLocaleString()} ₫
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+        {loading
+          ? "Сохранение..."
+          : "Добавить товар"}
+      </button>
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "12px",
-  border: "1px solid #CBD5E1",
-  borderRadius: "12px",
-  marginBottom: "12px",
-  boxSizing: "border-box",
-};
