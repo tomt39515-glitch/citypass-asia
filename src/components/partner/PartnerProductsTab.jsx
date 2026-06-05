@@ -16,8 +16,11 @@ export default function PartnerProductsTab({ partner }) {
       let photoUrl = null;
 
       if (photo) {
+        const extension =
+          photo.name.split(".").pop();
+
         const fileName =
-          `${Date.now()}-${photo.name}`;
+          `product-${crypto.randomUUID()}.${extension}`;
 
         const { error: uploadError } =
           await supabase.storage
@@ -27,7 +30,7 @@ export default function PartnerProductsTab({ partner }) {
         if (uploadError) throw uploadError;
 
         photoUrl =
-          `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/partner-products/${fileName}`;
+          `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/partner-images/${fileName}`;
       }
 
       const { error } = await supabase
@@ -64,9 +67,7 @@ export default function PartnerProductsTab({ partner }) {
       <input
         placeholder="Категория"
         value={category}
-        onChange={(e) =>
-          setCategory(e.target.value)
-        }
+        onChange={(e) => setCategory(e.target.value)}
         style={{
           width: "100%",
           marginBottom: 10,
@@ -77,9 +78,7 @@ export default function PartnerProductsTab({ partner }) {
       <input
         placeholder="Название"
         value={name}
-        onChange={(e) =>
-          setName(e.target.value)
-        }
+        onChange={(e) => setName(e.target.value)}
         style={{
           width: "100%",
           marginBottom: 10,
@@ -90,9 +89,7 @@ export default function PartnerProductsTab({ partner }) {
       <textarea
         placeholder="Описание"
         value={description}
-        onChange={(e) =>
-          setDescription(e.target.value)
-        }
+        onChange={(e) => setDescription(e.target.value)}
         style={{
           width: "100%",
           marginBottom: 10,
@@ -105,9 +102,7 @@ export default function PartnerProductsTab({ partner }) {
         type="number"
         placeholder="Цена"
         value={price}
-        onChange={(e) =>
-          setPrice(e.target.value)
-        }
+        onChange={(e) => setPrice(e.target.value)}
         style={{
           width: "100%",
           marginBottom: 10,
@@ -118,9 +113,7 @@ export default function PartnerProductsTab({ partner }) {
       <input
         type="file"
         accept="image/*"
-        onChange={(e) =>
-          setPhoto(e.target.files[0])
-        }
+        onChange={(e) => setPhoto(e.target.files[0])}
       />
 
       <button
@@ -136,9 +129,7 @@ export default function PartnerProductsTab({ partner }) {
           borderRadius: 8,
         }}
       >
-        {loading
-          ? "Сохранение..."
-          : "Добавить товар"}
+        {loading ? "Сохранение..." : "Добавить товар"}
       </button>
     </div>
   );
