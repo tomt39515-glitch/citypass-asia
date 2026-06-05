@@ -21,7 +21,7 @@ export default function PartnerProductsTab({ partner }) {
 
         const { error: uploadError } =
           await supabase.storage
-            .from("partner-products")
+            .from("partner-images")
             .upload(fileName, photo);
 
         if (uploadError) throw uploadError;
