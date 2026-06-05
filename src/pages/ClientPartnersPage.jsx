@@ -82,6 +82,24 @@ export default function ClientPartnerPage({
         📍 Маршрут
       </button>
 
+      <button
+        style={{
+          marginTop: 12,
+          marginLeft: 10,
+          padding: 12,
+          background: "#16a34a",
+          color: "#fff",
+          border: "none",
+          borderRadius: 8,
+        }}
+        onClick={() =>
+          alert("QR-модуль будет подключен следующим этапом")
+        }
+      >
+        🎟 Получить скидку
+      </button>
+
+
       <h3 style={{ marginTop: 20 }}>
         Товары и услуги
       </h3>
