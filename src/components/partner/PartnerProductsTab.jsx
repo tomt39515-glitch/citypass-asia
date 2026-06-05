@@ -95,6 +95,34 @@ export default function PartnerProductsTab() {
     }
   }
 
+
+  async function toggleProduct(productId, currentState) {
+    try {
+      const { error } = await supabase
+        .from("partner_products")
+        .update({
+          is_active: !currentState,
+        })
+        .eq("id", productId);
+
+      if (error) throw error;
+
+      setProducts((prev) =>
+        prev.map((item) =>
+          item.id === productId
+            ? {
+                ...item,
+                is_active: !currentState,
+              }
+            : item
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  }
+
   async function saveProduct() {
     try {
       if (!partner) {
@@ -309,6 +337,39 @@ export default function PartnerProductsTab() {
             >
               {item.description}
             </div>
+
+
+            <div
+              style={{
+                marginTop: 10,
+                fontWeight: "bold",
+              }}
+            >
+              {item.is_active
+                ? "🟢 Активен"
+                : "🔴 Скрыт"}
+            </div>
+
+            <button
+              onClick={() =>
+                toggleProduct(
+                  item.id,
+                  item.is_active
+                )
+              }
+              style={{
+                marginTop: 10,
+                marginRight: 10,
+                padding: "10px 14px",
+                borderRadius: 8,
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              {item.is_active
+                ? "Скрыть"
+                : "Активировать"}
+            </button>
 
             <button
               onClick={() =>
