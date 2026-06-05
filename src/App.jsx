@@ -15,6 +15,7 @@ import AdminDashboard from "./dashboards/AdminDashboard";
 import PartnerRegistration from "./components/client/PartnerRegistration";
 import PartnerDetailsPage from "./pages/PartnerDetailsPage";
 import PartnerTopupPage from "./pages/PartnerTopupPage";
+import ClientPartnerPage from "./pages/ClientPartnerPage";
 
 function App() {
   const telegramUser =
@@ -36,6 +37,9 @@ function App() {
     useState("home");
 
   const [selectedPartner, setSelectedPartner] =
+    useState(null);
+
+  const [clientSelectedPartner, setClientSelectedPartner] =
     useState(null);
 
   const [topupPartner, setTopupPartner] =
@@ -126,6 +130,17 @@ function App() {
   const renderContent = () => {
     switch (role) {
       case "client":
+        if (clientSelectedPartner) {
+          return (
+            <ClientPartnerPage
+              partner={clientSelectedPartner}
+              onBack={() =>
+                setClientSelectedPartner(null)
+              }
+            />
+          );
+        }
+
         return (
           <ClientDashboard
             currentTab={currentTab}
@@ -133,6 +148,9 @@ function App() {
             role={role}
             setRole={safeSetRole}
             userRoles={userRoles}
+            onOpenPartner={(partner) =>
+              setClientSelectedPartner(partner)
+            }
           />
         );
 

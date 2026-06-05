@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../supabase";
 
-export default function OffersTab() {
+export default function OffersTab({
+  onOpenPartner,
+}) {
   const [partners, setPartners] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -189,6 +191,9 @@ export default function OffersTab() {
             </button>
 
             <button
+              onClick={() =>
+                onOpenPartner?.(partner)
+              }
               style={{
                 flex: 1,
                 border: "none",

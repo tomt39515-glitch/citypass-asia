@@ -1,120 +1,122 @@
 import React, { useEffect, useState } from "react";
+import { supabase } from "../supabase";
 
-const SUPABASE_URL = "https://doswzyuumcwxjmltcgeh.supabase.co";
-const SUPABASE_KEY = "sb_publishable_5_sw0Rk7sPg-SMTgI1aTkA_Vb5QAZRP";
+export default function ClientPartnerPage({
+  partner,
+  onBack,
+}) {
+  const [products, setProducts] = useState([]);
 
-const headers = {
-  apikey: SUPABASE_KEY,
-  Authorization: `Bearer ${SUPABASE_KEY}`,
-};
+  useEffect(() => {
+    loadProducts();
+  }, [partner]);
 
-export default function ClientPartnersPage({ onBack }) {
-  const [partners, setPartners] = useState([]);
-  const [loading, setLoading] = useState(true);
+  async function loadProducts() {
+    if (!partner?.id) return;
 
-  async function loadPartners() {
-    try {
-      const response = await fetch(
-        `${SUPABASE_URL}/rest/v1/partners?status=eq.active&select=*`,
-        {
-          headers,
-        }
+    const { data } = await supabase
+      .from("partner_products")
+      .select("*")
+      .eq("partner_id", partner.id)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    setProducts(data || []);
+  }
+
+  function openRoute() {
+    if (partner?.latitude && partner?.longitude) {
+      window.open(
+        `https://www.google.com/maps?q=${partner.latitude},${partner.longitude}`,
+        "_blank"
       );
+      return;
+    }
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Ошибка загрузки");
-      }
-
-      const data = await response.json();
-
-      setPartners(data || []);
-    } catch (e) {
-      alert(e.message);
-    } finally {
-      setLoading(false);
+    if (partner?.address) {
+      window.open(
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(partner.address)}`,
+        "_blank"
+      );
     }
   }
 
-  useEffect(() => {
-    loadPartners();
-  }, []);
-
-  if (loading) {
-    return (
-      <div style={{ padding: 20 }}>
-        Загрузка партнёров...
-      </div>
-    );
-  }
-
   return (
-    <div
-      style={{
-        padding: 20,
-        background: "#f5f7fb",
-        minHeight: "100vh",
-      }}
-    >
-      <button
-        onClick={onBack}
-        style={{
-          background: "#111827",
-          color: "white",
-          border: "none",
-          padding: "12px 18px",
-          borderRadius: 14,
-          marginBottom: 20,
-          cursor: "pointer",
-        }}
-      >
-        Назад
+    <div style={{ padding: 16 }}>
+      <button onClick={onBack}>
+        ← Назад
       </button>
 
-      <h1
-        style={{
-          marginBottom: 20,
-        }}
-      >
-        Партнёры CityPass
-      </h1>
+      <h2>{partner?.business_name}</h2>
 
-      {partners.length === 0 && (
-        <div>Активных партнёров пока нет</div>
+      {partner?.cover_photo_url && (
+        <img
+          src={partner.cover_photo_url}
+          alt={partner.business_name}
+          style={{
+            width: "100%",
+            borderRadius: 16,
+            marginTop: 12,
+            marginBottom: 12,
+          }}
+        />
       )}
 
-      {partners.map((partner) => (
+      <div>{partner?.description}</div>
+
+      <div style={{ marginTop: 10 }}>
+        📞 {partner?.phone || "Не указан"}
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        📍 {partner?.address || "Не указан"}
+      </div>
+
+      <button
+        onClick={openRoute}
+        style={{
+          marginTop: 12,
+          padding: 12,
+        }}
+      >
+        📍 Маршрут
+      </button>
+
+      <h3 style={{ marginTop: 20 }}>
+        Товары и услуги
+      </h3>
+
+      {products.length === 0 && (
+        <div>Активных товаров нет</div>
+      )}
+
+      {products.map((item) => (
         <div
-          key={partner.id}
+          key={item.id}
           style={{
-            background: "white",
-            padding: 20,
-            borderRadius: 20,
-            marginBottom: 16,
-            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+            border: "1px solid #eee",
+            borderRadius: 12,
+            padding: 12,
+            marginBottom: 12,
           }}
         >
-          <h2 style={{ margin: 0 }}>
-            {partner.company_name ||
-              partner.name ||
-              `Партнёр #${partner.id}`}
-          </h2>
+          {item.photo_url && (
+            <img
+              src={item.photo_url}
+              alt={item.name}
+              style={{
+                width: "100%",
+                borderRadius: 10,
+                marginBottom: 10,
+              }}
+            />
+          )}
 
-          <div style={{ marginTop: 10 }}>
-            Категория: {partner.category || "Не указана"}
-          </div>
+          <strong>{item.name}</strong>
 
-          <div style={{ marginTop: 6 }}>
-            Адрес: {partner.address || "Не указан"}
-          </div>
+          <div>{item.price} VND</div>
 
-          <div style={{ marginTop: 6 }}>
-            Скидка: {partner.discount_percent || 10}%
-          </div>
-
-          <div style={{ marginTop: 6 }}>
-            {partner.description || ""}
-          </div>
+          <div>{item.description}</div>
         </div>
       ))}
     </div>
