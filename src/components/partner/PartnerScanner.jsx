@@ -55,9 +55,29 @@ export default function PartnerScanner() {
         return;
       }
 
-      setMessage(
-        `Покупка проведена ✅ Клиент оплатил ${data.final_amount} VND`
-      );
+      setMessage(`
+✅ Покупка проведена
+
+Сумма покупки: ${data.original_amount} VND
+
+Скидка клиенту:
+${data.discount} VND
+
+Комиссия CityPass:
+${data.citypass_fee} VND
+
+К оплате клиентом:
+${data.final_amount} VND
+
+Бонусный баланс:
+${data.bonus_balance_left} VND
+
+Основной баланс:
+${data.deposit_balance_left} VND
+
+Общий баланс:
+${data.partner_balance_left} VND
+      `);
 
       setToken("");
       setAmount("");
