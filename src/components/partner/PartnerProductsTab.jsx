@@ -1,17 +1,54 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../../supabase";
 
-export default function PartnerProductsTab({ partner }) {
-  const [name, setName] = useState("");
+export default function PartnerProductsTab() {
+  const [partner, setPartner] = useState(null);
+
   const [category, setCategory] = useState("");
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [photo, setPhoto] = useState(null);
-  const [loading, setLoading] = useState(false);
 
-  const saveProduct = async () => {
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    loadPartner();
+  }, []);
+
+  async function loadPartner() {
     try {
-      setLoading(true);
+      const telegramId =
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+      if (!telegramId) return;
+
+      const { data, error } = await supabase
+        .from("partners")
+        .select("*")
+        .eq("telegram_id", Number(telegramId))
+        .order("id", { ascending: false })
+        .limit(1);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        setPartner(data[0]);
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  }
+
+  async function saveProduct() {
+    try {
+      if (!partner) {
+        alert("Партнер не найден");
+        return;
+      }
+
+      setSaving(true);
 
       let photoUrl = null;
 
@@ -25,12 +62,18 @@ export default function PartnerProductsTab({ partner }) {
         const { error: uploadError } =
           await supabase.storage
             .from("partner-images")
-            .upload(fileName, photo);
+            .upload(fileName, photo, {
+              upsert: true,
+            });
 
         if (uploadError) throw uploadError;
 
-        photoUrl =
-          `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/partner-images/${fileName}`;
+        const { data } =
+          supabase.storage
+            .from("partner-images")
+            .getPublicUrl(fileName);
+
+        photoUrl = data.publicUrl;
       }
 
       const { error } = await supabase
@@ -40,97 +83,113 @@ export default function PartnerProductsTab({ partner }) {
           category,
           name,
           description,
-          price: Number(price),
+          price: Number(price || 0),
           photo_url: photoUrl,
+          is_active: true,
         });
 
       if (error) throw error;
 
-      alert("Товар добавлен");
+      alert("Товар успешно добавлен");
 
-      setName("");
       setCategory("");
+      setName("");
       setDescription("");
       setPrice("");
       setPhoto(null);
     } catch (err) {
+      console.error(err);
       alert(err.message);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
-  };
+  }
 
   return (
-    <div style={{ padding: 15 }}>
-      <h2>📦 Товары и услуги</h2>
-
-      <input
-        placeholder="Категория"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
+    <div style={{ padding: 16 }}>
+      <div
         style={{
-          width: "100%",
-          marginBottom: 10,
-          padding: 10,
-        }}
-      />
-
-      <input
-        placeholder="Название"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        style={{
-          width: "100%",
-          marginBottom: 10,
-          padding: 10,
-        }}
-      />
-
-      <textarea
-        placeholder="Описание"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        style={{
-          width: "100%",
-          marginBottom: 10,
-          padding: 10,
-          minHeight: 100,
-        }}
-      />
-
-      <input
-        type="number"
-        placeholder="Цена"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        style={{
-          width: "100%",
-          marginBottom: 10,
-          padding: 10,
-        }}
-      />
-
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setPhoto(e.target.files[0])}
-      />
-
-      <button
-        onClick={saveProduct}
-        disabled={loading}
-        style={{
-          width: "100%",
-          marginTop: 15,
-          padding: 12,
-          background: "#009688",
-          color: "#fff",
-          border: "none",
-          borderRadius: 8,
+          background: "#fff",
+          borderRadius: 24,
+          padding: 20,
         }}
       >
-        {loading ? "Сохранение..." : "Добавить товар"}
-      </button>
+        <h2>📦 Товары и услуги</h2>
+
+        <input
+          placeholder="Категория"
+          value={category}
+          onChange={(e) =>
+            setCategory(e.target.value)
+          }
+          style={{
+            width: "100%",
+            marginBottom: 10,
+          }}
+        />
+
+        <input
+          placeholder="Название"
+          value={name}
+          onChange={(e) =>
+            setName(e.target.value)
+          }
+          style={{
+            width: "100%",
+            marginBottom: 10,
+          }}
+        />
+
+        <textarea
+          placeholder="Описание"
+          value={description}
+          onChange={(e) =>
+            setDescription(e.target.value)
+          }
+          style={{
+            width: "100%",
+            minHeight: 120,
+            marginBottom: 10,
+          }}
+        />
+
+        <input
+          type="number"
+          placeholder="Цена"
+          value={price}
+          onChange={(e) =>
+            setPrice(e.target.value)
+          }
+          style={{
+            width: "100%",
+            marginBottom: 10,
+          }}
+        />
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) =>
+            setPhoto(
+              e.target.files?.[0] || null
+            )
+          }
+        />
+
+        <button
+          onClick={saveProduct}
+          disabled={saving}
+          style={{
+            width: "100%",
+            marginTop: 15,
+            padding: 14,
+          }}
+        >
+          {saving
+            ? "Сохранение..."
+            : "Добавить товар"}
+        </button>
+      </div>
     </div>
   );
 }
