@@ -6,7 +6,9 @@ export default function PartnerProfileTab({ onOpenTopup }) {
   const [description, setDescription] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [coverPhotoUrl, setCoverPhotoUrl] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     loadPartner();
@@ -35,6 +37,7 @@ export default function PartnerProfileTab({ onOpenTopup }) {
       setDescription(currentPartner.description || "");
       setLatitude(currentPartner.latitude || "");
       setLongitude(currentPartner.longitude || "");
+      setCoverPhotoUrl(currentPartner.cover_photo_url || "");
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -56,6 +59,50 @@ export default function PartnerProfileTab({ onOpenTopup }) {
         alert(error.message);
       }
     );
+  }
+
+  async function uploadPhoto(event) {
+    try {
+      const file = event.target.files?.[0];
+      if (!file || !partner) return;
+
+      setUploading(true);
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${partner.id}_${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("partner-images")
+        .upload(fileName, file, {
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from("partner-images")
+        .getPublicUrl(fileName);
+
+      const publicUrl = data.publicUrl;
+
+      const { error: updateError } = await supabase
+        .from("partners")
+        .update({
+          cover_photo_url: publicUrl,
+        })
+        .eq("id", partner.id);
+
+      if (updateError) throw updateError;
+
+      setCoverPhotoUrl(publicUrl);
+
+      alert("Фото загружено");
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function saveProfile() {
@@ -94,9 +141,29 @@ export default function PartnerProfileTab({ onOpenTopup }) {
           padding: "24px",
         }}
       >
-        <h2 style={{ marginTop: 0 }}>
-          Профиль бизнеса
-        </h2>
+        <h2 style={{ marginTop: 0 }}>Профиль бизнеса</h2>
+
+        {coverPhotoUrl && (
+          <img
+            src={coverPhotoUrl}
+            alt="business"
+            style={{
+              width: "100%",
+              borderRadius: "16px",
+              marginBottom: "12px",
+              maxHeight: "220px",
+              objectFit: "cover",
+            }}
+          />
+        )}
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={uploadPhoto}
+          disabled={uploading}
+          style={{ marginBottom: "16px" }}
+        />
 
         <div style={{ marginBottom: "12px" }}>
           <b>Название:</b><br />
