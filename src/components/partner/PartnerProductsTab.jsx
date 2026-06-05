@@ -3,6 +3,7 @@ import { supabase } from "../../supabase";
 
 export default function PartnerProductsTab() {
   const [partner, setPartner] = useState(null);
+  const [products, setProducts] = useState([]);
 
   const [category, setCategory] = useState("");
   const [name, setName] = useState("");
@@ -11,10 +12,17 @@ export default function PartnerProductsTab() {
   const [photo, setPhoto] = useState(null);
 
   const [saving, setSaving] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(false);
 
   useEffect(() => {
     loadPartner();
   }, []);
+
+  useEffect(() => {
+    if (partner?.id) {
+      loadProducts(partner.id);
+    }
+  }, [partner]);
 
   async function loadPartner() {
     try {
@@ -32,9 +40,55 @@ export default function PartnerProductsTab() {
 
       if (error) throw error;
 
-      if (data && data.length > 0) {
+      if (data?.length) {
         setPartner(data[0]);
       }
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  }
+
+  async function loadProducts(partnerId) {
+    try {
+      setLoadingProducts(true);
+
+      const { data, error } = await supabase
+        .from("partner_products")
+        .select("*")
+        .eq("partner_id", partnerId)
+        .order("created_at", {
+          ascending: false,
+        });
+
+      if (error) throw error;
+
+      setProducts(data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingProducts(false);
+    }
+  }
+
+  async function deleteProduct(productId) {
+    const ok = window.confirm(
+      "Удалить товар?"
+    );
+
+    if (!ok) return;
+
+    try {
+      const { error } = await supabase
+        .from("partner_products")
+        .delete()
+        .eq("id", productId);
+
+      if (error) throw error;
+
+      setProducts((prev) =>
+        prev.filter((x) => x.id !== productId)
+      );
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -97,6 +151,8 @@ export default function PartnerProductsTab() {
       setDescription("");
       setPrice("");
       setPhoto(null);
+
+      await loadProducts(partner.id);
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -112,6 +168,7 @@ export default function PartnerProductsTab() {
           background: "#fff",
           borderRadius: 24,
           padding: 20,
+          marginBottom: 20,
         }}
       >
         <h2>📦 Товары и услуги</h2>
@@ -189,6 +246,88 @@ export default function PartnerProductsTab() {
             ? "Сохранение..."
             : "Добавить товар"}
         </button>
+      </div>
+
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: 24,
+          padding: 20,
+        }}
+      >
+        <h2>Мои товары</h2>
+
+        {loadingProducts && (
+          <div>Загрузка...</div>
+        )}
+
+        {!loadingProducts &&
+          products.length === 0 && (
+            <div>
+              Пока нет товаров
+            </div>
+          )}
+
+        {products.map((item) => (
+          <div
+            key={item.id}
+            style={{
+              border: "1px solid #eee",
+              borderRadius: 16,
+              padding: 12,
+              marginBottom: 12,
+            }}
+          >
+            {item.photo_url && (
+              <img
+                src={item.photo_url}
+                alt={item.name}
+                style={{
+                  width: "100%",
+                  maxHeight: 220,
+                  objectFit: "cover",
+                  borderRadius: 12,
+                  marginBottom: 10,
+                }}
+              />
+            )}
+
+            <h3>{item.name}</h3>
+
+            <div>
+              Категория: {item.category}
+            </div>
+
+            <div>
+              Цена: {item.price}
+            </div>
+
+            <div
+              style={{
+                marginTop: 8,
+              }}
+            >
+              {item.description}
+            </div>
+
+            <button
+              onClick={() =>
+                deleteProduct(item.id)
+              }
+              style={{
+                marginTop: 12,
+                background: "#ff4d4f",
+                color: "#fff",
+                border: "none",
+                padding: "10px 14px",
+                borderRadius: 8,
+                cursor: "pointer",
+              }}
+            >
+              Удалить
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
