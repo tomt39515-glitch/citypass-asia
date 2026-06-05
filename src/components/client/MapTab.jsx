@@ -12,6 +12,7 @@ export default function MapTab({ onOpenPartner }) {
   const [partners, setPartners] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [selectedPartner, setSelectedPartner] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("Все");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,34 +20,19 @@ export default function MapTab({ onOpenPartner }) {
     loadPartners();
   }, []);
 
-  function getDistance(
-    lat1,
-    lon1,
-    lat2,
-    lon2
-  ) {
+  function getDistance(lat1, lon1, lat2, lon2) {
     const R = 6371;
-
-    const dLat =
-      ((lat2 - lat1) * Math.PI) / 180;
-
-    const dLon =
-      ((lon2 - lon1) * Math.PI) / 180;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
 
     const a =
-      Math.sin(dLat / 2) *
-        Math.sin(dLat / 2) +
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos((lat1 * Math.PI) / 180) *
         Math.cos((lat2 * Math.PI) / 180) *
         Math.sin(dLon / 2) *
         Math.sin(dLon / 2);
 
-    const c =
-      2 *
-      Math.atan2(
-        Math.sqrt(a),
-        Math.sqrt(1 - a)
-      );
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c;
   }
@@ -55,6 +41,40 @@ export default function MapTab({ onOpenPartner }) {
     return distance < 1
       ? `${Math.round(distance * 1000)} м`
       : `${distance.toFixed(1)} км`;
+  }
+
+  function getMarker(category) {
+    switch (category) {
+      case "Кафе":
+        return "🟤";
+      case "Ресторан":
+        return "🔴";
+      case "SPA":
+        return "🟣";
+      case "Отель":
+        return "🔵";
+      case "Транспорт":
+        return "🟠";
+      default:
+        return "🟢";
+    }
+  }
+
+  function getCategoryIcon(category) {
+    switch (category) {
+      case "Кафе":
+        return "☕";
+      case "Ресторан":
+        return "🍽️";
+      case "SPA":
+        return "💆";
+      case "Отель":
+        return "🏨";
+      case "Транспорт":
+        return "🚕";
+      default:
+        return "📍";
+    }
   }
 
   function getLocation() {
@@ -72,28 +92,20 @@ export default function MapTab({ onOpenPartner }) {
             " " +
             error.message
         );
-
-        console.error(error);
       },
-      {
-        enableHighAccuracy: true,
-      }
+      { enableHighAccuracy: true }
     );
   }
 
   async function loadPartners() {
     try {
-      const { data, error } =
-        await supabase
-          .from("partners")
-          .select("*")
-          .eq("is_active", true)
-          .in("status", [
-            "approved",
-            "active",
-          ])
-          .not("latitude", "is", null)
-          .not("longitude", "is", null);
+      const { data, error } = await supabase
+        .from("partners")
+        .select("*")
+        .eq("is_active", true)
+        .in("status", ["approved", "active"])
+        .not("latitude", "is", null)
+        .not("longitude", "is", null);
 
       if (error) throw error;
 
@@ -106,11 +118,7 @@ export default function MapTab({ onOpenPartner }) {
   }
 
   if (loading) {
-    return (
-      <div style={{ padding: 20 }}>
-        Загрузка карты...
-      </div>
-    );
+    return <div style={{ padding: 20 }}>Загрузка карты...</div>;
   }
 
   if (!userLocation) {
@@ -131,10 +139,23 @@ export default function MapTab({ onOpenPartner }) {
         Number(partner.longitude)
       ),
     }))
-    .sort(
-      (a, b) =>
-        a.distance - b.distance
-    );
+    .sort((a, b) => a.distance - b.distance);
+
+  const categories = [
+    "Все",
+    ...new Set(
+      partnersWithDistance
+        .map((p) => p.category)
+        .filter(Boolean)
+    ),
+  ];
+
+  const filteredPartners =
+    selectedCategory === "Все"
+      ? partnersWithDistance
+      : partnersWithDistance.filter(
+          (p) => p.category === selectedCategory
+        );
 
   return (
     <div style={{ padding: 12 }}>
@@ -158,8 +179,47 @@ export default function MapTab({ onOpenPartner }) {
         </div>
 
         <div>
-          Найдено партнёров: {partners.length}
+          Найдено партнёров: {filteredPartners.length}
         </div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          overflowX: "auto",
+          marginBottom: 12,
+          paddingBottom: 4,
+        }}
+      >
+        {categories.map((category) => (
+          <button
+            key={category}
+            onClick={() =>
+              setSelectedCategory(category)
+            }
+            style={{
+              border: "none",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+              borderRadius: 999,
+              padding: "10px 14px",
+              fontWeight: 600,
+              background:
+                selectedCategory === category
+                  ? "#14B8A6"
+                  : "#ffffff",
+              color:
+                selectedCategory === category
+                  ? "#fff"
+                  : "#111",
+            }}
+          >
+            {category === "Все"
+              ? "Все"
+              : `${getCategoryIcon(category)} ${category}`}
+          </button>
+        ))}
       </div>
 
       <div
@@ -181,65 +241,43 @@ export default function MapTab({ onOpenPartner }) {
             longitude={userLocation.lng}
             latitude={userLocation.lat}
           >
-            <div style={{ fontSize: 28 }}>
-              🔵
-            </div>
+            <div style={{ fontSize: 28 }}>🔵</div>
           </Marker>
 
-          {partnersWithDistance.map(
-            (partner) => (
-              <Marker
-                key={partner.id}
-                longitude={Number(
-                  partner.longitude
-                )}
-                latitude={Number(
-                  partner.latitude
-                )}
-                onClick={(e) => {
-                  e.originalEvent.stopPropagation();
-                  setSelectedPartner(
-                    partner
-                  );
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 30,
-                    cursor: "pointer",
-                  }}
-                >
-                  🟢
-                </div>
-              </Marker>
-            )
-          )}
-
-          {selectedPartner && (
-            <Popup
-              longitude={Number(
-                selectedPartner.longitude
-              )}
-              latitude={Number(
-                selectedPartner.latitude
-              )}
-              anchor="bottom"
-              onClose={() =>
-                setSelectedPartner(null)
-              }
+          {filteredPartners.map((partner) => (
+            <Marker
+              key={partner.id}
+              longitude={Number(partner.longitude)}
+              latitude={Number(partner.latitude)}
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                setSelectedPartner(partner);
+              }}
             >
               <div
                 style={{
-                  minWidth: 220,
+                  fontSize: 30,
+                  cursor: "pointer",
                 }}
               >
+                {getMarker(partner.category)}
+              </div>
+            </Marker>
+          ))}
+
+          {selectedPartner && (
+            <Popup
+              longitude={Number(selectedPartner.longitude)}
+              latitude={Number(selectedPartner.latitude)}
+              anchor="bottom"
+              onClose={() => setSelectedPartner(null)}
+            >
+              <div style={{ minWidth: 220 }}>
                 <strong>
                   {selectedPartner.business_name}
                 </strong>
 
-                <div>
-                  {selectedPartner.category}
-                </div>
+                <div>{selectedPartner.category}</div>
 
                 <div>
                   Скидка:{" "}
@@ -247,7 +285,7 @@ export default function MapTab({ onOpenPartner }) {
                 </div>
 
                 <div>
-                  📍 Расстояние:{" "}
+                  📍{" "}
                   {formatDistance(
                     selectedPartner.distance
                   )}
@@ -255,19 +293,15 @@ export default function MapTab({ onOpenPartner }) {
 
                 <button
                   onClick={() =>
-                    onOpenPartner?.(
-                      selectedPartner
-                    )
+                    onOpenPartner?.(selectedPartner)
                   }
                   style={{
                     marginTop: 10,
                     border: "none",
                     padding: 10,
                     borderRadius: 10,
-                    background:
-                      "#14B8A6",
+                    background: "#14B8A6",
                     color: "#fff",
-                    cursor: "pointer",
                     width: "100%",
                   }}
                 >
@@ -297,109 +331,98 @@ export default function MapTab({ onOpenPartner }) {
           📍 Ближайшие партнёры
         </div>
 
-        {partnersWithDistance
-          .slice(0, 10)
-          .map((partner) => (
+        {filteredPartners.slice(0, 10).map((partner) => (
+          <div
+            key={partner.id}
+            onClick={() =>
+              onOpenPartner?.(partner)
+            }
+            style={{
+              background: "#fff",
+              borderRadius: 20,
+              overflow: "hidden",
+              marginBottom: 18,
+              cursor: "pointer",
+              boxShadow:
+                "0 4px 12px rgba(0,0,0,0.08)",
+              border:
+                "1px solid rgba(0,0,0,0.05)",
+            }}
+          >
             <div
-              key={partner.id}
-              onClick={() =>
-                onOpenPartner?.(partner)
-              }
               style={{
-                background: "#fff",
-                borderRadius: 20,
-                overflow: "hidden",
-                marginBottom: 18,
-                cursor: "pointer",
-                boxShadow:
-                  "0 4px 12px rgba(0,0,0,0.08)",
-                border:
-                  "1px solid rgba(0,0,0,0.05)",
+                height: 180,
+                background: partner.image_url
+                  ? `url(${partner.image_url}) center center / cover`
+                  : "linear-gradient(135deg,#14B8A6,#0F766E)",
+                position: "relative",
               }}
             >
               <div
                 style={{
-                  height: 180,
-                  background:
-                    partner.image_url
-                      ? `url(${partner.image_url}) center center / cover`
-                      : "linear-gradient(135deg,#14B8A6,#0F766E)",
-                  position: "relative",
+                  position: "absolute",
+                  top: 12,
+                  right: 12,
+                  background: "#14B8A6",
+                  color: "#fff",
+                  padding: "6px 12px",
+                  borderRadius: 999,
+                  fontWeight: 700,
                 }}
               >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 12,
-                    right: 12,
-                    background: "#14B8A6",
-                    color: "#fff",
-                    padding: "6px 12px",
-                    borderRadius: 999,
-                    fontSize: 14,
-                    fontWeight: 700,
-                  }}
-                >
-                  🎁 {partner.discount_percent || 0}%
-                </div>
+                🎁 {partner.discount_percent || 0}%
+              </div>
+            </div>
+
+            <div style={{ padding: 16 }}>
+              <div
+                style={{
+                  fontSize: 18,
+                  fontWeight: 700,
+                  marginBottom: 8,
+                }}
+              >
+                {partner.business_name}
               </div>
 
               <div
                 style={{
-                  padding: 16,
+                  color: "#6B7280",
+                  marginBottom: 10,
+                }}
+              >
+                {getCategoryIcon(partner.category)}{" "}
+                {partner.category}
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent:
+                    "space-between",
                 }}
               >
                 <div
                   style={{
-                    fontSize: 18,
+                    color: "#14B8A6",
+                    fontWeight: 600,
+                  }}
+                >
+                  📍 {formatDistance(partner.distance)}
+                </div>
+
+                <div
+                  style={{
+                    color: "#14B8A6",
                     fontWeight: 700,
-                    marginBottom: 8,
-                    color: "#111827",
                   }}
                 >
-                  {partner.business_name}
-                </div>
-
-                <div
-                  style={{
-                    color: "#6B7280",
-                    marginBottom: 10,
-                    fontSize: 14,
-                  }}
-                >
-                  {partner.category || "Партнёр"}
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent:
-                      "space-between",
-                    alignItems:
-                      "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      color: "#14B8A6",
-                      fontWeight: 600,
-                    }}
-                  >
-                    📍 {formatDistance(partner.distance)}
-                  </div>
-
-                  <div
-                    style={{
-                      color: "#14B8A6",
-                      fontWeight: 700,
-                    }}
-                  >
-                    Подробнее →
-                  </div>
+                  Подробнее →
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+        ))}
       </div>
     </div>
   );
