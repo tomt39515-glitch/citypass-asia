@@ -1,3 +1,4 @@
+import MapTab from "../components/client/MapTab";
 import HomeTab from "../components/client/HomeTab";
 import QRTab from "../components/client/QRTab";
 import HistoryTab from "../components/client/HistoryTab";
@@ -24,13 +25,16 @@ export default function ClientDashboard(props) {
     return <NotificationsTab {...props} />;
   }
 
-  if (currentTab === "offers") {
-    return <OffersTab {...props} />;
-  }
+ if (currentTab === "offers") {
+  return <OffersTab {...props} />;
+}
 
-  if (currentTab === "profile") {
-    return <ProfileTab {...props} />;
-  }
+if (currentTab === "map") {
+  return <MapTab {...props} />;
+}
 
+if (currentTab === "profile") {
+  return <ProfileTab {...props} />;
+}
   return null;
 }

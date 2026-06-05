@@ -26,7 +26,7 @@ export default function AppLayout({
     client: [
       { key: "home", label: "Главная", icon: Home },
       { key: "offers", label: "Партнёры", icon: Briefcase },
-      { key: "qr", label: "Карта", icon: QrCode },
+      { key: "map", label: "Карта", icon: QrCode },
       { key: "history", label: "История", icon: History },
       { key: "profile", label: "Профиль", icon: User },
     ],
