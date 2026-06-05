@@ -14,24 +14,43 @@ export default function PartnerNotificationsTab() {
       const telegramId =
         window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
+      console.log("TELEGRAM ID:", telegramId);
+
       if (!telegramId) {
+        alert("Telegram ID не найден");
         setLoading(false);
         return;
       }
 
-      const { data: partners } = await supabase
-        .from("partners")
-        .select("*")
-        .eq("telegram_id", Number(telegramId))
-        .order("id", { ascending: false })
-        .limit(1);
+      const { data: partners, error: partnerError } =
+        await supabase
+          .from("partners")
+          .select("*")
+          .eq("telegram_id", Number(telegramId))
+          .order("id", { ascending: false })
+          .limit(1);
+
+      console.log("PARTNERS:", partners);
+      console.log("PARTNER ERROR:", partnerError);
+
+      if (partnerError) {
+        alert(partnerError.message);
+        setLoading(false);
+        return;
+      }
 
       if (!partners || partners.length === 0) {
+        alert(
+          `Партнёр не найден для Telegram ID ${telegramId}`
+        );
         setLoading(false);
         return;
       }
 
       const partner = partners[0];
+
+      console.log("PARTNER:", partner);
+      alert(`Partner ID: ${partner.id}`);
 
       const { data, error } = await supabase
         .from("notifications")
@@ -40,6 +59,13 @@ export default function PartnerNotificationsTab() {
         .eq("user_id", partner.id)
         .order("created_at", { ascending: false });
 
+      console.log("NOTIFICATIONS:", data);
+      console.log("NOTIFICATIONS ERROR:", error);
+
+      alert(
+        `Найдено уведомлений: ${data?.length || 0}`
+      );
+
       if (error) {
         console.error(error);
       } else {
@@ -47,6 +73,7 @@ export default function PartnerNotificationsTab() {
       }
     } catch (err) {
       console.error(err);
+      alert(err.message);
     }
 
     setLoading(false);
