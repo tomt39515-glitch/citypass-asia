@@ -12,6 +12,7 @@ import {
   Users,
   CreditCard,
   Briefcase,
+  Bell,
 } from "lucide-react";
 
 export default function AppLayout({
@@ -49,6 +50,11 @@ export default function AppLayout({
   key: "deposits",
   label: "Депозит",
   icon: Wallet,
+},
+{
+  key: "notifications",
+  label: "Уведомл.",
+  icon: Bell,
 },
   {
     key: "profile",

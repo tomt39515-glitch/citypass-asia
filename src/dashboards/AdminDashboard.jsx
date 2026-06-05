@@ -255,6 +255,8 @@ export default function AdminDashboard({
           body: JSON.stringify({
             deposit_balance:
               balanceAfter,
+
+            status: "active",
           }),
         }
       );

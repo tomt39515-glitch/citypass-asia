@@ -13,6 +13,8 @@ export default function PartnerDetailsPage({
   onBack,
 }) {
   const [transactions, setTransactions] = useState([]);
+  const [bonusAmount, setBonusAmount] =
+    useState("");
 
   async function safeFetch(url) {
     const response = await fetch(url, {
@@ -29,6 +31,75 @@ export default function PartnerDetailsPage({
     }
 
     return response.json();
+  }
+
+
+  async function addBonus() {
+    try {
+      const amount =
+        Number(bonusAmount);
+
+      if (
+        !amount ||
+        amount <= 0
+      ) {
+        alert(
+          "Введите сумму бонуса"
+        );
+        return;
+      }
+
+      const newBonusBalance =
+        Number(
+          partner.bonus_balance || 0
+        ) + amount;
+
+      await fetch(
+        `${SUPABASE_URL}/rest/v1/partners?id=eq.${partner.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            ...headers,
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            bonus_balance:
+              newBonusBalance,
+          }),
+        }
+      );
+
+      await fetch(
+        `${SUPABASE_URL}/rest/v1/partner_balance_logs`,
+        {
+          method: "POST",
+          headers: {
+            ...headers,
+            "Content-Type":
+              "application/json",
+            Prefer:
+              "return=representation",
+          },
+          body: JSON.stringify({
+            partner_id:
+              partner.id,
+            amount: amount,
+            operation_type:
+              "credit",
+            description:
+              "Admin bonus",
+          }),
+        }
+      );
+
+      alert("Бонус начислен");
+
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+      alert(e.message);
+    }
   }
 
   async function loadTransactions() {
@@ -168,6 +239,55 @@ export default function PartnerDetailsPage({
         <div>
           <strong>Статус:</strong>{" "}
           {partner.status || "-"}
+        </div>
+
+        <div
+          style={{
+            marginTop: 20,
+            padding: 16,
+            background: "#f3f4f6",
+            borderRadius: 12,
+          }}
+        >
+          <div>
+            <strong>
+              Бонусный баланс:
+            </strong>{" "}
+            {Number(
+              partner.bonus_balance || 0
+            ).toLocaleString()} VND
+          </div>
+
+          <input
+            type="number"
+            placeholder="Сумма бонуса"
+            value={bonusAmount}
+            onChange={(e) =>
+              setBonusAmount(
+                e.target.value
+              )
+            }
+            style={{
+              width: "100%",
+              padding: 12,
+              marginTop: 12,
+              marginBottom: 12,
+            }}
+          />
+
+          <button
+            onClick={addBonus}
+            style={{
+              padding: 12,
+              border: "none",
+              borderRadius: 10,
+              background: "#16a34a",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            Начислить бонус
+          </button>
         </div>
 
         <div style={{ marginTop: 12 }}>
