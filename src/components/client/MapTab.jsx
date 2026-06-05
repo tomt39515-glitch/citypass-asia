@@ -1,38 +1,17 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabase";
 
-import {
-  MapContainer,
-  TileLayer,
+import Map, {
   Marker,
   Popup,
-} from "react-leaflet";
+} from "react-map-gl/maplibre";
+import "maplibre-gl/dist/maplibre-gl.css";
 
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-delete L.Icon.Default.prototype._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
-
-export default function MapTab({
-  onOpenPartner,
-}) {
-  const [partners, setPartners] =
-    useState([]);
-
-  const [userLocation, setUserLocation] =
-    useState(null);
-
-  const [loading, setLoading] =
-    useState(true);
+export default function MapTab({ onOpenPartner }) {
+  const [partners, setPartners] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
+  const [selectedPartner, setSelectedPartner] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getLocation();
@@ -47,16 +26,15 @@ export default function MapTab({
           lng: position.coords.longitude,
         });
       },
-     (error) => {
-  alert(
-    "GPS ERROR: " +
-    error.code +
-    " " +
-    error.message
-  );
-
-  console.error(error);
-},
+      (error) => {
+        alert(
+          "GPS ERROR: " +
+            error.code +
+            " " +
+            error.message
+        );
+        console.error(error);
+      },
       {
         enableHighAccuracy: true,
       }
@@ -65,17 +43,13 @@ export default function MapTab({
 
   async function loadPartners() {
     try {
-      const { data, error } =
-        await supabase
-          .from("partners")
-          .select("*")
-          .eq("is_active", true)
-          .in("status", [
-            "approved",
-            "active",
-          ])
-          .not("latitude", "is", null)
-          .not("longitude", "is", null);
+      const { data, error } = await supabase
+        .from("partners")
+        .select("*")
+        .eq("is_active", true)
+        .in("status", ["approved", "active"])
+        .not("latitude", "is", null)
+        .not("longitude", "is", null);
 
       if (error) throw error;
 
@@ -88,138 +62,115 @@ export default function MapTab({
   }
 
   if (loading) {
-    return (
-      <div
-        style={{
-          padding: 20,
-        }}
-      >
-        Загрузка карты...
-      </div>
-    );
+    return <div style={{ padding: 20 }}>Загрузка карты...</div>;
   }
 
   if (!userLocation) {
     return (
-      <div
-        style={{
-          padding: 20,
-        }}
-      >
+      <div style={{ padding: 20 }}>
         Разрешите доступ к геолокации
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        padding: 12,
-      }}
-    >
+    <div style={{ padding: 12 }}>
       <div
         style={{
-          background:
-            "linear-gradient(135deg,#14B8A6,#0F766E)",
+          background: "linear-gradient(135deg,#14B8A6,#0F766E)",
           color: "#fff",
           padding: 16,
           borderRadius: 20,
           marginBottom: 12,
         }}
       >
-        <div
-          style={{
-            fontSize: 24,
-            fontWeight: 700,
-          }}
-        >
+        <div style={{ fontSize: 24, fontWeight: 700 }}>
           📍 Карта партнёров
         </div>
-
-        <div>
-          Найдено партнёров:
-          {" "}
-          {partners.length}
-        </div>
+        <div>Найдено партнёров: {partners.length}</div>
       </div>
 
-      <MapContainer
-        center={[
-          userLocation.lat,
-          userLocation.lng,
-        ]}
-        zoom={14}
+      <div
         style={{
           height: "70vh",
-          width: "100%",
           borderRadius: 20,
+          overflow: "hidden",
         }}
       >
-        <TileLayer
-          attribution="OpenStreetMap"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-
-        <Marker
-          position={[
-            userLocation.lat,
-            userLocation.lng,
-          ]}
+        <Map
+          initialViewState={{
+            longitude: userLocation.lng,
+            latitude: userLocation.lat,
+            zoom: 14,
+          }}
+          mapStyle="https://tiles.openfreemap.org/styles/liberty"
         >
-          <Popup>
-            📍 Вы здесь
-          </Popup>
-        </Marker>
-
-        {partners.map((partner) => (
           <Marker
-            key={partner.id}
-            position={[
-              Number(partner.latitude),
-              Number(partner.longitude),
-            ]}
+            longitude={userLocation.lng}
+            latitude={userLocation.lat}
           >
-            <Popup>
-              <div>
+            <div style={{ fontSize: 28 }}>🔵</div>
+          </Marker>
+
+          {partners.map((partner) => (
+            <Marker
+              key={partner.id}
+              longitude={Number(partner.longitude)}
+              latitude={Number(partner.latitude)}
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                setSelectedPartner(partner);
+              }}
+            >
+              <div style={{ fontSize: 30, cursor: "pointer" }}>
+                🟢
+              </div>
+            </Marker>
+          ))}
+
+          {selectedPartner && (
+            <Popup
+              longitude={Number(selectedPartner.longitude)}
+              latitude={Number(selectedPartner.latitude)}
+              anchor="bottom"
+              onClose={() => setSelectedPartner(null)}
+            >
+              <div style={{ minWidth: 220 }}>
                 <strong>
-                  {partner.business_name}
+                  {selectedPartner.business_name}
                 </strong>
 
                 <div>
-                  {partner.category}
+                  {selectedPartner.category}
                 </div>
 
                 <div>
-                  Скидка:
-                  {" "}
-                  {partner.discount_percent || 0}
-                  %
+                  Скидка:{" "}
+                  {selectedPartner.discount_percent || 0}%
                 </div>
 
                 <button
                   onClick={() =>
-                    onOpenPartner?.(
-                      partner
-                    )
+                    onOpenPartner?.(selectedPartner)
                   }
                   style={{
                     marginTop: 10,
                     border: "none",
                     padding: 10,
                     borderRadius: 10,
-                    background:
-                      "#14B8A6",
+                    background: "#14B8A6",
                     color: "#fff",
                     cursor: "pointer",
+                    width: "100%",
                   }}
                 >
                   Подробнее
                 </button>
               </div>
             </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
+          )}
+        </Map>
+      </div>
     </div>
   );
 }
