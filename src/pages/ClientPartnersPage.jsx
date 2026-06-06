@@ -12,7 +12,7 @@ export default function ClientPartnerPage({
   const [visitId, setVisitId] = useState(null);
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
-  const [showReviews, setShowReviews] = useState(false);
+  const [showReviews, setShowReviews] = useState(true);
 
   useEffect(() => {
     loadProducts();
@@ -274,35 +274,32 @@ export default function ClientPartnerPage({
         </div>
       )}
 
+      
       <button
         onClick={() => setShowReviews(!showReviews)}
         style={{
-          marginTop: 24,
-          width: "100%",
-          padding: 12,
-          borderRadius: 10,
-          border: "none",
-          background: "#f59e0b",
-          color: "#fff",
-          fontWeight: 600,
+          marginTop: 16,
+          padding: "6px 10px",
+          fontSize: 12,
+          borderRadius: 8,
         }}
       >
-        {showReviews ? "Скрыть отзывы" : `Показать отзывы (${reviews.length})`}
+        {showReviews ? "Скрыть отзывы" : `Отзывы (${reviews.length})`}
       </button>
 
       {showReviews && (
         <>
-          <h3 style={{ marginTop: 24 }}>
-            Отзывы клиентов
-          </h3>
+      <h3 style={{ marginTop: 24 }}>
+        Отзывы клиентов
+      </h3>
 
-          {reviews.length === 0 && (
-            <div style={{ color: "#666" }}>
-              Пока нет отзывов
-            </div>
-          )}
+      {reviews.length === 0 && (
+        <div style={{ color: "#666" }}>
+          Пока нет отзывов
+        </div>
+      )}
 
-          {reviews.map((review) => (
+      {reviews.map((review) => (
         <div
           key={review.id}
           style={{
@@ -346,7 +343,9 @@ export default function ClientPartnerPage({
           </div>
         </div>
       ))}
+
         </>
+
       )}
 
       <h3 style={{ marginTop: 24 }}>
