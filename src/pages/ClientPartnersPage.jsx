@@ -12,6 +12,7 @@ export default function ClientPartnerPage({
   const [visitId, setVisitId] = useState(null);
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
+  const [showReviews, setShowReviews] = useState(false);
 
   useEffect(() => {
     loadProducts();
@@ -35,37 +36,13 @@ export default function ClientPartnerPage({
   async function loadReviews() {
     if (!partner?.id) return;
 
-    const { data: reviewsData } = await supabase
+    const { data } = await supabase
       .from("partner_reviews")
-      .select("*")
+      .select(`*, clients(full_name)`)
       .eq("partner_id", partner.id)
       .order("created_at", { ascending: false });
 
-    if (!reviewsData?.length) {
-      setReviews([]);
-      return;
-    }
-
-    const clientIds = [...new Set(reviewsData.map((r) => r.client_id))];
-
-    const { data: clientsData } = await supabase
-      .from("clients")
-      .select("id, full_name")
-      .in("id", clientIds);
-
-    const clientsMap = {};
-
-    (clientsData || []).forEach((client) => {
-      clientsMap[client.id] = client.full_name;
-    });
-
-    setReviews(
-      reviewsData.map((review) => ({
-        ...review,
-        client_name:
-          clientsMap[review.client_id] || "Неизвестный пользователь",
-      }))
-    );
+    setReviews(data || []);
   }
 
   
@@ -297,17 +274,35 @@ export default function ClientPartnerPage({
         </div>
       )}
 
-      <h3 style={{ marginTop: 24 }}>
-        Отзывы клиентов
-      </h3>
+      <button
+        onClick={() => setShowReviews(!showReviews)}
+        style={{
+          marginTop: 24,
+          width: "100%",
+          padding: 12,
+          borderRadius: 10,
+          border: "none",
+          background: "#f59e0b",
+          color: "#fff",
+          fontWeight: 600,
+        }}
+      >
+        {showReviews ? "Скрыть отзывы" : `Показать отзывы (${reviews.length})`}
+      </button>
 
-      {reviews.length === 0 && (
-        <div style={{ color: "#666" }}>
-          Пока нет отзывов
-        </div>
-      )}
+      {showReviews && (
+        <>
+          <h3 style={{ marginTop: 24 }}>
+            Отзывы клиентов
+          </h3>
 
-      {reviews.map((review) => (
+          {reviews.length === 0 && (
+            <div style={{ color: "#666" }}>
+              Пока нет отзывов
+            </div>
+          )}
+
+          {reviews.map((review) => (
         <div
           key={review.id}
           style={{
@@ -323,7 +318,7 @@ export default function ClientPartnerPage({
               marginBottom: 6,
             }}
           >
-            {review.client_name}
+            {review.clients?.full_name}
           </div>
 
           <div
@@ -351,6 +346,8 @@ export default function ClientPartnerPage({
           </div>
         </div>
       ))}
+        </>
+      )}
 
       <h3 style={{ marginTop: 24 }}>
         Товары и услуги
