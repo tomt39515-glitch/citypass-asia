@@ -48,22 +48,6 @@ export default function PartnerDetails({
         >
           Скидка {partner?.discount}
         </div>
-
-        <button
-          onClick={onGetDiscount}
-          style={{
-            width: "100%",
-            marginTop: "20px",
-            padding: "14px",
-            border: "none",
-            borderRadius: "14px",
-            background: "#2563eb",
-            color: "#fff",
-            cursor: "pointer",
-          }}
-        >
-          Получить скидку
-        </button>
       </div>
     </div>
   );
