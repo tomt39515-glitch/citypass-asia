@@ -6,6 +6,7 @@ export default function OffersTab({
 }) {
   const [partners, setPartners] = useState([]);
   const [search, setSearch] = useState("");
+  const [ratings, setRatings] = useState({});
 
   useEffect(() => {
     loadPartners();
@@ -23,6 +24,27 @@ export default function OffersTab({
       if (error) throw error;
 
       setPartners(data || []);
+
+      const { data: reviews } = await supabase
+        .from("partner_reviews")
+        .select("partner_id,rating");
+
+      const ratingMap = {};
+
+      (reviews || []).forEach((review) => {
+        if (!ratingMap[review.partner_id]) {
+          ratingMap[review.partner_id] = {
+            total: 0,
+            count: 0,
+          };
+        }
+
+        ratingMap[review.partner_id].total += Number(review.rating || 0);
+        ratingMap[review.partner_id].count += 1;
+      });
+
+      setRatings(ratingMap);
+
     } catch (err) {
       console.error(err);
     }
@@ -143,6 +165,29 @@ export default function OffersTab({
                 }}
               >
                 {partner.business_name}
+              </div>
+
+              <div
+                style={{
+                  color: "#f59e0b",
+                  fontWeight: 700,
+                  marginTop: 4,
+                }}
+              >
+                ⭐ {
+                  ratings[partner.id]
+                    ? (
+                        ratings[partner.id].total /
+                        ratings[partner.id].count
+                      ).toFixed(1)
+                    : "0.0"
+                }
+                {" "}
+                (
+                {
+                  ratings[partner.id]?.count || 0
+                }
+                )
               </div>
 
               <div>
