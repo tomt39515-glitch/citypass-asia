@@ -144,6 +144,7 @@ function App() {
         return (
           <ClientDashboard
             currentTab={currentTab}
+            onChangeTab={setCurrentTab}
             transactions={[]}
             role={role}
             setRole={safeSetRole}
