@@ -15,7 +15,7 @@ import AdminDashboard from "./dashboards/AdminDashboard";
 import PartnerRegistration from "./components/client/PartnerRegistration";
 import PartnerDetailsPage from "./pages/PartnerDetailsPage";
 import PartnerTopupPage from "./pages/PartnerTopupPage";
-import ClientPartnerPage from "./pages/ClientPartnersPage";
+import ClientPartnerPageV2 from "./pages/ClientPartnerPageV2";
 import ReviewModal from "./components/reviews/ReviewModal";
 
 function App() {
@@ -198,15 +198,15 @@ function App() {
     switch (role) {
       case "client":
         if (clientSelectedPartner) {
-          return (
-            <ClientPartnerPage
-              partner={clientSelectedPartner}
-              onBack={() =>
-                setClientSelectedPartner(null)
-              }
-            />
-          );
-        }
+  return (
+    <ClientPartnerPageV2
+      partner={clientSelectedPartner}
+      onBack={() =>
+        setClientSelectedPartner(null)
+      }
+    />
+  );
+}
 
         return (
           <ClientDashboard
