@@ -49,6 +49,20 @@ export default function ClientPartnerPage({
 
       <h2>{partner?.business_name}</h2>
 
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 18, fontWeight: 600, color: "#f59e0b" }}>
+          ⭐ {partner?.rating || 0} ({partner?.reviews_count || 0} отзывов)
+        </div>
+
+        <div style={{ marginTop: 6 }}>
+          ☕ {partner?.category || "Категория не указана"}
+        </div>
+
+        <div style={{ marginTop: 6, color: "#16a34a", fontWeight: 600 }}>
+          🎁 Скидка {partner?.discount_percent || partner?.discount || 0}%
+        </div>
+      </div>
+
       {partner?.cover_photo_url && (
         <img
           src={partner.cover_photo_url}
