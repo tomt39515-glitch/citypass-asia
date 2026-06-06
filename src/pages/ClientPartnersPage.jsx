@@ -6,9 +6,11 @@ export default function ClientPartnerPage({
   onBack,
 }) {
   const [products, setProducts] = useState([]);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     loadProducts();
+    loadReviews();
   }, [partner]);
 
   async function loadProducts() {
@@ -24,6 +26,18 @@ export default function ClientPartnerPage({
     setProducts(data || []);
   }
 
+  async function loadReviews() {
+    if (!partner?.id) return;
+
+    const { data } = await supabase
+      .from("partner_reviews")
+      .select("*")
+      .eq("partner_id", partner.id)
+      .order("created_at", { ascending: false });
+
+    setReviews(data || []);
+  }
+
   function openRoute() {
     if (partner?.latitude && partner?.longitude) {
       window.open(
@@ -35,11 +49,21 @@ export default function ClientPartnerPage({
 
     if (partner?.address) {
       window.open(
-        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(partner.address)}`,
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          partner.address
+        )}`,
         "_blank"
       );
     }
   }
+
+  const avgRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) /
+          reviews.length
+        ).toFixed(1)
+      : 0;
 
   return (
     <div style={{ padding: 16 }}>
@@ -50,15 +74,27 @@ export default function ClientPartnerPage({
       <h2>{partner?.business_name}</h2>
 
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: 18, fontWeight: 600, color: "#f59e0b" }}>
-          ⭐ {partner?.rating || 0} ({partner?.reviews_count || 0} отзывов)
+        <div
+          style={{
+            fontSize: 18,
+            fontWeight: 600,
+            color: "#f59e0b",
+          }}
+        >
+          ⭐ {avgRating} ({reviews.length} отзывов)
         </div>
 
         <div style={{ marginTop: 6 }}>
           ☕ {partner?.category || "Категория не указана"}
         </div>
 
-        <div style={{ marginTop: 6, color: "#16a34a", fontWeight: 600 }}>
+        <div
+          style={{
+            marginTop: 6,
+            color: "#16a34a",
+            fontWeight: 600,
+          }}
+        >
           🎁 Скидка {partner?.discount_percent || partner?.discount || 0}%
         </div>
       </div>
@@ -96,8 +132,53 @@ export default function ClientPartnerPage({
         📍 Маршрут
       </button>
 
+      <h3 style={{ marginTop: 24 }}>
+        Отзывы клиентов
+      </h3>
 
-      <h3 style={{ marginTop: 20 }}>
+      {reviews.length === 0 && (
+        <div style={{ color: "#666" }}>
+          Пока нет отзывов
+        </div>
+      )}
+
+      {reviews.map((review) => (
+        <div
+          key={review.id}
+          style={{
+            border: "1px solid #eee",
+            borderRadius: 12,
+            padding: 12,
+            marginTop: 10,
+          }}
+        >
+          <div
+            style={{
+              color: "#f59e0b",
+              fontWeight: 600,
+              marginBottom: 6,
+            }}
+          >
+            ⭐ {review.rating}
+          </div>
+
+          <div>
+            {review.review_text || "Без текста"}
+          </div>
+
+          <div
+            style={{
+              fontSize: 12,
+              color: "#888",
+              marginTop: 8,
+            }}
+          >
+            {new Date(review.created_at).toLocaleDateString("ru-RU")}
+          </div>
+        </div>
+      ))}
+
+      <h3 style={{ marginTop: 24 }}>
         Товары и услуги
       </h3>
 
