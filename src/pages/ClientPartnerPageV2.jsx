@@ -267,12 +267,14 @@ export default function ClientPartnerPageV2({
 
       setCart([]);
     } catch (err) {
-      console.error(err);
+  console.error(err);
 
-      alert(
-        "Ошибка создания заказа"
-      );
-    } finally {
+  alert(
+    err?.message ||
+    JSON.stringify(err)
+  );
+}
+finally {
       setLoading(false);
     }
   }
