@@ -16,6 +16,7 @@ import PartnerRegistration from "./components/client/PartnerRegistration";
 import PartnerDetailsPage from "./pages/PartnerDetailsPage";
 import PartnerTopupPage from "./pages/PartnerTopupPage";
 import ClientPartnerPage from "./pages/ClientPartnersPage";
+import ReviewModal from "./components/reviews/ReviewModal";
 
 function App() {
   const telegramUser =
@@ -53,6 +54,15 @@ function App() {
     setShowPartnerRegistration,
   ] = useState(false);
 
+  const [clientId, setClientId] =
+    useState(null);
+
+  const [reviewVisit, setReviewVisit] =
+    useState(null);
+
+  const [showReviewModal, setShowReviewModal] =
+    useState(false);
+
   useEffect(() => {
     registerClient();
   }, []);
@@ -78,6 +88,55 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!clientId) return;
+
+    const channel =
+      supabase.channel(
+        `client-visits-${clientId}`
+      );
+
+    channel.on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "client_visits",
+      },
+      async (payload) => {
+        const visit = payload.new;
+
+        if (
+          Number(visit.client_id) !==
+          Number(clientId)
+        ) {
+          return;
+        }
+
+        const {
+          data: existingReview,
+        } = await supabase
+          .from("partner_reviews")
+          .select("id")
+          .eq("visit_id", visit.id)
+          .maybeSingle();
+
+        if (existingReview) {
+          return;
+        }
+
+        setReviewVisit(visit);
+        setShowReviewModal(true);
+      }
+    );
+
+    channel.subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [clientId]);
+
   async function registerClient() {
     try {
       if (!telegramId) return;
@@ -94,6 +153,7 @@ function App() {
         .maybeSingle();
 
       if (existingClient) {
+        setClientId(existingClient.id);
         return;
       }
 
@@ -107,15 +167,22 @@ function App() {
         telegramUser?.username ||
         "CityPass User";
 
-      await supabase
-        .from("clients")
-        .insert({
-          telegram_id: String(
-            telegramId
-          ),
-          full_name: fullName,
-          total_spent: 0,
-        });
+      const { data: newClient } =
+        await supabase
+          .from("clients")
+          .insert({
+            telegram_id: String(
+              telegramId
+            ),
+            full_name: fullName,
+            total_spent: 0,
+          })
+          .select()
+          .single();
+
+      if (newClient) {
+        setClientId(newClient.id);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -258,6 +325,17 @@ function App() {
           }
         />
       )}
+
+      {showReviewModal &&
+        reviewVisit && (
+          <ReviewModal
+            visit={reviewVisit}
+            onClose={() => {
+              setShowReviewModal(false);
+              setReviewVisit(null);
+            }}
+          />
+        )}
     </>
   );
 }
