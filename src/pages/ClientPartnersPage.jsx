@@ -37,7 +37,7 @@ export default function ClientPartnerPage({
 
     const { data } = await supabase
       .from("partner_reviews")
-      .select("*")
+      .select(`*, clients(full_name)`)
       .eq("partner_id", partner.id)
       .order("created_at", { ascending: false });
 
@@ -295,12 +295,21 @@ export default function ClientPartnerPage({
         >
           <div
             style={{
+              fontWeight: 700,
+              marginBottom: 6,
+            }}
+          >
+            {review.clients?.full_name}
+          </div>
+
+          <div
+            style={{
               color: "#f59e0b",
               fontWeight: 600,
               marginBottom: 6,
             }}
           >
-            ⭐ {review.rating}
+            ⭐⭐⭐⭐⭐ {review.rating}
           </div>
 
           <div>
