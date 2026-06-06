@@ -52,11 +52,17 @@ export default function ClientPartnerPage({
 
       if (!telegramId || !partner?.id) return;
 
+      console.log("PARTNER OBJECT:", partner);
+      console.log("PARTNER ID:", partner?.id);
+      console.log("PARTNER NAME:", partner?.business_name);
+
       const { data: client } = await supabase
         .from("clients")
         .select("id")
         .eq("telegram_id", telegramId)
         .maybeSingle();
+
+      console.log("CLIENT:", client);
 
       if (!client) return;
 
@@ -68,6 +74,8 @@ export default function ClientPartnerPage({
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
+
+      console.log("VISIT:", visit);
 
       if (!visit) return;
 
