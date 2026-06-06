@@ -52,28 +52,13 @@ export default function ClientPartnerPage({
 
       if (!telegramId || !partner?.id) return;
 
-      alert(
-        "PARTNER ID = " +
-        partner?.id +
-        "\nPARTNER = " +
-        partner?.business_name
-      );
-
       const { data: client } = await supabase
         .from("clients")
         .select("id")
         .eq("telegram_id", telegramId)
         .maybeSingle();
 
-      alert(
-        "CLIENT = " +
-        JSON.stringify(client)
-      );
-
-      if (!client) {
-        alert("CLIENT NOT FOUND");
-        return;
-      }
+      if (!client) return;
 
       const { data: visit } = await supabase
         .from("client_visits")
@@ -84,15 +69,7 @@ export default function ClientPartnerPage({
         .limit(1)
         .maybeSingle();
 
-      alert(
-        "VISIT = " +
-        JSON.stringify(visit)
-      );
-
-      if (!visit) {
-        alert("VISIT NOT FOUND");
-        return;
-      }
+      if (!visit) return;
 
       const { data: existingReview } = await supabase
         .from("partner_reviews")
@@ -100,25 +77,11 @@ export default function ClientPartnerPage({
         .eq("visit_id", visit.id)
         .maybeSingle();
 
-      alert(
-        "EXISTING REVIEW = " +
-        JSON.stringify(existingReview)
-      );
-
-      if (existingReview) {
-        alert("REVIEW ALREADY EXISTS");
-        return;
-      }
+      if (existingReview) return;
 
       setVisitId(visit.id);
       setCanReview(true);
-
-      alert("REVIEW ACCESS GRANTED");
     } catch (err) {
-      alert(
-        "ERROR: " +
-        (err?.message || JSON.stringify(err))
-      );
       console.error(err);
     }
   }
