@@ -12,7 +12,7 @@ export default function ClientPartnerPage({
   const [visitId, setVisitId] = useState(null);
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
-  const [showReviews, setShowReviews] = useState(true);
+  const [showReviews, setShowReviews] = useState(false);
 
   useEffect(() => {
     loadProducts();
@@ -36,13 +36,33 @@ export default function ClientPartnerPage({
   async function loadReviews() {
     if (!partner?.id) return;
 
-    const { data } = await supabase
+    const { data: reviewsData } = await supabase
       .from("partner_reviews")
-      .select(`*, clients(full_name)`)
+      .select("*")
       .eq("partner_id", partner.id)
       .order("created_at", { ascending: false });
 
-    setReviews(data || []);
+    if (!reviewsData?.length) {
+      setReviews([]);
+      return;
+    }
+
+    const clientIds = reviewsData.map((r) => r.client_id);
+
+    const { data: clientsData } = await supabase
+      .from("clients")
+      .select("id, full_name")
+      .in("id", clientIds);
+
+    const reviewsWithNames = reviewsData.map((review) => ({
+      ...review,
+      client_name:
+        clientsData?.find(
+          (c) => Number(c.id) === Number(review.client_id)
+        )?.full_name || "Гость",
+    }));
+
+    setReviews(reviewsWithNames);
   }
 
   
@@ -274,78 +294,83 @@ export default function ClientPartnerPage({
         </div>
       )}
 
-      
-      <button
-        onClick={() => setShowReviews(!showReviews)}
+      <div
         style={{
-          marginTop: 16,
-          padding: "6px 10px",
-          fontSize: 12,
-          borderRadius: 8,
+          display: "flex",
+          gap: 8,
+          marginTop: 20,
+          marginBottom: 20,
         }}
       >
-        {showReviews ? "Скрыть отзывы" : `Отзывы (${reviews.length})`}
-      </button>
+        <button
+          onClick={() => setShowReviews(!showReviews)}
+          style={{
+            padding: "8px 12px",
+            fontSize: 13,
+            borderRadius: 8,
+            border: "1px solid #ccc",
+            background: "#fff",
+            cursor: "pointer",
+          }}
+        >
+          {showReviews ? "Скрыть отзывы" : `Отзывы (${reviews.length})`}
+        </button>
+      </div>
 
       {showReviews && (
         <>
-      <h3 style={{ marginTop: 24 }}>
-        Отзывы клиентов
-      </h3>
+          {reviews.length === 0 && (
+            <div style={{ color: "#666" }}>
+              Пока нет отзывов
+            </div>
+          )}
 
-      {reviews.length === 0 && (
-        <div style={{ color: "#666" }}>
-          Пока нет отзывов
-        </div>
-      )}
+          {reviews.map((review) => (
+            <div
+              key={review.id}
+              style={{
+                border: "1px solid #eee",
+                borderRadius: 12,
+                padding: 12,
+                marginTop: 10,
+              }}
+            >
+              <div
+                style={{
+                  fontWeight: 700,
+                  marginBottom: 6,
+                  color: "#111827",
+                }}
+              >
+                👤 {review.client_name}
+              </div>
 
-      {reviews.map((review) => (
-        <div
-          key={review.id}
-          style={{
-            border: "1px solid #eee",
-            borderRadius: 12,
-            padding: 12,
-            marginTop: 10,
-          }}
-        >
-          <div
-            style={{
-              fontWeight: 700,
-              marginBottom: 6,
-            }}
-          >
-            {review.clients?.full_name}
-          </div>
+              <div
+                style={{
+                  color: "#f59e0b",
+                  fontWeight: 600,
+                  marginBottom: 6,
+                }}
+              >
+                {"⭐".repeat(review.rating)}
+              </div>
 
-          <div
-            style={{
-              color: "#f59e0b",
-              fontWeight: 600,
-              marginBottom: 6,
-            }}
-          >
-            ⭐⭐⭐⭐⭐ {review.rating}
-          </div>
+              <div>
+                {review.review_text || "Без текста"}
+              </div>
 
-          <div>
-            {review.review_text || "Без текста"}
-          </div>
-
-          <div
-            style={{
-              fontSize: 12,
-              color: "#888",
-              marginTop: 8,
-            }}
-          >
-            {new Date(review.created_at).toLocaleDateString("ru-RU")}
-          </div>
-        </div>
-      ))}
-
+              <div
+                style={{
+                  fontSize: 12,
+                  color: "#888",
+                  marginTop: 8,
+                }}
+              >
+                {new Date(review.created_at).toLocaleDateString("ru-RU")}
+              </div>
+            </div>
+          ))}
         </>
-
       )}
 
       <h3 style={{ marginTop: 24 }}>
