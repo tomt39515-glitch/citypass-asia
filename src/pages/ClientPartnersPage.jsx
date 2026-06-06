@@ -52,9 +52,12 @@ export default function ClientPartnerPage({
 
       if (!telegramId || !partner?.id) return;
 
-      console.log("PARTNER OBJECT:", partner);
-      console.log("PARTNER ID:", partner?.id);
-      console.log("PARTNER NAME:", partner?.business_name);
+      alert(
+        "PARTNER ID = " +
+        partner?.id +
+        "\nPARTNER = " +
+        partner?.business_name
+      );
 
       const { data: client } = await supabase
         .from("clients")
@@ -62,9 +65,15 @@ export default function ClientPartnerPage({
         .eq("telegram_id", telegramId)
         .maybeSingle();
 
-      console.log("CLIENT:", client);
+      alert(
+        "CLIENT = " +
+        JSON.stringify(client)
+      );
 
-      if (!client) return;
+      if (!client) {
+        alert("CLIENT NOT FOUND");
+        return;
+      }
 
       const { data: visit } = await supabase
         .from("client_visits")
@@ -75,9 +84,15 @@ export default function ClientPartnerPage({
         .limit(1)
         .maybeSingle();
 
-      console.log("VISIT:", visit);
+      alert(
+        "VISIT = " +
+        JSON.stringify(visit)
+      );
 
-      if (!visit) return;
+      if (!visit) {
+        alert("VISIT NOT FOUND");
+        return;
+      }
 
       const { data: existingReview } = await supabase
         .from("partner_reviews")
@@ -85,11 +100,25 @@ export default function ClientPartnerPage({
         .eq("visit_id", visit.id)
         .maybeSingle();
 
-      if (existingReview) return;
+      alert(
+        "EXISTING REVIEW = " +
+        JSON.stringify(existingReview)
+      );
+
+      if (existingReview) {
+        alert("REVIEW ALREADY EXISTS");
+        return;
+      }
 
       setVisitId(visit.id);
       setCanReview(true);
+
+      alert("REVIEW ACCESS GRANTED");
     } catch (err) {
+      alert(
+        "ERROR: " +
+        (err?.message || JSON.stringify(err))
+      );
       console.error(err);
     }
   }
