@@ -1,4 +1,4 @@
-export default function HomeTab() {
+export default function HomeTab({ onChangeTab }) {
   const categories = [
     "Рестораны",
     "Отели",
@@ -128,6 +128,7 @@ export default function HomeTab() {
         {/* QR BUTTON */}
 
         <button
+          onClick={() => onChangeTab?.("qr")}
           style={{
             width: "100%",
             border: "none",
