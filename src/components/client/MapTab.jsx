@@ -110,7 +110,24 @@ export default function MapTab({ onOpenPartner }) {
 
       if (error) throw error;
 
-      setPartners(data || []);
+      const { data: ratings } = await supabase
+        .from("partner_ratings")
+        .select("*");
+
+      const ratingsMap = {};
+
+      (ratings || []).forEach((r) => {
+        ratingsMap[r.partner_id] = r;
+      });
+
+      const partnersWithRatings = (data || []).map((partner) => ({
+        ...partner,
+        rating: ratingsMap[partner.id]?.rating || 0,
+        reviews_count:
+          ratingsMap[partner.id]?.reviews_count || 0,
+      }));
+
+      setPartners(partnersWithRatings);
     } catch (err) {
       console.error(err);
     } finally {
@@ -314,6 +331,17 @@ export default function MapTab({ onOpenPartner }) {
 
                 <div>{selectedPartner.category}</div>
 
+                <div
+                  style={{
+                    marginTop: 4,
+                    marginBottom: 4,
+                    color: "#F59E0B",
+                    fontWeight: 700,
+                  }}
+                >
+                  ⭐ {selectedPartner.rating || 0} ({selectedPartner.reviews_count || 0})
+                </div>
+
                 <div>
                   Скидка:{" "}
                   {selectedPartner.discount_percent || 0}%
@@ -418,6 +446,16 @@ export default function MapTab({ onOpenPartner }) {
                 }}
               >
                 {partner.business_name}
+              </div>
+
+              <div
+                style={{
+                  color: "#F59E0B",
+                  fontWeight: 700,
+                  marginBottom: 8,
+                }}
+              >
+                ⭐ {partner.rating || 0} ({partner.reviews_count || 0})
               </div>
 
               <div
