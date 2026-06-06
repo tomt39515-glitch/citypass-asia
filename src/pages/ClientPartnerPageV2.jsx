@@ -308,7 +308,7 @@ export default function ClientPartnerPageV2({
 
       <LocationGuard
         partner={partner}
-        maxDistance={50}
+        maxDistance={200}
         onAccessChange={
           setCanOrder
         }
