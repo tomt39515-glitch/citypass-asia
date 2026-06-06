@@ -35,13 +35,37 @@ export default function ClientPartnerPage({
   async function loadReviews() {
     if (!partner?.id) return;
 
-    const { data } = await supabase
+    const { data: reviewsData } = await supabase
       .from("partner_reviews")
-      .select(`*, clients(full_name)`)
+      .select("*")
       .eq("partner_id", partner.id)
       .order("created_at", { ascending: false });
 
-    setReviews(data || []);
+    if (!reviewsData?.length) {
+      setReviews([]);
+      return;
+    }
+
+    const clientIds = [...new Set(reviewsData.map((r) => r.client_id))];
+
+    const { data: clientsData } = await supabase
+      .from("clients")
+      .select("id, full_name")
+      .in("id", clientIds);
+
+    const clientsMap = {};
+
+    (clientsData || []).forEach((client) => {
+      clientsMap[client.id] = client.full_name;
+    });
+
+    setReviews(
+      reviewsData.map((review) => ({
+        ...review,
+        client_name:
+          clientsMap[review.client_id] || "Неизвестный пользователь",
+      }))
+    );
   }
 
   
@@ -299,7 +323,7 @@ export default function ClientPartnerPage({
               marginBottom: 6,
             }}
           >
-            {review.clients?.full_name}
+            {review.client_name}
           </div>
 
           <div
