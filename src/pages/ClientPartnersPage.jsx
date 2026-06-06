@@ -7,10 +7,15 @@ export default function ClientPartnerPage({
 }) {
   const [products, setProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [canReview, setCanReview] = useState(false);
+  const [visitId, setVisitId] = useState(null);
+  const [rating, setRating] = useState(5);
+  const [reviewText, setReviewText] = useState("");
 
   useEffect(() => {
     loadProducts();
     loadReviews();
+    checkReviewAccess();
   }, [partner]);
 
   async function loadProducts() {
@@ -36,6 +41,84 @@ export default function ClientPartnerPage({
       .order("created_at", { ascending: false });
 
     setReviews(data || []);
+  }
+
+  
+  async function checkReviewAccess() {
+    try {
+      const telegramId =
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+      if (!telegramId || !partner?.id) return;
+
+      const { data: client } = await supabase
+        .from("clients")
+        .select("id")
+        .eq("telegram_id", String(telegramId))
+        .maybeSingle();
+
+      if (!client) return;
+
+      const { data: visit } = await supabase
+        .from("client_visits")
+        .select("*")
+        .eq("client_id", client.id)
+        .eq("partner_id", partner.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!visit) return;
+
+      const { data: existingReview } = await supabase
+        .from("partner_reviews")
+        .select("id")
+        .eq("visit_id", visit.id)
+        .maybeSingle();
+
+      if (existingReview) return;
+
+      setVisitId(visit.id);
+      setCanReview(true);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function submitReview() {
+    try {
+      if (!visitId) return;
+
+      const telegramId =
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+      const { data: client } = await supabase
+        .from("clients")
+        .select("id")
+        .eq("telegram_id", String(telegramId))
+        .single();
+
+      const { error } = await supabase
+        .from("partner_reviews")
+        .insert({
+          partner_id: partner.id,
+          client_id: client.id,
+          visit_id: visitId,
+          rating,
+          review_text: reviewText,
+        });
+
+      if (error) throw error;
+
+      alert("Отзыв сохранён");
+
+      setCanReview(false);
+      setReviewText("");
+      loadReviews();
+    } catch (err) {
+      console.error(err);
+      alert("Ошибка сохранения отзыва");
+    }
   }
 
   function openRoute() {
@@ -131,6 +214,63 @@ export default function ClientPartnerPage({
       >
         📍 Маршрут
       </button>
+
+      
+      {canReview && (
+        <div
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: 12,
+            padding: 12,
+            marginTop: 20,
+            marginBottom: 20,
+          }}
+        >
+          <h3>Оставить отзыв</h3>
+
+          <select
+            value={rating}
+            onChange={(e) => setRating(Number(e.target.value))}
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 10,
+            }}
+          >
+            <option value={5}>⭐⭐⭐⭐⭐</option>
+            <option value={4}>⭐⭐⭐⭐</option>
+            <option value={3}>⭐⭐⭐</option>
+            <option value={2}>⭐⭐</option>
+            <option value={1}>⭐</option>
+          </select>
+
+          <textarea
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value)}
+            placeholder="Ваш отзыв"
+            style={{
+              width: "100%",
+              minHeight: 100,
+              padding: 10,
+            }}
+          />
+
+          <button
+            onClick={submitReview}
+            style={{
+              marginTop: 10,
+              padding: 12,
+              width: "100%",
+              background: "#16a34a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+            }}
+          >
+            Отправить отзыв
+          </button>
+        </div>
+      )}
 
       <h3 style={{ marginTop: 24 }}>
         Отзывы клиентов
