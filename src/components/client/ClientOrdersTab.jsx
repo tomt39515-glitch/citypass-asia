@@ -109,6 +109,32 @@ async function loadMessages(orderId) {
 
   setMessages(data || []);
 }
+useEffect(() => {
+  if (!selectedOrder) return;
+
+  const channel = supabase
+    .channel(`chat-${selectedOrder.id}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "order_messages",
+        filter: `order_id=eq.${selectedOrder.id}`,
+      },
+      (payload) => {
+        setMessages((prev) => [
+          ...prev,
+          payload.new,
+        ]);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [selectedOrder]);
   function statusLabel(status) {
     switch (status) {
       case "pending":

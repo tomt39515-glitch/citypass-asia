@@ -93,7 +93,32 @@ async function loadMessages(orderId) {
 
   setMessages(data || []);
 }
+useEffect(() => {
+  if (!selectedOrder) return;
 
+  const channel = supabase
+    .channel(`partner-chat-${selectedOrder.id}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "order_messages",
+        filter: `order_id=eq.${selectedOrder.id}`,
+      },
+      (payload) => {
+        setMessages((prev) => [
+          ...prev,
+          payload.new,
+        ]);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [selectedOrder]);
 async function updateStatus(newStatus) {
 try {
 const oldStatus = selectedOrder.status;
@@ -345,24 +370,25 @@ marginBottom: 20,
     />
 
     <button
-      onClick={async () => {
-        if (!newMessage.trim()) return;
+  onClick={async () => {
+    if (!newMessage.trim()) return;
 
-        await supabase
-          .from("order_messages")
-          .insert({
-            order_id: selectedOrder.id,
-            sender_role: "partner",
-            sender_id: 0,
-            message: newMessage,
-          });
+    const { error } = await supabase
+      .from("order_messages")
+      .insert({
+        order_id: selectedOrder.id,
+        sender_role: "partner",
+        sender_id: 0,
+        message: newMessage,
+      });
 
-        setNewMessage("");
+    if (error) {
+      alert(error.message);
+      return;
+    }
 
-        await loadMessages(
-          selectedOrder.id
-        );
-      }}
+    setNewMessage("");
+  }}
       style={{
         width: "100%",
         padding: 12,
