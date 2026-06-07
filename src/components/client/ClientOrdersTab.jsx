@@ -217,7 +217,27 @@ export default function ClientOrdersTab() {
               selectedOrder.status
             )}
           </div>
-
+<button
+  onClick={() =>
+    alert(
+      `Чат с партнером\nЗаказ: ${selectedOrder.order_number}`
+    )
+  }
+  style={{
+    width: "100%",
+    padding: 14,
+    marginBottom: 20,
+    border: "none",
+    borderRadius: 12,
+    background: "#14B8A6",
+    color: "#fff",
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: "pointer",
+  }}
+>
+  💬 Чат с партнером
+</button>
           {selectedOrder.service_type ===
             "table" && (
             <div
