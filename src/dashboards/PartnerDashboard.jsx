@@ -5,6 +5,7 @@ import TransactionsTab from "../components/partner/TransactionsTab";
 import PartnerProfileTab from "../components/partner/PartnerProfileTab";
 import PartnerNotificationsTab from "../components/partner/PartnerNotificationsTab";
 import PartnerProductsTab from "../components/partner/PartnerProductsTab";
+import PartnerOrdersTab from "../components/partner/PartnerOrdersTab";
 
 export default function PartnerDashboard(props) {
   const { currentTab } = props;
@@ -12,6 +13,9 @@ export default function PartnerDashboard(props) {
   switch (currentTab) {
     case "home":
       return <PartnerHomeTab {...props} />;
+
+    case "orders":
+      return <PartnerOrdersTab {...props} />;
 
     case "scanner":
       return <PartnerScanner {...props} />;

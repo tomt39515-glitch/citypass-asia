@@ -32,42 +32,42 @@ export default function AppLayout({
     ],
 
     partner: [
-      {
-        key: "home",
-        label: "Главная",
-        icon: LayoutDashboard,
-      },
-      {
-        key: "scanner",
-        label: "QR",
-        icon: ScanLine,
-      },
-      {
-        key: "transactions",
-        label: "История",
-        icon: History,
-      },
-      {
-        key: "deposits",
-        label: "Депозит",
-        icon: Wallet,
-      },
-      {
-        key: "products",
-        label: "Товары",
-        icon: ShoppingBag,
-      },
-      {
-        key: "notifications",
-        label: "Уведомл.",
-        icon: Bell,
-      },
-      {
-        key: "profile",
-        label: "Профиль",
-        icon: User,
-      },
-    ],
+  {
+    key: "home",
+    label: "Главная",
+    icon: LayoutDashboard,
+  },
+  {
+    key: "scanner",
+    label: "QR",
+    icon: ScanLine,
+  },
+  {
+    key: "orders",
+    label: "Заказы",
+    icon: ShoppingBag,
+  },
+  {
+    key: "deposits",
+    label: "Депозит",
+    icon: Wallet,
+  },
+  {
+    key: "products",
+    label: "Товары",
+    icon: ShoppingBag,
+  },
+  {
+    key: "notifications",
+    label: "Уведомл.",
+    icon: Bell,
+  },
+  {
+    key: "profile",
+    label: "Профиль",
+    icon: User,
+  },
+],
 
     admin: [
       { key: "dashboard", label: "Панель", icon: Shield },
