@@ -7,9 +7,44 @@ export default function ClientOrdersTab() {
   const [orderItems, setOrderItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadOrders();
-  }, []);
+ useEffect(() => {
+  loadOrders();
+
+  const channel = supabase
+    .channel("client-orders-realtime")
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "orders",
+      },
+      (payload) => {
+        setOrders((prev) =>
+          prev.map((order) =>
+            order.id === payload.new.id
+              ? payload.new
+              : order
+          )
+        );
+
+        setSelectedOrder((prev) => {
+          if (!prev) return prev;
+
+          if (prev.id === payload.new.id) {
+            return payload.new;
+          }
+
+          return prev;
+        });
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, []);
 
   async function loadOrders() {
     try {
