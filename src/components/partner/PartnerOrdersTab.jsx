@@ -77,6 +77,51 @@ setSelectedOrder(order);
 
 }
 
+async function updateStatus(newStatus) {
+try {
+const oldStatus = selectedOrder.status;
+
+
+  const { error } = await supabase
+    .from("orders")
+    .update({
+      status: newStatus,
+    })
+    .eq("id", selectedOrder.id);
+
+  if (error) throw error;
+
+  await supabase
+    .from("order_status_history")
+    .insert({
+      order_id: selectedOrder.id,
+      old_status: oldStatus,
+      new_status: newStatus,
+      changed_by_role: "partner",
+    });
+
+  const updatedOrder = {
+    ...selectedOrder,
+    status: newStatus,
+  };
+
+  setSelectedOrder(updatedOrder);
+
+  setOrders((prev) =>
+    prev.map((item) =>
+      item.id === selectedOrder.id
+        ? updatedOrder
+        : item
+    )
+  );
+} catch (err) {
+  console.error(err);
+  alert(err.message);
+}
+
+
+}
+
 if (selectedOrder) {
 return (
 <div style={{ padding: 16 }}>
@@ -114,6 +159,77 @@ marginBottom: 20,
         }}
       >
         Статус: {selectedOrder.status}
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          gap: 10,
+          marginBottom: 20,
+          flexWrap: "wrap",
+        }}
+      >
+        {selectedOrder.status ===
+          "pending" && (
+          <>
+            <button
+              onClick={() =>
+                updateStatus(
+                  "accepted"
+                )
+              }
+            >
+              ✅ Принять
+            </button>
+
+            <button
+              onClick={() =>
+                updateStatus(
+                  "cancelled"
+                )
+              }
+            >
+              ❌ Отменить
+            </button>
+          </>
+        )}
+
+        {selectedOrder.status ===
+          "accepted" && (
+          <button
+            onClick={() =>
+              updateStatus(
+                "preparing"
+              )
+            }
+          >
+            👨‍🍳 Готовится
+          </button>
+        )}
+
+        {selectedOrder.status ===
+          "preparing" && (
+          <button
+            onClick={() =>
+              updateStatus("ready")
+            }
+          >
+            📦 Готов
+          </button>
+        )}
+
+        {selectedOrder.status ===
+          "ready" && (
+          <button
+            onClick={() =>
+              updateStatus(
+                "completed"
+              )
+            }
+          >
+            ✅ Выдан клиенту
+          </button>
+        )}
       </div>
 
       {orderItems.map((item) => (
@@ -155,7 +271,8 @@ marginBottom: 20,
           fontWeight: 700,
         }}
       >
-        Итого: {selectedOrder.total_amount} {selectedOrder.currency}
+        Итого: {selectedOrder.total_amount}{" "}
+        {selectedOrder.currency}
       </div>
     </div>
   </div>
@@ -179,9 +296,12 @@ padding: 20,
       <div>Загрузка заказов...</div>
     )}
 
-    {!loading && orders.length === 0 && (
-      <div>Пока заказов нет</div>
-    )}
+    {!loading &&
+      orders.length === 0 && (
+        <div>
+          Пока заказов нет
+        </div>
+      )}
 
     {orders.map((order) => (
       <div
@@ -209,7 +329,8 @@ padding: 20,
         </div>
 
         <div>
-          Сумма: {order.total_amount} {order.currency}
+          Сумма: {order.total_amount}{" "}
+          {order.currency}
         </div>
       </div>
     ))}
