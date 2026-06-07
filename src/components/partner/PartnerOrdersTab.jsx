@@ -13,7 +13,27 @@ const [showChat, setShowChat] = useState(false);
 useEffect(() => {
 loadOrders();
 }, []);
+useEffect(() => {
+  const channel = supabase
+    .channel("partner-orders")
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "orders",
+      },
+      async () => {
+        console.log("Новый заказ");
+        await loadOrders();
+      }
+    )
+    .subscribe();
 
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, []);
 async function loadOrders() {
 try {
 const telegramId =
@@ -54,6 +74,11 @@ window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
   if (error) throw error;
 
   setOrders(data || []);
+
+console.log(
+  "Загружено заказов:",
+  data?.length || 0
+);
 } catch (err) {
   console.error(err);
   alert(err.message);

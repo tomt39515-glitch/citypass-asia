@@ -258,7 +258,7 @@ useEffect(() => {
           </div>
 <button
   onClick={async () => {
-    await loadMessages(selectedOrder.id);
+    
     setShowChat(true);
   }}
   style={{
