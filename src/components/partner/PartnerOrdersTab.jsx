@@ -36,13 +36,18 @@ window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
   }
 
   const { data, error } = await supabase
-    .from("orders")
-    .select("*")
-    .eq("partner_id", partner.id)
-    .order("created_at", {
-      ascending: false,
-    });
-
+  .from("orders")
+  .select(`
+    *,
+    clients (
+      full_name,
+      telegram_id
+    )
+  `)
+  .eq("partner_id", partner.id)
+  .order("created_at", {
+    ascending: false,
+  });
   if (error) throw error;
 
   setOrders(data || []);
