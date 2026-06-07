@@ -156,7 +156,31 @@ marginBottom: 20,
       <h2>
         📦 {selectedOrder.order_number}
       </h2>
+<div
+  style={{
+    background: "#F8FAFC",
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 16,
+  }}
+>
+  <div
+    style={{
+      fontWeight: 600,
+    }}
+  >
+    👤 {selectedOrder.clients?.full_name || "Клиент"}
+  </div>
 
+  <div
+    style={{
+      color: "#64748B",
+      marginTop: 4,
+    }}
+  >
+    📱 {selectedOrder.clients?.telegram_id || "-"}
+  </div>
+</div>
       <div
         style={{
           marginBottom: 16,
