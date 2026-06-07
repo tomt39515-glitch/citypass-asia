@@ -57,6 +57,10 @@ export default function PartnerOrdersTab() {
 
   async function openOrder(order) {
     try {
+      alert(
+        `Order ID: ${order.id}\n${order.order_number}`
+      );
+
       setSelectedOrder(order);
 
       const { data, error } = await supabase
@@ -65,6 +69,13 @@ export default function PartnerOrdersTab() {
         .eq("order_id", order.id);
 
       if (error) throw error;
+
+      alert(
+        `Товаров найдено: ${data?.length || 0}`
+      );
+
+      console.log("ORDER:", order);
+      console.log("ITEMS:", data);
 
       setOrderItems(data || []);
     } catch (err) {
@@ -156,6 +167,12 @@ export default function PartnerOrdersTab() {
               }
             </h3>
 
+            {orderItems.length === 0 && (
+              <div>
+                Товары не найдены
+              </div>
+            )}
+
             {orderItems.map((item) => (
               <div
                 key={item.id}
@@ -165,17 +182,31 @@ export default function PartnerOrdersTab() {
                     "1px solid #F1F5F9",
                 }}
               >
-                <div>
-                  {item.item_name_snapshot}
+                <div
+                  style={{
+                    fontWeight: 600,
+                  }}
+                >
+                  {
+                    item.item_name_snapshot
+                  }
                 </div>
 
                 <div>
-                  {item.quantity} ×{" "}
+                  Количество:
+                  {" "}
+                  {item.quantity}
+                </div>
+
+                <div>
+                  Цена:
+                  {" "}
                   {item.unit_price}
                 </div>
 
                 <div>
-                  Итого:{" "}
+                  Итого:
+                  {" "}
                   {item.total_price}
                 </div>
               </div>
