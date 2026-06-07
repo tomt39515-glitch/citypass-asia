@@ -6,6 +6,9 @@ export default function ClientOrdersTab() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
   const [loading, setLoading] = useState(true);
+const [messages, setMessages] = useState([]);
+const [newMessage, setNewMessage] = useState("");
+const [showChat, setShowChat] = useState(false);
 
  useEffect(() => {
   loadOrders();
@@ -95,7 +98,17 @@ export default function ClientOrdersTab() {
 
     setOrderItems(data || []);
   }
+async function loadMessages(orderId) {
+  const { data } = await supabase
+    .from("order_messages")
+    .select("*")
+    .eq("order_id", orderId)
+    .order("created_at", {
+      ascending: true,
+    });
 
+  setMessages(data || []);
+}
   function statusLabel(status) {
     switch (status) {
       case "pending":
@@ -218,11 +231,10 @@ export default function ClientOrdersTab() {
             )}
           </div>
 <button
-  onClick={() =>
-    alert(
-      `Чат с партнером\nЗаказ: ${selectedOrder.order_number}`
-    )
-  }
+  onClick={async () => {
+    await loadMessages(selectedOrder.id);
+    setShowChat(true);
+  }}
   style={{
     width: "100%",
     padding: 14,
@@ -238,6 +250,92 @@ export default function ClientOrdersTab() {
 >
   💬 Чат с партнером
 </button>
+
+{showChat && (
+  <div
+    style={{
+      background: "#F8FAFC",
+      borderRadius: 16,
+      padding: 12,
+      marginBottom: 20,
+    }}
+  >
+    <h3>💬 Чат заказа</h3>
+
+    <div
+      style={{
+        maxHeight: 300,
+        overflowY: "auto",
+        marginBottom: 12,
+      }}
+    >
+      {messages.map((msg) => (
+        <div
+          key={msg.id}
+          style={{
+            marginBottom: 10,
+            padding: 10,
+            borderRadius: 10,
+            background:
+              msg.sender_role === "client"
+                ? "#DBEAFE"
+                : "#FFFFFF",
+          }}
+        >
+          {msg.message}
+        </div>
+      ))}
+    </div>
+
+    <input
+      value={newMessage}
+      onChange={(e) =>
+        setNewMessage(e.target.value)
+      }
+      placeholder="Введите сообщение..."
+      style={{
+        width: "100%",
+        padding: 10,
+        marginBottom: 10,
+        border: "1px solid #E2E8F0",
+        borderRadius: 10,
+      }}
+    />
+
+    <button
+      onClick={async () => {
+        if (!newMessage.trim()) return;
+
+        await supabase
+          .from("order_messages")
+          .insert({
+            order_id: selectedOrder.id,
+            sender_role: "client",
+            sender_id: 0,
+            message: newMessage,
+          });
+
+        setNewMessage("");
+
+        await loadMessages(
+          selectedOrder.id
+        );
+      }}
+      style={{
+        width: "100%",
+        padding: 12,
+        border: "none",
+        borderRadius: 10,
+        background: "#14B8A6",
+        color: "#fff",
+        fontWeight: 700,
+      }}
+    >
+      Отправить
+    </button>
+  </div>
+)}
+
           {selectedOrder.service_type ===
             "table" && (
             <div
