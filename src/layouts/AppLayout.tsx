@@ -2,7 +2,6 @@ import React from "react";
 import {
   Home,
   QrCode,
-  History,
   User,
   LayoutDashboard,
   ScanLine,
@@ -23,13 +22,33 @@ export default function AppLayout({
   children,
 }) {
   const tabsByRole = {
-    client: [
-      { key: "home", label: "Главная", icon: Home },
-      { key: "offers", label: "Партнёры", icon: Briefcase },
-      { key: "map", label: "Карта", icon: QrCode },
-      { key: "history", label: "История", icon: History },
-      { key: "profile", label: "Профиль", icon: User },
-    ],
+   client: [
+  {
+    key: "home",
+    label: "Главная",
+    icon: Home,
+  },
+  {
+    key: "offers",
+    label: "Партнёры",
+    icon: Briefcase,
+  },
+  {
+    key: "map",
+    label: "Карта",
+    icon: QrCode,
+  },
+  {
+    key: "orders",
+    label: "Заказы",
+    icon: ShoppingBag,
+  },
+  {
+    key: "profile",
+    label: "Профиль",
+    icon: User,
+  },
+],
 
     partner: [
   {
