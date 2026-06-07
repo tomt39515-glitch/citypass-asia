@@ -1,15 +1,31 @@
 export default function HomeTab({ onChangeTab }) {
   const categories = [
-    "Рестораны",
-    "Отели",
-    "Медицина",
-    "Магазины",
+    {
+      title: "Рестораны",
+      image:
+        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800",
+    },
+    {
+      title: "Отели",
+      image:
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+    },
+    {
+      title: "Магазины",
+      image:
+        "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800",
+    },
+    {
+      title: "Развлечения",
+      image:
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
+    },
   ];
 
   return (
     <div
       style={{
-        background: "#F4F7FB",
+        background: "#F7FAFB",
         minHeight: "100vh",
         width: "100%",
       }}
@@ -19,148 +35,117 @@ export default function HomeTab({ onChangeTab }) {
           maxWidth: "480px",
           margin: "0 auto",
           padding: "16px",
-          paddingBottom: "90px",
+          paddingBottom: "100px",
           display: "flex",
           flexDirection: "column",
-          gap: "14px",
+          gap: "16px",
         }}
       >
-        {/* LOGO */}
-
-        <div>
-          <h1
-            style={{
-              margin: 0,
-              color: "#14B8A6",
-              fontSize: "30px",
-              fontWeight: 800,
-            }}
-          >
-            CityPass Asia
-          </h1>
-
-          <div
-            style={{
-              color: "#64748B",
-              marginTop: "4px",
-            }}
-          >
-            Клуб привилегий и скидок
-          </div>
-        </div>
-
-        {/* MEMBER CARD */}
+        {/* HERO */}
 
         <div
           style={{
-            background:
-              "linear-gradient(135deg,#14B8A6,#0F766E)",
+            position: "relative",
+            height: "240px",
             borderRadius: "28px",
-            padding: "22px",
-            color: "#fff",
+            overflow: "hidden",
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         >
           <div
             style={{
-              opacity: 0.9,
-              fontSize: "14px",
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(to top, rgba(0,0,0,.65), rgba(0,0,0,.15))",
             }}
-          >
-            CITYPASS ASIA
-          </div>
+          />
 
           <div
             style={{
-              marginTop: "12px",
-              fontSize: "26px",
-              fontWeight: 700,
-            }}
-          >
-            CLUB MEMBER
-          </div>
-
-          <div
-            style={{
-              marginTop: "12px",
-              display: "inline-block",
-              padding: "8px 14px",
-              borderRadius: "999px",
-              background: "rgba(255,255,255,.18)",
-            }}
-          >
-            Активный участник
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              marginTop: "18px",
-              flexWrap: "wrap",
+              position: "absolute",
+              left: "20px",
+              right: "20px",
+              bottom: "20px",
+              color: "#fff",
             }}
           >
             <div
               style={{
-                background: "#fff",
-                color: "#0F172A",
-                padding: "10px 14px",
-                borderRadius: "14px",
-                fontWeight: 600,
+                fontSize: "14px",
+                opacity: 0.9,
               }}
             >
-              127 партнёров
+              CITYPASS ASIA
             </div>
 
-            <div
+            <h1
               style={{
-                background: "#fff",
-                color: "#0F172A",
-                padding: "10px 14px",
-                borderRadius: "14px",
-                fontWeight: 600,
+                margin: "8px 0",
+                fontSize: "30px",
+                lineHeight: 1.1,
               }}
             >
-              До 50% скидок
+              Откройте Азию
+              <br />
+              с привилегиями
+            </h1>
+
+            <div
+              style={{
+                fontSize: "14px",
+                opacity: 0.9,
+              }}
+            >
+              Эксклюзивные предложения рядом с вами
             </div>
           </div>
         </div>
 
-        {/* QR BUTTON */}
+        {/* QR CARD */}
 
-        <button
+        <div
           onClick={() => onChangeTab?.("qr")}
           style={{
-            width: "100%",
-            border: "none",
-            borderRadius: "20px",
-            padding: "18px",
             background:
-              "linear-gradient(135deg,#14B8A6,#0D9488)",
+              "linear-gradient(135deg,#14B8A6,#0F766E)",
+            borderRadius: "24px",
+            padding: "22px",
             color: "#fff",
-            fontSize: "18px",
-            fontWeight: 700,
             cursor: "pointer",
           }}
         >
-          Мой QR-код
-        </button>
+          <div
+            style={{
+              fontSize: "14px",
+              opacity: 0.9,
+            }}
+          >
+            CITYPASS CLUB
+          </div>
 
-        {/* SEARCH */}
+          <div
+            style={{
+              marginTop: "8px",
+              fontSize: "24px",
+              fontWeight: 700,
+            }}
+          >
+            Показать QR-код
+          </div>
 
-        <input
-          placeholder="Поиск партнёров..."
-          style={{
-            width: "100%",
-            padding: "16px",
-            borderRadius: "18px",
-            border: "none",
-            fontSize: "15px",
-            boxSizing: "border-box",
-            background: "#fff",
-            boxShadow:
-              "0 5px 15px rgba(15,23,42,.05)",
-          }}
-        />
+          <div
+            style={{
+              marginTop: "6px",
+              opacity: 0.9,
+            }}
+          >
+            Получайте привилегии у партнёров
+          </div>
+        </div>
 
         {/* CATEGORIES */}
 
@@ -173,19 +158,38 @@ export default function HomeTab({ onChangeTab }) {
         >
           {categories.map((item) => (
             <div
-              key={item}
+              key={item.title}
               style={{
-                background: "#fff",
-                borderRadius: "18px",
-                padding: "18px",
-                textAlign: "center",
-                fontWeight: 600,
-                color: "#0F172A",
-                boxShadow:
-                  "0 5px 15px rgba(15,23,42,.04)",
+                position: "relative",
+                height: "120px",
+                borderRadius: "20px",
+                overflow: "hidden",
+                backgroundImage: `url(${item.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
             >
-              {item}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(to top, rgba(0,0,0,.65), rgba(0,0,0,.1))",
+                }}
+              />
+
+              <div
+                style={{
+                  position: "absolute",
+                  left: "14px",
+                  bottom: "14px",
+                  color: "#fff",
+                  fontWeight: 700,
+                  fontSize: "16px",
+                }}
+              >
+                {item.title}
+              </div>
             </div>
           ))}
         </div>
@@ -194,30 +198,122 @@ export default function HomeTab({ onChangeTab }) {
 
         <div
           style={{
-            background:
-              "linear-gradient(135deg,#14B8A6,#0F766E)",
-            borderRadius: "22px",
+            background: "#fff",
+            borderRadius: "24px",
             padding: "20px",
-            color: "#fff",
+            boxShadow:
+              "0 8px 24px rgba(15,23,42,.06)",
           }}
         >
           <div
             style={{
-              opacity: 0.9,
+              color: "#64748B",
             }}
           >
-            Экономия участников сегодня
+            Вы сэкономили
           </div>
 
-          <h2
+          <div
             style={{
-              marginTop: "10px",
-              marginBottom: 0,
-              fontSize: "28px",
+              marginTop: "8px",
+              fontSize: "34px",
+              fontWeight: 800,
+              color: "#0F172A",
             }}
           >
             12 458 000 ₫
-          </h2>
+          </div>
+
+          <div
+            style={{
+              marginTop: "4px",
+              color: "#64748B",
+            }}
+          >
+            за всё время
+          </div>
+        </div>
+
+        {/* NEARBY */}
+
+        <div>
+          <h3
+            style={{
+              marginBottom: "12px",
+              color: "#0F172A",
+            }}
+          >
+            Рядом с вами
+          </h3>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+            }}
+          >
+            {[
+              {
+                name: "Duck Cafe",
+                rating: "4.8",
+                distance: "180 м",
+                discount: "-15%",
+              },
+              {
+                name: "Sailing Club",
+                rating: "4.9",
+                distance: "350 м",
+                discount: "-20%",
+              },
+            ].map((partner) => (
+              <div
+                key={partner.name}
+                style={{
+                  background: "#fff",
+                  borderRadius: "20px",
+                  padding: "16px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  boxShadow:
+                    "0 6px 20px rgba(15,23,42,.05)",
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      color: "#0F172A",
+                    }}
+                  >
+                    {partner.name}
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop: "4px",
+                      color: "#64748B",
+                    }}
+                  >
+                    ⭐ {partner.rating} · 📍 {partner.distance}
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    background: "#14B8A6",
+                    color: "#fff",
+                    padding: "8px 12px",
+                    borderRadius: "12px",
+                    fontWeight: 700,
+                  }}
+                >
+                  {partner.discount}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
