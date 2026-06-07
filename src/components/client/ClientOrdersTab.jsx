@@ -86,6 +86,114 @@ export default function ClientOrdersTab() {
     }
   }
 
+  if (selectedOrder) {
+    return (
+      <div style={{ padding: 16 }}>
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: 24,
+            padding: 20,
+          }}
+        >
+          <button
+            onClick={() => {
+              setSelectedOrder(null);
+              setOrderItems([]);
+            }}
+            style={{
+              border: "none",
+              background: "#F1F5F9",
+              padding: "10px 14px",
+              borderRadius: 12,
+              marginBottom: 20,
+              cursor: "pointer",
+            }}
+          >
+            ← Назад
+          </button>
+
+          <h2>📦 Заказ</h2>
+
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: 18,
+              marginBottom: 10,
+            }}
+          >
+            {selectedOrder.order_number}
+          </div>
+
+          <div
+            style={{
+              marginBottom: 20,
+              fontWeight: 600,
+            }}
+          >
+            {statusLabel(selectedOrder.status)}
+          </div>
+
+          {selectedOrder.service_type === "table" && (
+            <div
+              style={{
+                marginBottom: 20,
+              }}
+            >
+              🍽 Столик №{selectedOrder.table_number}
+            </div>
+          )}
+
+          {orderItems.map((item) => (
+            <div
+              key={item.id}
+              style={{
+                border: "1px solid #E2E8F0",
+                borderRadius: 16,
+                padding: 14,
+                marginBottom: 12,
+              }}
+            >
+              <div
+                style={{
+                  fontWeight: 600,
+                  marginBottom: 8,
+                }}
+              >
+                {item.item_name_snapshot}
+              </div>
+
+              <div>
+                Количество: {item.quantity}
+              </div>
+
+              <div>
+                Цена: {item.unit_price}
+              </div>
+
+              <div>
+                Сумма: {item.total_price}
+              </div>
+            </div>
+          ))}
+
+          <div
+            style={{
+              marginTop: 24,
+              paddingTop: 20,
+              borderTop: "2px solid #E2E8F0",
+              fontWeight: 700,
+              fontSize: 20,
+            }}
+          >
+            Итого: {selectedOrder.total_amount}{" "}
+            {selectedOrder.currency}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: 16 }}>
       <div
@@ -134,15 +242,12 @@ export default function ClientOrdersTab() {
             </div>
 
             <div>
-              💰 {order.total_amount}{" "}
-              {order.currency}
+              💰 {order.total_amount} {order.currency}
             </div>
 
-            {order.service_type ===
-              "table" && (
+            {order.service_type === "table" && (
               <div>
-                🍽 Столик №
-                {order.table_number}
+                🍽 Столик №{order.table_number}
               </div>
             )}
 
@@ -159,81 +264,6 @@ export default function ClientOrdersTab() {
             </div>
           </div>
         ))}
-
-        {selectedOrder && (
-          <div
-            style={{
-              marginTop: 24,
-              borderTop:
-                "2px solid #E2E8F0",
-              paddingTop: 20,
-            }}
-          >
-            <h3>
-              Заказ{" "}
-              {
-                selectedOrder.order_number
-              }
-            </h3>
-
-            {orderItems.map((item) => (
-              <div
-                key={item.id}
-                style={{
-                  padding: 10,
-                  borderBottom:
-                    "1px solid #F1F5F9",
-                }}
-              >
-                <div
-                  style={{
-                    fontWeight: 600,
-                  }}
-                >
-                  {
-                    item.item_name_snapshot
-                  }
-                </div>
-
-                <div>
-                  Количество:
-                  {" "}
-                  {item.quantity}
-                </div>
-
-                <div>
-                  Цена:
-                  {" "}
-                  {item.unit_price}
-                </div>
-
-                <div>
-                  Итого:
-                  {" "}
-                  {item.total_price}
-                </div>
-              </div>
-            ))}
-
-            <div
-              style={{
-                marginTop: 16,
-                fontWeight: 700,
-                fontSize: 18,
-              }}
-            >
-              Итого:
-              {" "}
-              {
-                selectedOrder.total_amount
-              }
-              {" "}
-              {
-                selectedOrder.currency
-              }
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
