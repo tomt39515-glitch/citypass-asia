@@ -443,6 +443,31 @@ table_number:
       if (orderError)
         throw orderError;
 
+      try {
+        await fetch(
+          "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              order_id: order.id,
+              partner_id: partner.id,
+              order_number: orderNumber,
+              total_amount: totalAmount,
+              service_type: serviceType,
+              table_number: tableNumber,
+            }),
+          }
+        );
+      } catch (e) {
+        console.error(
+          "Telegram notification error",
+          e
+        );
+      }
+
       const items =
         cart.map((item) => ({
           order_id:

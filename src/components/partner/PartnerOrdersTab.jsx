@@ -131,12 +131,33 @@ useEffect(() => {
         table: "order_messages",
         filter: `order_id=eq.${selectedOrder.id}`,
       },
-      (payload) => {
-        setMessages((prev) => [
-          ...prev,
-          payload.new,
-        ]);
-      }
+     (payload) => {
+  setMessages((prev) => [
+    ...prev,
+    payload.new,
+  ]);
+
+  // звук
+  try {
+    new Audio("/notification.mp3").play();
+  } catch (e) {
+    console.log(e);
+  }
+
+  // вызов официанта
+  if (
+    payload.new.message ===
+    "🔔 ВЫЗОВ ОФИЦИАНТА"
+  ) {
+    alert(
+      "🔔 Клиент вызывает официанта"
+    );
+  } else {
+    alert(
+      "💬 Новое сообщение от клиента"
+    );
+  }
+}
     )
     .subscribe();
 
