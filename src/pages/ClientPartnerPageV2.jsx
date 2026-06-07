@@ -636,7 +636,7 @@ finally {
 )}
       <LocationGuard
         partner={partner}
-        maxDistance={200}
+        maxDistance={300}
         onAccessChange={
           setCanOrder
         }
