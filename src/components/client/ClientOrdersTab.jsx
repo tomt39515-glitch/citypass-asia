@@ -257,10 +257,13 @@ useEffect(() => {
             )}
           </div>
 <button
-  onClick={async () => {
-    
-    setShowChat(true);
-  }}
+ onClick={async () => {
+  await loadMessages(
+    selectedOrder.id
+  );
+
+  setShowChat(true);
+}}
   style={{
     width: "100%",
     padding: 14,
@@ -276,7 +279,39 @@ useEffect(() => {
 >
   💬 Чат с партнером
 </button>
+<button
+  onClick={async () => {
+    const { error } = await supabase
+      .from("order_messages")
+      .insert({
+        order_id: selectedOrder.id,
+        sender_role: "client",
+        sender_id: 0,
+        message: "🔔 ВЫЗОВ ОФИЦИАНТА",
+      });
 
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    alert("Официант вызван");
+  }}
+  style={{
+    width: "100%",
+    padding: 14,
+    marginBottom: 20,
+    border: "none",
+    borderRadius: 12,
+    background: "#F59E0B",
+    color: "#fff",
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: "pointer",
+  }}
+>
+  🔔 Позвать официанта
+</button>
 {showChat && (
   <div
     style={{
