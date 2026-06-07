@@ -65,24 +65,64 @@ export default function ClientOrdersTab() {
     switch (status) {
       case "pending":
         return "🟡 Ожидает";
-
       case "accepted":
         return "🟢 Принят";
-
       case "preparing":
         return "👨‍🍳 Готовится";
-
       case "ready":
         return "📦 Готов";
-
       case "completed":
         return "✅ Выполнен";
-
       case "cancelled":
         return "❌ Отменён";
-
       default:
         return status;
+    }
+  }
+
+  function statusStyle(status) {
+    switch (status) {
+      case "pending":
+        return {
+          background: "#FEF3C7",
+          color: "#92400E",
+        };
+
+      case "accepted":
+        return {
+          background: "#DCFCE7",
+          color: "#166534",
+        };
+
+      case "preparing":
+        return {
+          background: "#DBEAFE",
+          color: "#1D4ED8",
+        };
+
+      case "ready":
+        return {
+          background: "#E0E7FF",
+          color: "#4338CA",
+        };
+
+      case "completed":
+        return {
+          background: "#D1FAE5",
+          color: "#065F46",
+        };
+
+      case "cancelled":
+        return {
+          background: "#FEE2E2",
+          color: "#991B1B",
+        };
+
+      default:
+        return {
+          background: "#F1F5F9",
+          color: "#475569",
+        };
     }
   }
 
@@ -127,20 +167,33 @@ export default function ClientOrdersTab() {
 
           <div
             style={{
+              display: "inline-block",
+              padding: "8px 14px",
+              borderRadius: 999,
+              fontSize: 13,
+              fontWeight: 700,
               marginBottom: 20,
-              fontWeight: 600,
+              ...statusStyle(
+                selectedOrder.status
+              ),
             }}
           >
-            {statusLabel(selectedOrder.status)}
+            {statusLabel(
+              selectedOrder.status
+            )}
           </div>
 
-          {selectedOrder.service_type === "table" && (
+          {selectedOrder.service_type ===
+            "table" && (
             <div
               style={{
                 marginBottom: 20,
               }}
             >
-              🍽 Столик №{selectedOrder.table_number}
+              🍽 Столик №
+              {
+                selectedOrder.table_number
+              }
             </div>
           )}
 
@@ -148,7 +201,8 @@ export default function ClientOrdersTab() {
             <div
               key={item.id}
               style={{
-                border: "1px solid #E2E8F0",
+                border:
+                  "1px solid #E2E8F0",
                 borderRadius: 16,
                 padding: 14,
                 marginBottom: 12,
@@ -160,19 +214,24 @@ export default function ClientOrdersTab() {
                   marginBottom: 8,
                 }}
               >
-                {item.item_name_snapshot}
+                {
+                  item.item_name_snapshot
+                }
               </div>
 
               <div>
-                Количество: {item.quantity}
+                Количество:{" "}
+                {item.quantity}
               </div>
 
               <div>
-                Цена: {item.unit_price}
+                Цена:{" "}
+                {item.unit_price}
               </div>
 
               <div>
-                Сумма: {item.total_price}
+                Сумма:{" "}
+                {item.total_price}
               </div>
             </div>
           ))}
@@ -181,13 +240,19 @@ export default function ClientOrdersTab() {
             style={{
               marginTop: 24,
               paddingTop: 20,
-              borderTop: "2px solid #E2E8F0",
+              borderTop:
+                "2px solid #E2E8F0",
               fontWeight: 700,
               fontSize: 20,
             }}
           >
-            Итого: {selectedOrder.total_amount}{" "}
-            {selectedOrder.currency}
+            Итого:{" "}
+            {
+              selectedOrder.total_amount
+            }{" "}
+            {
+              selectedOrder.currency
+            }
           </div>
         </div>
       </div>
@@ -219,9 +284,12 @@ export default function ClientOrdersTab() {
         {orders.map((order) => (
           <div
             key={order.id}
-            onClick={() => openOrder(order)}
+            onClick={() =>
+              openOrder(order)
+            }
             style={{
-              border: "1px solid #E2E8F0",
+              border:
+                "1px solid #E2E8F0",
               borderRadius: 16,
               padding: 16,
               marginBottom: 12,
@@ -231,23 +299,40 @@ export default function ClientOrdersTab() {
             <div
               style={{
                 fontWeight: 700,
-                marginBottom: 6,
+                marginBottom: 8,
               }}
             >
               {order.order_number}
             </div>
 
-            <div>
-              {statusLabel(order.status)}
+            <div
+              style={{
+                display: "inline-block",
+                padding: "6px 12px",
+                borderRadius: 999,
+                fontSize: 13,
+                fontWeight: 700,
+                marginBottom: 10,
+                ...statusStyle(
+                  order.status
+                ),
+              }}
+            >
+              {statusLabel(
+                order.status
+              )}
             </div>
 
             <div>
-              💰 {order.total_amount} {order.currency}
+              💰 {order.total_amount}{" "}
+              {order.currency}
             </div>
 
-            {order.service_type === "table" && (
+            {order.service_type ===
+              "table" && (
               <div>
-                🍽 Столик №{order.table_number}
+                🍽 Столик №
+                {order.table_number}
               </div>
             )}
 
