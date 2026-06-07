@@ -182,13 +182,35 @@ marginBottom: 20,
   </div>
 </div>
       <div
-        style={{
-          marginBottom: 16,
-          color: "#64748B",
-        }}
-      >
-        Статус: {selectedOrder.status}
-      </div>
+  style={{
+    marginBottom: 16,
+    color: "#64748B",
+  }}
+>
+  Статус: {selectedOrder.status}
+</div>
+
+<button
+  onClick={() =>
+    alert(
+      `Чат с клиентом\nЗаказ: ${selectedOrder.order_number}`
+    )
+  }
+  style={{
+    width: "100%",
+    padding: 14,
+    marginBottom: 16,
+    border: "none",
+    borderRadius: 12,
+    background: "#14B8A6",
+    color: "#fff",
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: "pointer",
+  }}
+>
+  💬 Чат с клиентом
+</button>
 
       <div
         style={{
