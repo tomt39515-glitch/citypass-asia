@@ -350,10 +350,6 @@ if (error) {
 }
 
         setNewMessage("");
-
-        await loadMessages(
-          selectedOrder.id
-        );
       }}
       style={{
         width: "100%",
