@@ -16,7 +16,7 @@ try {
 const telegramId =
 window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
-```
+
   if (!telegramId) {
     setLoading(false);
     return;
@@ -52,7 +52,7 @@ window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 } finally {
   setLoading(false);
 }
-```
+
 
 }
 
@@ -60,7 +60,7 @@ async function openOrder(order) {
 try {
 setSelectedOrder(order);
 
-```
+
   const { data, error } = await supabase
     .from("order_items")
     .select("*")
@@ -73,7 +73,7 @@ setSelectedOrder(order);
   console.error(err);
   alert(err.message);
 }
-```
+
 
 }
 
@@ -87,7 +87,6 @@ padding: 20,
 }}
 > <h2>📦 Заказы</h2>
 
-```
     {loading && (
       <div>Загрузка заказов...</div>
     )}
@@ -200,7 +199,7 @@ padding: 20,
     )}
   </div>
 </div>
-```
+
 
 );
 }
