@@ -444,7 +444,13 @@ table_number:
         throw orderError;
 
       try {
-        await fetch(
+        console.log("ORDER CREATED", {
+          partner_id: partner.id,
+          order_number: orderNumber,
+          total_amount: totalAmount,
+        });
+
+        const response = await fetch(
           "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
           {
             method: "POST",
@@ -452,14 +458,15 @@ table_number:
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              order_id: order.id,
-              partner_id: partner.id,
-              order_number: orderNumber,
-              total_amount: totalAmount,
-              service_type: serviceType,
-              table_number: tableNumber,
+              chat_id: "8052071718",
+              text: `Новый заказ ${orderNumber}`,
             }),
           }
+        );
+
+        console.log(
+          "TELEGRAM RESPONSE",
+          await response.text()
         );
       } catch (e) {
         console.error(
