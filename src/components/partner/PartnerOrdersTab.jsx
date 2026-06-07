@@ -77,6 +77,93 @@ setSelectedOrder(order);
 
 }
 
+if (selectedOrder) {
+return (
+<div style={{ padding: 16 }}>
+<div
+style={{
+background: "#fff",
+borderRadius: 24,
+padding: 20,
+}}
+>
+<button
+onClick={() => {
+setSelectedOrder(null);
+setOrderItems([]);
+}}
+style={{
+border: "none",
+background: "transparent",
+fontSize: 16,
+cursor: "pointer",
+marginBottom: 20,
+}}
+>
+← Назад </button>
+
+
+      <h2>
+        📦 {selectedOrder.order_number}
+      </h2>
+
+      <div
+        style={{
+          marginBottom: 16,
+          color: "#64748B",
+        }}
+      >
+        Статус: {selectedOrder.status}
+      </div>
+
+      {orderItems.map((item) => (
+        <div
+          key={item.id}
+          style={{
+            padding: 12,
+            marginBottom: 10,
+            borderRadius: 12,
+            background: "#F8FAFC",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 700,
+            }}
+          >
+            {item.item_name_snapshot}
+          </div>
+
+          <div>
+            Количество: {item.quantity}
+          </div>
+
+          <div>
+            Цена: {item.unit_price}
+          </div>
+
+          <div>
+            Итого: {item.total_price}
+          </div>
+        </div>
+      ))}
+
+      <div
+        style={{
+          marginTop: 20,
+          fontSize: 20,
+          fontWeight: 700,
+        }}
+      >
+        Итого: {selectedOrder.total_amount} {selectedOrder.currency}
+      </div>
+    </div>
+  </div>
+);
+
+
+}
+
 return (
 <div style={{ padding: 16 }}>
 <div
@@ -86,6 +173,7 @@ borderRadius: 24,
 padding: 20,
 }}
 > <h2>📦 Заказы</h2>
+
 
     {loading && (
       <div>Загрузка заказов...</div>
@@ -123,80 +211,8 @@ padding: 20,
         <div>
           Сумма: {order.total_amount} {order.currency}
         </div>
-
-        <div
-          style={{
-            color: "#64748B",
-            fontSize: 13,
-          }}
-        >
-          {new Date(
-            order.created_at
-          ).toLocaleString()}
-        </div>
       </div>
     ))}
-
-    {selectedOrder && (
-      <div
-        style={{
-          marginTop: 20,
-          borderTop: "2px solid #E2E8F0",
-          paddingTop: 20,
-        }}
-      >
-        <h3>
-          Заказ {selectedOrder.order_number}
-        </h3>
-
-        {orderItems.length === 0 && (
-          <div>Товары не найдены</div>
-        )}
-
-        {orderItems.map((item) => (
-          <div
-            key={item.id}
-            style={{
-              padding: 10,
-              borderBottom:
-                "1px solid #F1F5F9",
-            }}
-          >
-            <div
-              style={{
-                fontWeight: 600,
-              }}
-            >
-              {item.item_name_snapshot}
-            </div>
-
-            <div>
-              Количество: {item.quantity}
-            </div>
-
-            <div>
-              Цена: {item.unit_price}
-            </div>
-
-            <div>
-              Итого: {item.total_price}
-            </div>
-          </div>
-        ))}
-
-        <div
-          style={{
-            marginTop: 16,
-            fontWeight: 700,
-            fontSize: 18,
-          }}
-        >
-          Итого заказ:{" "}
-          {selectedOrder.total_amount}{" "}
-          {selectedOrder.currency}
-        </div>
-      </div>
-    )}
   </div>
 </div>
 
