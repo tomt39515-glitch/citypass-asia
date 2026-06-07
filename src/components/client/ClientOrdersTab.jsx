@@ -306,14 +306,22 @@ async function loadMessages(orderId) {
       onClick={async () => {
         if (!newMessage.trim()) return;
 
-        await supabase
-          .from("order_messages")
-          .insert({
-            order_id: selectedOrder.id,
-            sender_role: "client",
-            sender_id: 0,
-            message: newMessage,
-          });
+        const { data, error } = await supabase
+  .from("order_messages")
+  .insert({
+    order_id: selectedOrder.id,
+    sender_role: "client",
+    sender_id: 0,
+    message: newMessage,
+  });
+
+console.log("INSERT RESULT", data);
+console.log("INSERT ERROR", error);
+
+if (error) {
+  alert(error.message);
+  return;
+}
 
         setNewMessage("");
 
