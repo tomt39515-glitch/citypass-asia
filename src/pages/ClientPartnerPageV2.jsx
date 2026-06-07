@@ -23,6 +23,11 @@ export default function ClientPartnerPageV2({
 
   const [loading, setLoading] =
     useState(false);
+const [serviceType, setServiceType] =
+  useState("table");
+
+const [tableNumber, setTableNumber] =
+  useState("");
 const [reviews, setReviews] =
   useState([]);
 
@@ -127,9 +132,9 @@ async function checkReviewAccess() {
         .from("clients")
         .select("id")
         .eq(
-          "telegram_id",
-          telegramId
-        )
+  "telegram_id",
+  String(telegramId)
+)
         .maybeSingle();
 
     if (!client) return;
@@ -325,12 +330,18 @@ const avgRating =
     : 0;
   async function submitOrder() {
     try {
-      if (!cart.length) {
-        alert(
-          "Корзина пуста"
-        );
-        return;
-      }
+    if (!cart.length) {
+  alert("Корзина пуста");
+  return;
+}
+
+if (
+  serviceType === "table" &&
+  !tableNumber.trim()
+) {
+  alert("Введите номер столика");
+  return;
+}
 
       setLoading(true);
 
@@ -405,7 +416,13 @@ const avgRating =
 
           partner_id:
             partner.id,
+service_type:
+  serviceType,
 
+table_number:
+  serviceType === "table"
+    ? tableNumber
+    : null,
           order_type:
             "food",
 
@@ -624,6 +641,62 @@ finally {
           setCanOrder
         }
       />
+{canOrder && (
+  <div
+    style={{
+      border: "1px solid #eee",
+      borderRadius: 12,
+      padding: 12,
+      marginTop: 15,
+      marginBottom: 15,
+    }}
+  >
+    <h3>Способ получения</h3>
+
+    <label>
+      <input
+        type="radio"
+        checked={serviceType === "table"}
+        onChange={() =>
+          setServiceType("table")
+        }
+      />
+      За столиком
+    </label>
+
+    <br />
+
+    <label>
+      <input
+        type="radio"
+        checked={serviceType === "takeaway"}
+        onChange={() =>
+          setServiceType("takeaway")
+        }
+      />
+      Самовывоз
+    </label>
+
+    {serviceType === "table" && (
+      <div style={{ marginTop: 10 }}>
+        <input
+          type="text"
+          placeholder="Номер столика"
+          value={tableNumber}
+          onChange={(e) =>
+            setTableNumber(
+              e.target.value
+            )
+          }
+          style={{
+            width: "100%",
+            padding: 10,
+          }}
+        />
+      </div>
+    )}
+  </div>
+)}
 <button
   onClick={() =>
     setShowReviews(
@@ -660,9 +733,9 @@ finally {
         </div>
 
         <div>
-          {"⭐".repeat(
-            review.rating
-          )}
+         {"⭐".repeat(
+  Number(review.rating || 0)
+)}
         </div>
 
         <div>
