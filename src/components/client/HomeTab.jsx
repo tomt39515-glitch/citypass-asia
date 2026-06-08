@@ -49,19 +49,6 @@ const userName =
 
 <div
   style={{
-    marginTop:12,
-    display:"inline-block",
-    background:"rgba(236,208,111,.25)",
-    color:"#ECD06F",
-    padding:"8px 16px",
-    borderRadius:999,
-    fontWeight:700
-  }}
-
-</div>
-
-<div
-  style={{
     marginTop:16,
     fontSize:18,
     maxWidth:340,
