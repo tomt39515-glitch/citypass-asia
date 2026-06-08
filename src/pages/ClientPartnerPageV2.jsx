@@ -883,9 +883,7 @@ finally {
 {products.map((item) => (
   <div
     key={item.id}
-onClick={() =>
-  setSelectedProduct(item)
-}
+
     style={{
       background: "#fff",
       borderRadius: 20,
@@ -990,6 +988,28 @@ onClick={() =>
       </div>
     </div>
   )}
+
+  <button
+    onClick={() =>
+      setSelectedProduct(item)
+    }
+    style={{
+      position: "absolute",
+      left: 10,
+      bottom: 10,
+      border: "none",
+      borderRadius: 999,
+      background: "rgba(255,255,255,.95)",
+      padding: "6px 12px",
+      fontSize: 12,
+      fontWeight: 700,
+      cursor: "pointer",
+      boxShadow:
+        "0 4px 12px rgba(0,0,0,.15)",
+    }}
+  >
+    ⓘ Подробнее
+  </button>
 </div>
 
 <div
