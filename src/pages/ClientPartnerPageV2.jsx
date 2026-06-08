@@ -633,7 +633,7 @@ finally {
     <div
       style={{
         marginTop: 6,
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 700,
       }}
     >
@@ -868,6 +868,14 @@ finally {
           Товары отсутствуют
         </div>
       )}
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns:
+      "repeat(2, minmax(0,1fr))",
+    gap: 12,
+  }}
+>
 {products.map((item) => (
   <div
     key={item.id}
@@ -887,7 +895,7 @@ finally {
     alt={item.name}
     style={{
       width: "100%",
-      height: 220,
+      height: 160,
       objectFit: "cover",
       display: "block",
     }}
@@ -913,7 +921,7 @@ finally {
          <div
   style={{
     color: "#0b8f88",
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 800,
     marginTop: 10,
   }}
@@ -990,6 +998,7 @@ finally {
         </div>
 </div>
       ))}
+</div>
 
       <CartPanel
         cart={cart}
