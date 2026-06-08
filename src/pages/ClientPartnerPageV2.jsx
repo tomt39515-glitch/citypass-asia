@@ -532,39 +532,101 @@ finally {
         padding: 16,
       }}
     >
-      <button
-        onClick={onBack}
-      >
-        ← Назад
-      </button>
-{partner?.cover_photo_url && (
-  <img
-    src={partner.cover_photo_url}
-    alt={partner.business_name}
-    style={{
-      width: "100%",
-      height: 240,
-      objectFit: "cover",
-      borderRadius: 20,
-      marginTop: 12,
-      marginBottom: 16,
-    }}
-  />
-)}
-      <h2>
-        {partner?.business_name}
-      </h2>
-<div
+     <div
   style={{
-    fontSize: 18,
-    fontWeight: 600,
-    color: "#f59e0b",
-    marginBottom: 10,
+    position: "relative",
+    marginBottom: 20,
   }}
 >
-  ⭐ {avgRating}
-  {" "}
-  ({reviews.length} отзывов)
+  <img
+    src={partner?.cover_photo_url}
+    alt={partner?.business_name}
+    style={{
+      width: "100%",
+      height: 300,
+      objectFit: "cover",
+      borderRadius: 24,
+    }}
+  />
+
+  <div
+    style={{
+      position: "absolute",
+      inset: 0,
+      borderRadius: 24,
+      background:
+        "linear-gradient(to top, rgba(0,95,95,.85), rgba(0,95,95,.15))",
+    }}
+  />
+
+  <button
+    onClick={onBack}
+    style={{
+      position: "absolute",
+      top: 16,
+      left: 16,
+      border: "none",
+      background: "rgba(255,255,255,.9)",
+      padding: "10px 16px",
+      borderRadius: 999,
+      fontWeight: 600,
+      cursor: "pointer",
+    }}
+  >
+    ← Назад
+  </button>
+
+  <div
+    style={{
+      position: "absolute",
+      top: 16,
+      right: 16,
+      background: "#ECD06F",
+      padding: "10px 16px",
+      borderRadius: 999,
+      fontWeight: 800,
+    }}
+  >
+    CLUB
+  </div>
+
+  <div
+    style={{
+      position: "absolute",
+      left: 20,
+      right: 20,
+      bottom: 20,
+      color: "#fff",
+    }}
+  >
+    <div
+      style={{
+        fontSize: 30,
+        fontWeight: 800,
+      }}
+    >
+      {partner?.business_name}
+    </div>
+
+    <div
+      style={{
+        marginTop: 8,
+        fontSize: 18,
+      }}
+    >
+      ⭐ {avgRating} ({reviews.length} отзывов)
+    </div>
+
+    <div
+      style={{
+        marginTop: 6,
+        fontSize: 18,
+        fontWeight: 700,
+      }}
+    >
+      🎁 Скидка {partner?.discount_percent || 0}%
+    </div>
+  </div>
 </div>
 
 <div>
@@ -594,18 +656,7 @@ finally {
 >
   📍 Маршрут
 </button>
-      <div
-        style={{
-          color: "#16a34a",
-          fontWeight: 700,
-          marginBottom: 10,
-        }}
-      >
-        🎁 Скидка{" "}
-        {partner?.discount_percent ||
-          0}
-        %
-      </div>
+      
 {canReview && (
   <div
     style={{
