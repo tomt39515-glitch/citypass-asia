@@ -76,7 +76,7 @@ const userName =
         </div>
 
         <div onClick={()=>onChangeTab?.("qr")} style={{
-          marginTop:-30,
+          marginTop:-10,
           position:"relative",
           background:"linear-gradient(135deg,#0e8f8f,#06656c)",
           color:"#fff",
