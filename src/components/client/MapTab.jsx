@@ -324,10 +324,25 @@ export default function MapTab({ onOpenPartner }) {
               anchor="bottom"
               onClose={() => setSelectedPartner(null)}
             >
-              <div style={{ minWidth: 220 }}>
-                <strong>
-                  {selectedPartner.business_name}
-                </strong>
+             <div style={{ minWidth: 220 }}>
+
+  {selectedPartner.image_url && (
+    <img
+      src={selectedPartner.image_url}
+      alt={selectedPartner.business_name}
+      style={{
+        width: "100%",
+        height: 120,
+        objectFit: "cover",
+        borderRadius: 12,
+        marginBottom: 10
+      }}
+    />
+  )}
+
+  <strong>
+    {selectedPartner.business_name}
+  </strong>
 
                 <div>{selectedPartner.category}</div>
 
