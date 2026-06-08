@@ -1,18 +1,17 @@
 import React from "react";
 import {
   Home,
-  QrCode,
   User,
   LayoutDashboard,
   ScanLine,
   Wallet,
-  BarChart3,
   Shield,
   Users,
   CreditCard,
   Briefcase,
   Bell,
   ShoppingBag,
+  MapPinned,
 } from "lucide-react";
 
 export default function AppLayout({
@@ -22,84 +21,116 @@ export default function AppLayout({
   children,
 }) {
   const tabsByRole = {
-   client: [
-  {
-    key: "home",
-    label: "Главная",
-    icon: Home,
-  },
-  {
-    key: "offers",
-    label: "Партнёры",
-    icon: Briefcase,
-  },
-  {
-    key: "map",
-    label: "Карта",
-    icon: QrCode,
-  },
-  {
-    key: "orders",
-    label: "Заказы",
-    icon: ShoppingBag,
-  },
-  {
-    key: "profile",
-    label: "Профиль",
-    icon: User,
-  },
-],
+    client: [
+      {
+        key: "home",
+        label: "Главная",
+        icon: Home,
+      },
+      {
+        key: "offers",
+        label: "Партнёры",
+        icon: Briefcase,
+      },
+      {
+        key: "map",
+        label: "Карта",
+        icon: MapPinned,
+      },
+      {
+        key: "orders",
+        label: "Заказы",
+        icon: ShoppingBag,
+      },
+      {
+        key: "profile",
+        label: "Профиль",
+        icon: User,
+      },
+    ],
 
     partner: [
-  {
-    key: "home",
-    label: "Главная",
-    icon: LayoutDashboard,
-  },
-  {
-    key: "scanner",
-    label: "QR",
-    icon: ScanLine,
-  },
-  {
-    key: "orders",
-    label: "Заказы",
-    icon: ShoppingBag,
-  },
-  {
-    key: "deposits",
-    label: "Депозит",
-    icon: Wallet,
-  },
-  {
-    key: "products",
-    label: "Товары",
-    icon: ShoppingBag,
-  },
-  {
-    key: "notifications",
-    label: "Уведомл.",
-    icon: Bell,
-  },
-  {
-    key: "profile",
-    label: "Профиль",
-    icon: User,
-  },
-],
+      {
+        key: "home",
+        label: "Главная",
+        icon: LayoutDashboard,
+      },
+      {
+        key: "scanner",
+        label: "QR",
+        icon: ScanLine,
+      },
+      {
+        key: "orders",
+        label: "Заказы",
+        icon: ShoppingBag,
+      },
+      {
+        key: "deposits",
+        label: "Депозит",
+        icon: Wallet,
+      },
+      {
+        key: "products",
+        label: "Товары",
+        icon: ShoppingBag,
+      },
+      {
+        key: "notifications",
+        label: "Уведомл.",
+        icon: Bell,
+      },
+      {
+        key: "profile",
+        label: "Профиль",
+        icon: User,
+      },
+    ],
 
     admin: [
-      { key: "dashboard", label: "Панель", icon: Shield },
-      { key: "partners", label: "Партнёры", icon: Briefcase },
-      { key: "clients", label: "Клиенты", icon: Users },
-      { key: "topups", label: "Баланс", icon: Wallet },
-      { key: "transactions", label: "Операции", icon: CreditCard },
+      {
+        key: "dashboard",
+        label: "Панель",
+        icon: Shield,
+      },
+      {
+        key: "partners",
+        label: "Партнёры",
+        icon: Briefcase,
+      },
+      {
+        key: "clients",
+        label: "Клиенты",
+        icon: Users,
+      },
+      {
+        key: "topups",
+        label: "Баланс",
+        icon: Wallet,
+      },
+      {
+        key: "transactions",
+        label: "Операции",
+        icon: CreditCard,
+      },
     ],
 
     agent: [
-      { key: "dashboard", label: "Главная", icon: LayoutDashboard },
-      { key: "partners", label: "Партнёры", icon: Briefcase },
-      { key: "earnings", label: "Доход", icon: Wallet },
+      {
+        key: "dashboard",
+        label: "Главная",
+        icon: LayoutDashboard,
+      },
+      {
+        key: "partners",
+        label: "Партнёры",
+        icon: Briefcase,
+      },
+      {
+        key: "earnings",
+        label: "Доход",
+        icon: Wallet,
+      },
     ],
   };
 
@@ -118,66 +149,16 @@ export default function AppLayout({
           maxWidth: "430px",
           margin: "0 auto",
           minHeight: "100vh",
-          background: "#F4F7FB",
+          background: "#F7FAFB",
           position: "relative",
           overflowX: "hidden",
           boxShadow:
             "0 0 40px rgba(15,23,42,.08)",
         }}
       >
-        <header
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 100,
-            background: "#FFFFFF",
-            padding: "16px",
-            borderBottom: "1px solid #E2E8F0",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>
-              <div
-                style={{
-                  fontSize: "22px",
-                  fontWeight: 800,
-                  color: "#14B8A6",
-                }}
-              >
-                CityPass Asia
-              </div>
-
-              <div
-                style={{
-                  fontSize: "12px",
-                  color: "#64748B",
-                }}
-              >
-                Клуб привилегий
-              </div>
-            </div>
-
-            <div
-              style={{
-                width: "42px",
-                height: "42px",
-                borderRadius: "50%",
-                background:
-                  "linear-gradient(135deg,#14B8A6,#0F766E)",
-              }}
-            />
-          </div>
-        </header>
-
         <main
           style={{
-            paddingBottom: "110px",
+            paddingBottom: "130px",
           }}
         >
           {children}
@@ -186,54 +167,80 @@ export default function AppLayout({
         <nav
           style={{
             position: "fixed",
-            bottom: "8px",
+            bottom: "12px",
             left: "50%",
             transform: "translateX(-50%)",
-            width: "calc(100% - 16px)",
+            width: "calc(100% - 20px)",
             maxWidth: "414px",
             background: "#FFFFFF",
-            borderRadius: "28px",
-            padding: "8px",
+            borderRadius: "30px",
+            padding: "10px",
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "flex-end",
             boxShadow:
-              "0 10px 35px rgba(15,23,42,.12)",
+              "0 15px 40px rgba(15,23,42,.15)",
             zIndex: 1000,
           }}
         >
           {tabs.map((tab) => {
             const Icon = tab.icon;
-            const active = currentTab === tab.key;
+            const active =
+              currentTab === tab.key;
+
+            const isMap =
+              tab.key === "map";
 
             return (
               <button
                 key={tab.key}
-                onClick={() => onChangeTab(tab.key)}
+                onClick={() =>
+                  onChangeTab(tab.key)
+                }
                 style={{
                   flex: 1,
                   border: "none",
-                  background: active
-                    ? "linear-gradient(135deg,#14B8A6,#0D9488)"
-                    : "transparent",
-                  color: active
-                    ? "#FFFFFF"
-                    : "#64748B",
-                  borderRadius: "18px",
-                  padding: "10px 6px",
+                  background: "transparent",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
+                  justifyContent: "center",
                   gap: "4px",
                   cursor: "pointer",
+                  color: active
+                    ? "#0F766E"
+                    : "#64748B",
                 }}
               >
-                <Icon size={22} />
+                {isMap ? (
+                  <div
+                    style={{
+                      width: "72px",
+                      height: "72px",
+                      borderRadius: "50%",
+                      background:
+                        "linear-gradient(135deg,#14B8A6,#0F766E)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#FFFFFF",
+                      marginTop: "-45px",
+                      boxShadow:
+                        "0 12px 30px rgba(20,184,166,.35)",
+                    }}
+                  >
+                    <Icon size={30} />
+                  </div>
+                ) : (
+                  <Icon size={22} />
+                )}
 
                 <span
                   style={{
                     fontSize: "11px",
-                    fontWeight: 600,
+                    fontWeight: active
+                      ? 700
+                      : 500,
                   }}
                 >
                   {tab.label}
