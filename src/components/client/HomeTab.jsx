@@ -2,6 +2,8 @@ import heroImage from "../../assets/citypass-hero.png";
 import { Bell, QrCode, Utensils, Hotel, ShoppingBag, PartyPopper, MapPin } from "lucide-react";
 
 export default function HomeTab({ onChangeTab }) {
+const userName =
+  window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name || "Гость";
   const categories = [
     { title: "Рестораны", count: "126 мест", icon: <Utensils size={20} />, image: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1200" },
     { title: "Отели", count: "42 объекта", icon: <Hotel size={20} />, image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200" },
@@ -39,10 +41,10 @@ export default function HomeTab({ onChangeTab }) {
           </div>
 
           <div style={{position:"absolute",left:24,right:24,bottom:32,color:"#fff"}}>
-          <div style={{fontSize:42,fontWeight:800,lineHeight:1.1}}>
+        <div style={{fontSize:42,fontWeight:800,lineHeight:1.1}}>
   Добро пожаловать,
   <br />
-  Виталий 👋
+  {userName} 👋
 </div>
 
 <div
