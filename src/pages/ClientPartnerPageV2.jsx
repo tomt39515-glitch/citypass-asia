@@ -995,25 +995,20 @@ finally {
     }
     style={{
       position: "absolute",
-      top: 10,
-      right: 10,
-      width: 36,
-      height: 36,
+      left: 10,
+      bottom: 10,
       border: "none",
-      borderRadius: "50%",
+      borderRadius: 999,
       background: "rgba(255,255,255,.95)",
-      color: "#0b8f88",
-      fontSize: 18,
+      padding: "6px 12px",
+      fontSize: 12,
       fontWeight: 700,
       cursor: "pointer",
       boxShadow:
         "0 4px 12px rgba(0,0,0,.15)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
     }}
   >
-    ⓘ
+    ⓘ Подробнее
   </button>
 </div>
 
