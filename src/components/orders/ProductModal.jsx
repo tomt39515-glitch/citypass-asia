@@ -11,17 +11,14 @@ export default function ProductModal({
       style={{
         position: "fixed",
         inset: 0,
-        background:
-          "rgba(0,0,0,.6)",
+        background: "rgba(0,0,0,.6)",
         zIndex: 9999,
         display: "flex",
         alignItems: "flex-end",
       }}
     >
       <div
-        onClick={(e) =>
-          e.stopPropagation()
-        }
+        onClick={(e) => e.stopPropagation()}
         style={{
           background: "#fff",
           width: "100%",
@@ -32,15 +29,51 @@ export default function ProductModal({
           overflowY: "auto",
         }}
       >
-        <img
-          src={product.photo_url}
-          alt={product.name}
+        <div
           style={{
-            width: "100%",
-            height: 280,
-            objectFit: "cover",
+            width: 48,
+            height: 5,
+            background: "#d1d5db",
+            borderRadius: 999,
+            margin: "12px auto",
           }}
         />
+
+        <div
+          style={{
+            position: "relative",
+          }}
+        >
+          <img
+            src={product.photo_url}
+            alt={product.name}
+            style={{
+              width: "100%",
+              height: 280,
+              objectFit: "cover",
+            }}
+          />
+
+          <button
+            onClick={onClose}
+            style={{
+              position: "absolute",
+              top: 14,
+              right: 14,
+              width: 40,
+              height: 40,
+              borderRadius: "50%",
+              border: "none",
+              background: "rgba(255,255,255,.95)",
+              fontSize: 22,
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(0,0,0,.15)",
+            }}
+          >
+            ✕
+          </button>
+        </div>
 
         <div
           style={{
@@ -63,9 +96,7 @@ export default function ProductModal({
               marginTop: 10,
             }}
           >
-            {Number(
-              product.price || 0
-            ).toLocaleString()} ₫
+            {Number(product.price || 0).toLocaleString()} ₫
           </div>
 
           <div
@@ -75,8 +106,7 @@ export default function ProductModal({
               lineHeight: 1.6,
             }}
           >
-            {product.description ||
-              "Описание отсутствует"}
+            {product.description || "Описание отсутствует"}
           </div>
 
           <button
