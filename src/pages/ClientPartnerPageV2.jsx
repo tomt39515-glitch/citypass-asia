@@ -4,7 +4,7 @@ import React, {
 } from "react";
 
 import { supabase } from "../supabase";
-
+import ProductModal from "../components/orders/ProductModal";
 import CartPanel from "../components/orders/CartPanel";
 import LocationGuard from "../components/orders/LocationGuard";
 
@@ -45,6 +45,10 @@ const [rating, setRating] =
 
 const [reviewText, setReviewText] =
   useState("");
+const [
+  selectedProduct,
+  setSelectedProduct,
+] = useState(null);
   useEffect(() => {
   loadProducts();
   loadReviews();
@@ -879,6 +883,9 @@ finally {
 {products.map((item) => (
   <div
     key={item.id}
+onClick={() =>
+  setSelectedProduct(item)
+}
     style={{
       background: "#fff",
       borderRadius: 20,
@@ -1049,7 +1056,15 @@ position: "relative",
 </div>
 ))}
 </div>
-
+{selectedProduct && (
+  <ProductModal
+    product={selectedProduct}
+    onClose={() =>
+      setSelectedProduct(null)
+    }
+    onAdd={addToCart}
+  />
+)}
       <CartPanel
         cart={cart}
         partner={partner}
