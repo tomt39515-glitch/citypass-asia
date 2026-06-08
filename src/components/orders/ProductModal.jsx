@@ -1,8 +1,13 @@
+import React, { useState } from "react";
+
 export default function ProductModal({
   product,
   onClose,
   onAdd,
 }) {
+  const [quantity, setQuantity] =
+    useState(1);
+
   if (!product) return null;
 
   return (
@@ -24,9 +29,10 @@ export default function ProductModal({
           width: "100%",
           borderTopLeftRadius: 28,
           borderTopRightRadius: 28,
-          overflow: "hidden",
           maxHeight: "90vh",
-          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
         }}
       >
         <div
@@ -41,82 +47,141 @@ export default function ProductModal({
 
         <div
           style={{
-            position: "relative",
+            overflowY: "auto",
+            flex: 1,
           }}
         >
-          <img
-            src={product.photo_url}
-            alt={product.name}
+          <div
             style={{
-              width: "100%",
-              height: 280,
-              objectFit: "cover",
-            }}
-          />
-
-          <button
-            onClick={onClose}
-            style={{
-              position: "absolute",
-              top: 14,
-              right: 14,
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              border: "none",
-              background: "rgba(255,255,255,.95)",
-              fontSize: 22,
-              fontWeight: 700,
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(0,0,0,.15)",
+              position: "relative",
             }}
           >
-            ✕
-          </button>
+            <img
+              src={product.photo_url}
+              alt={product.name}
+              style={{
+                width: "100%",
+                height: 280,
+                objectFit: "cover",
+              }}
+            />
+
+            <button
+              onClick={onClose}
+              style={{
+                position: "absolute",
+                top: 14,
+                right: 14,
+                width: 52,
+                height: 52,
+                borderRadius: "50%",
+                border: "none",
+                background: "rgba(255,255,255,.95)",
+                fontSize: 28,
+                cursor: "pointer",
+                boxShadow:
+                  "0 4px 12px rgba(0,0,0,.15)",
+              }}
+            >
+              ✕
+            </button>
+          </div>
+
+          <div
+            style={{
+              padding: 20,
+            }}
+          >
+            <h2
+              style={{
+                margin: 0,
+              }}
+            >
+              {product.name}
+            </h2>
+
+            <div
+              style={{
+                color: "#0b8f88",
+                fontSize: 28,
+                fontWeight: 800,
+                marginTop: 10,
+              }}
+            >
+              {Number(
+                product.price || 0
+              ).toLocaleString()} ₫
+            </div>
+
+            <div
+              style={{
+                marginTop: 16,
+                color: "#555",
+                lineHeight: 1.7,
+                fontSize: 18,
+              }}
+            >
+              {product.description ||
+                "Описание отсутствует"}
+            </div>
+          </div>
         </div>
 
         <div
           style={{
-            padding: 20,
+            borderTop: "1px solid #eee",
+            padding: 16,
+            background: "#fff",
           }}
         >
-          <h2
-            style={{
-              margin: 0,
-            }}
-          >
-            {product.name}
-          </h2>
-
           <div
             style={{
-              color: "#0b8f88",
-              fontSize: 28,
-              fontWeight: 800,
-              marginTop: 10,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 16,
+              marginBottom: 12,
             }}
           >
-            {Number(product.price || 0).toLocaleString()} ₫
-          </div>
+            <button
+              onClick={() =>
+                setQuantity((q) =>
+                  Math.max(1, q - 1)
+                )
+              }
+            >
+              −
+            </button>
 
-          <div
-            style={{
-              marginTop: 16,
-              color: "#555",
-              lineHeight: 1.6,
-            }}
-          >
-            {product.description || "Описание отсутствует"}
+            <strong>
+              {quantity}
+            </strong>
+
+            <button
+              onClick={() =>
+                setQuantity((q) =>
+                  q + 1
+                )
+              }
+            >
+              +
+            </button>
           </div>
 
           <button
             onClick={() => {
-              onAdd(product);
+              for (
+                let i = 0;
+                i < quantity;
+                i++
+              ) {
+                onAdd(product);
+              }
+
               onClose();
             }}
             style={{
               width: "100%",
-              marginTop: 24,
               padding: 16,
               border: "none",
               borderRadius: 16,
@@ -127,7 +192,7 @@ export default function ProductModal({
               fontSize: 16,
             }}
           >
-            🛒 Добавить в заказ
+            🛒 Добавить • {(Number(product.price || 0) * quantity).toLocaleString()} ₫
           </button>
         </div>
       </div>
