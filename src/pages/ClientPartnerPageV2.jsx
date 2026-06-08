@@ -868,46 +868,70 @@ finally {
           Товары отсутствуют
         </div>
       )}
+{products.map((item) => (
+  <div
+    key={item.id}
+    style={{
+      background: "#fff",
+      borderRadius: 20,
+      overflow: "hidden",
+      boxShadow:
+        "0 4px 15px rgba(0,0,0,.06)",
+      marginBottom: 16,
+    }}
+  >
+        
+        {item.photo_url && (
+  <img
+    src={item.photo_url}
+    alt={item.name}
+    style={{
+      width: "100%",
+      height: 220,
+      objectFit: "cover",
+      display: "block",
+    }}
+  />
+)}
 
-      {products.map((item) => (
-        <div
-          key={item.id}
-          style={{
-            border:
-              "1px solid #eee",
-            borderRadius: 12,
-            padding: 12,
-            marginBottom: 12,
-          }}
-        >
-          {item.photo_url && (
-            <img
-              src={
-                item.photo_url
-              }
-              alt={item.name}
-              style={{
-                width: "100%",
-                borderRadius: 10,
-                marginBottom: 10,
-              }}
-            />
-          )}
+<div
+  style={{
+    padding: 14,
+  }}
+>
 
-          <strong>
-            {item.name}
-          </strong>
+<div
+  style={{
+    fontSize: 18,
+    fontWeight: 700,
+    marginBottom: 6,
+  }}
+>
+  {item.name}
+</div>
 
-          <div>
-            {Number(
-              item.price || 0
-            ).toLocaleString()}{" "}
-            VND
-          </div>
+         <div
+  style={{
+    color: "#0b8f88",
+    fontSize: 24,
+    fontWeight: 800,
+    marginTop: 10,
+  }}
+>
+  {Number(item.price || 0).toLocaleString()} ₫
+</div>
 
-          <div>
-            {item.description}
-          </div>
+          <div
+  style={{
+    color: "#666",
+    fontSize: 14,
+    lineHeight: 1.4,
+    marginTop: 8,
+    minHeight: 40,
+  }}
+>
+  {item.description}
+</div>
 
        {canOrder && (
   <>
@@ -964,6 +988,7 @@ finally {
   </>
 )}
         </div>
+</div>
       ))}
 
       <CartPanel
