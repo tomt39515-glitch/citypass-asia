@@ -537,7 +537,20 @@ finally {
       >
         ← Назад
       </button>
-
+{partner?.cover_photo_url && (
+  <img
+    src={partner.cover_photo_url}
+    alt={partner.business_name}
+    style={{
+      width: "100%",
+      height: 240,
+      objectFit: "cover",
+      borderRadius: 20,
+      marginTop: 12,
+      marginBottom: 16,
+    }}
+  />
+)}
       <h2>
         {partner?.business_name}
       </h2>
