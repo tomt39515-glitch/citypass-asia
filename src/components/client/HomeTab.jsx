@@ -1,3 +1,4 @@
+import heroImage from "../../assets/citypass-hero.png";
 import { Bell, QrCode, Utensils, Hotel, ShoppingBag, PartyPopper, MapPin } from "lucide-react";
 
 export default function HomeTab({ onChangeTab }) {
@@ -17,7 +18,7 @@ export default function HomeTab({ onChangeTab }) {
           borderRadius:32,
           overflow:"hidden",
           position:"relative",
-          backgroundImage:"url('https://images.unsplash.com/photo-1528127269322-539801943592?w=2000')",
+          backgroundImage:`url(${heroImage})`,
           backgroundSize:"cover",
           backgroundPosition:"center"
         }}>
@@ -38,12 +39,37 @@ export default function HomeTab({ onChangeTab }) {
           </div>
 
           <div style={{position:"absolute",left:24,right:24,bottom:32,color:"#fff"}}>
-            <div style={{fontSize:56,fontWeight:800,lineHeight:1.05}}>
-              Откройте Азию<br/>с привилегиями
-            </div>
-            <div style={{marginTop:16,fontSize:18,maxWidth:340,lineHeight:1.5}}>
-              Эксклюзивные предложения в ресторанах, отелях, магазинах и сервисах для участников CityPass Club.
-            </div>
+          <div style={{fontSize:42,fontWeight:800,lineHeight:1.1}}>
+  Добро пожаловать,
+  <br />
+  Виталий 👋
+</div>
+
+<div
+  style={{
+    marginTop:12,
+    display:"inline-block",
+    background:"rgba(236,208,111,.25)",
+    color:"#ECD06F",
+    padding:"8px 16px",
+    borderRadius:999,
+    fontWeight:700
+  }}
+>
+  Gold Club
+</div>
+
+<div
+  style={{
+    marginTop:16,
+    fontSize:18,
+    maxWidth:340,
+    lineHeight:1.5
+  }}
+>
+  Скидки, бонусы и специальные предложения
+  по всей Азии
+</div>
           </div>
         </div>
 
@@ -63,8 +89,13 @@ export default function HomeTab({ onChangeTab }) {
             <QrCode size={42}/>
           </div>
           <div>
-            <div style={{fontSize:18,fontWeight:800}}>Показать QR-код</div>
-            <div style={{opacity:.9}}>Откройте код для получения привилегий</div>
+           <div style={{fontSize:20,fontWeight:800}}>
+  Моя карта CityPass
+</div>
+
+<div style={{opacity:.9}}>
+  Откройте QR-код для получения привилегий
+</div>
           </div>
         </div>
 
