@@ -991,6 +991,7 @@ finally {
     display: "flex",
     flexDirection: "column",
     flex: 1,
+position: "relative",
   }}
 >
 
@@ -1021,24 +1022,28 @@ finally {
 
           {canOrder &&
   getCartQuantity(item.id) === 0 && (
-    <button
-      onClick={() =>
-        addToCart(item)
-      }
-      style={{
-        width: "100%",
-        marginTop: 10,
-        padding: 12,
-        border: "none",
-        borderRadius: 12,
-        background:
-          "linear-gradient(135deg,#22c7b8,#0b8f88)",
-        color: "#fff",
-        fontWeight: 700,
-      }}
-    >
-      🛒 Добавить
-    </button>
+   <button
+  onClick={() => addToCart(item)}
+  style={{
+    position: "absolute",
+    right: 14,
+    bottom: 14,
+    width: 42,
+    height: 42,
+    borderRadius: "50%",
+    border: "none",
+    background:
+      "linear-gradient(135deg,#22c7b8,#0b8f88)",
+    color: "#fff",
+    fontSize: 26,
+    fontWeight: 700,
+    cursor: "pointer",
+    boxShadow:
+      "0 6px 15px rgba(11,143,136,.35)",
+  }}
+>
+  +
+</button>
 )}
 </div>
 </div>
