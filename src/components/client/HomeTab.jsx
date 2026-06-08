@@ -24,7 +24,7 @@ const userName =
           backgroundSize:"cover",
           backgroundPosition:"center"
         }}>
-          <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,.12))"}} />
+          <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.45))"}} />
 
           <div style={{position:"absolute",top:24,left:24,right:24,display:"flex",justifyContent:"space-between"}}>
             <div style={{color:"#fff"}}>
