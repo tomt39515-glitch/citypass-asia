@@ -11,13 +11,18 @@ export default function PartnerDetails({
       }}
     >
       <img
-        src="https://picsum.photos/600/300"
-        alt={partner?.name}
-        style={{
-          width: "100%",
-          borderRadius: "20px",
-        }}
-      />
+  src={
+    partner?.cover_photo_url ||
+    "https://picsum.photos/600/300"
+  }
+  alt={partner?.business_name || partner?.name}
+  style={{
+    width: "100%",
+    height: "240px",
+    objectFit: "cover",
+    borderRadius: "20px",
+  }}
+/>
 
       <div
         style={{
@@ -26,7 +31,9 @@ export default function PartnerDetails({
           padding: "20px",
         }}
       >
-        <h2>{partner?.name}</h2>
+        <h2>
+  {partner?.business_name || partner?.name}
+</h2>
 
         <p>
           {partner?.icon} Партнёр CityPass Asia
@@ -46,7 +53,7 @@ export default function PartnerDetails({
             fontWeight: "700",
           }}
         >
-          Скидка {partner?.discount}
+          Скидка {partner?.discount_percent || partner?.discount}%
         </div>
       </div>
     </div>
