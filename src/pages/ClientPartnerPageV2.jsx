@@ -624,7 +624,7 @@ finally {
     <div
       style={{
         marginTop: 8,
-        fontSize: 18,
+        fontSize: 15,
       }}
     >
       ⭐ {avgRating} ({reviews.length} отзывов)
@@ -885,22 +885,105 @@ finally {
       overflow: "hidden",
       boxShadow:
         "0 4px 15px rgba(0,0,0,.06)",
-      marginBottom: 16,
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
     }}
   >
         
-        {item.photo_url && (
-  <img
-    src={item.photo_url}
-    alt={item.name}
-    style={{
-      width: "100%",
-      height: 160,
-      objectFit: "cover",
-      display: "block",
-    }}
-  />
-)}
+       <div
+  style={{
+    position: "relative",
+  }}
+>
+  {item.photo_url && (
+    <img
+      src={item.photo_url}
+      alt={item.name}
+      style={{
+        width: "100%",
+        height: 160,
+        objectFit: "cover",
+        display: "block",
+        filter:
+          getCartQuantity(item.id) > 0
+            ? "brightness(0.45)"
+            : "none",
+        transition: "0.25s",
+      }}
+    />
+  )}
+
+  {getCartQuantity(item.id) > 0 && (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: 999,
+          padding: "8px 14px",
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          boxShadow:
+            "0 8px 20px rgba(0,0,0,.25)",
+        }}
+      >
+        <button
+          onClick={() =>
+            decreaseQuantity(item.id)
+          }
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            border: "none",
+            background: "#22c7b8",
+            color: "#fff",
+            fontSize: 20,
+            fontWeight: 700,
+          }}
+        >
+          −
+        </button>
+
+        <strong
+          style={{
+            color: "#0b8f88",
+            fontSize: 18,
+          }}
+        >
+          {getCartQuantity(item.id)}
+        </strong>
+
+        <button
+          onClick={() =>
+            increaseQuantity(item.id)
+          }
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            border: "none",
+            background: "#22c7b8",
+            color: "#fff",
+            fontSize: 20,
+            fontWeight: 700,
+          }}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  )}
+</div>
 
 <div
   style={{
@@ -910,7 +993,7 @@ finally {
 
 <div
   style={{
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 700,
     marginBottom: 6,
   }}
@@ -929,75 +1012,30 @@ finally {
   {Number(item.price || 0).toLocaleString()} ₫
 </div>
 
-          <div
-  style={{
-    color: "#666",
-    fontSize: 14,
-    lineHeight: 1.4,
-    marginTop: 8,
-    minHeight: 40,
-  }}
->
-  {item.description}
-</div>
-
-       {canOrder && (
-  <>
-    {getCartQuantity(item.id) === 0 ? (
-      <button
-        onClick={() =>
-          addToCart(item)
-        }
-        style={{
-          width: "100%",
-          marginTop: 10,
-          padding: 12,
-          border: "none",
-          borderRadius: 12,
-          background:
-            "linear-gradient(135deg,#22c7b8,#0b8f88)",
-          color: "#fff",
-          fontWeight: 700,
-        }}
-      >
-        🛒 Добавить
-      </button>
-    ) : (
-      <div
-        style={{
-          marginTop: 10,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 12,
-        }}
-      >
-        <button
-          onClick={() =>
-            decreaseQuantity(item.id)
-          }
-        >
-          −
-        </button>
-
-        <strong>
-          {getCartQuantity(item.id)}
-        </strong>
-
-        <button
-          onClick={() =>
-            increaseQuantity(item.id)
-          }
-        >
-          +
-        </button>
-      </div>
-    )}
-  </>
+          {canOrder &&
+  getCartQuantity(item.id) === 0 && (
+    <button
+      onClick={() =>
+        addToCart(item)
+      }
+      style={{
+        width: "100%",
+        marginTop: 10,
+        padding: 12,
+        border: "none",
+        borderRadius: 12,
+        background:
+          "linear-gradient(135deg,#22c7b8,#0b8f88)",
+        color: "#fff",
+        fontWeight: 700,
+      }}
+    >
+      🛒 Добавить
+    </button>
 )}
-        </div>
 </div>
-      ))}
+</div>
+))}
 </div>
 
       <CartPanel
