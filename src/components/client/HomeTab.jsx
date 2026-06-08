@@ -16,7 +16,7 @@ const userName =
       <div style={{ maxWidth:480, margin:"0 auto", padding:16, paddingBottom:120 }}>
 
         <div style={{
-          height:520,
+          height:480,
           borderRadius:32,
           overflow:"hidden",
           position:"relative",
@@ -24,7 +24,11 @@ const userName =
           backgroundSize:"cover",
           backgroundPosition:"center"
         }}>
-          <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.45))"}} />
+       <div style={{
+  position:"absolute",
+  inset:0,
+  background:"linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,.05))"
+}} />
 
           <div style={{position:"absolute",top:12,left:24,right:24,display:"flex",justifyContent:"space-between"}}>
             <div style={{color:"#fff"}}>
