@@ -326,9 +326,9 @@ export default function MapTab({ onOpenPartner }) {
             >
              <div style={{ minWidth: 220 }}>
 
-  {selectedPartner.image_url && (
-    <img
-      src={selectedPartner.image_url}
+  {selectedPartner.cover_photo_url && (
+  <img
+    src={selectedPartner.cover_photo_url}
       alt={selectedPartner.business_name}
       style={{
         width: "100%",
@@ -430,8 +430,8 @@ export default function MapTab({ onOpenPartner }) {
             <div
               style={{
                 height: 180,
-                background: partner.image_url
-                  ? `url(${partner.image_url}) center center / cover`
+background: partner.cover_photo_url
+  ? `url(${partner.cover_photo_url}) center center / cover`
                   : "linear-gradient(135deg,#14B8A6,#0F766E)",
                 position: "relative",
               }}

@@ -3,23 +3,39 @@ export default function PartnerCard({
   discount,
   category,
   icon,
+  image,
   onOpen,
 }) {
-  return (
+ return (
+  <div
+    style={{
+      background: "#fff",
+      borderRadius: "20px",
+      padding: "20px",
+      boxShadow: "0 4px 15px rgba(0,0,0,.05)",
+    }}
+  >
+
+    {image && (
+      <img
+        src={image}
+        alt={name}
+        style={{
+          width: "100%",
+          height: 180,
+          objectFit: "cover",
+          borderRadius: "16px",
+          marginBottom: "16px",
+        }}
+      />
+    )}
+
     <div
       style={{
-        background: "#fff",
-        borderRadius: "20px",
-        padding: "20px",
-        boxShadow: "0 4px 15px rgba(0,0,0,.05)",
+        display: "flex",
+        justifyContent: "space-between",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
         <div>
           <h3 style={{ margin: 0 }}>
             {icon} {name}
