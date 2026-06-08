@@ -73,7 +73,7 @@ export default function HomeTab({ onChangeTab }) {
         <div
           style={{
             position: "relative",
-            height: "340px",
+            height: "380px",
             borderRadius: "30px",
             overflow: "hidden",
             backgroundImage:
@@ -89,11 +89,9 @@ export default function HomeTab({ onChangeTab }) {
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(to top, rgba(0,0,0,.70), rgba(0,0,0,.15))",
+                "linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,.15))",
             }}
           />
-
-          {/* TOP BAR */}
 
           <div
             style={{
@@ -129,19 +127,44 @@ export default function HomeTab({ onChangeTab }) {
 
             <div
               style={{
-                background: "#D4AF37",
-                color: "#0F172A",
-                padding: "10px 18px",
-                borderRadius: "999px",
-                fontWeight: 700,
-                fontSize: "14px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
               }}
             >
-              CLUB
+              <div
+                style={{
+                  background: "#E8C75A",
+                  color: "#0F172A",
+                  padding: "12px 22px",
+                  borderRadius: "999px",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                }}
+              >
+                👑 CLUB
+              </div>
+
+              <div
+                style={{
+                  width: "42px",
+                  height: "42px",
+                  borderRadius: "50%",
+                  background:
+                    "rgba(255,255,255,.18)",
+                  backdropFilter:
+                    "blur(10px)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontSize: "18px",
+                }}
+              >
+                🔔
+              </div>
             </div>
           </div>
-
-          {/* TEXT */}
 
           <div
             style={{
@@ -155,8 +178,8 @@ export default function HomeTab({ onChangeTab }) {
             <h1
               style={{
                 margin: 0,
-                fontSize: "42px",
-                lineHeight: 1.05,
+                fontSize: "48px",
+                lineHeight: 1.02,
                 fontWeight: 800,
               }}
             >
@@ -169,13 +192,15 @@ export default function HomeTab({ onChangeTab }) {
               style={{
                 marginTop: "14px",
                 fontSize: "15px",
-                lineHeight: 1.4,
-                maxWidth: "300px",
+                lineHeight: 1.5,
+                maxWidth: "320px",
                 opacity: 0.95,
               }}
             >
-              Рестораны, отели, магазины и сервисы
-              с эксклюзивными предложениями рядом с вами.
+              Эксклюзивные предложения
+              в ресторанах, отелях,
+              магазинах и сервисах
+              для участников CityPass Club.
             </div>
           </div>
         </div>
@@ -227,6 +252,16 @@ export default function HomeTab({ onChangeTab }) {
             >
               Получайте привилегии у партнёров
             </div>
+
+            <div
+              style={{
+                marginTop: "8px",
+                fontSize: "13px",
+                opacity: 0.8,
+              }}
+            >
+              Нажмите для открытия →
+            </div>
           </div>
 
           <div
@@ -234,7 +269,7 @@ export default function HomeTab({ onChangeTab }) {
               fontSize: "42px",
             }}
           >
-            ⬜
+            🔳
           </div>
         </div>
 
@@ -252,7 +287,7 @@ export default function HomeTab({ onChangeTab }) {
               key={item.title}
               style={{
                 position: "relative",
-                height: "170px",
+                height: "190px",
                 borderRadius: "22px",
                 overflow: "hidden",
                 backgroundImage: `url(${item.image})`,
@@ -297,7 +332,7 @@ export default function HomeTab({ onChangeTab }) {
             background:
               "linear-gradient(135deg,#14B8A6,#0F766E)",
             borderRadius: "26px",
-            padding: "24px",
+            padding: "28px",
             color: "#fff",
           }}
         >
@@ -328,6 +363,16 @@ export default function HomeTab({ onChangeTab }) {
           >
             за всё время
           </div>
+
+          <div
+            style={{
+              marginTop: "20px",
+              height: "60px",
+              borderTop:
+                "1px solid rgba(255,255,255,.15)",
+              opacity: 0.6,
+            }}
+          />
         </div>
 
         {/* NEARBY */}
@@ -335,7 +380,7 @@ export default function HomeTab({ onChangeTab }) {
         <div>
           <div
             style={{
-              fontSize: "22px",
+              fontSize: "24px",
               fontWeight: 800,
               color: "#0F172A",
               marginBottom: "14px",
@@ -373,11 +418,7 @@ export default function HomeTab({ onChangeTab }) {
                   }}
                 />
 
-                <div
-                  style={{
-                    padding: "14px",
-                  }}
-                >
+                <div style={{ padding: "14px" }}>
                   <div
                     style={{
                       fontWeight: 700,
