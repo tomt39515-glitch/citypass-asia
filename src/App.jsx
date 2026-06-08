@@ -64,8 +64,20 @@ function App() {
     useState(false);
 
   useEffect(() => {
-    registerClient();
-  }, []);
+  if (window.Telegram?.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+
+    if (
+      typeof window.Telegram.WebApp
+        .disableVerticalSwipes === "function"
+    ) {
+      window.Telegram.WebApp.disableVerticalSwipes();
+    }
+  }
+
+  registerClient();
+}, []);
 
   useEffect(() => {
     const openPartnerRegistration =
