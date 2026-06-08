@@ -988,6 +988,9 @@ finally {
 <div
   style={{
     padding: 14,
+    display: "flex",
+    flexDirection: "column",
+    flex: 1,
   }}
 >
 
@@ -996,17 +999,21 @@ finally {
     fontSize: 15,
     fontWeight: 700,
     marginBottom: 6,
+    minHeight: 72,
+    display: "flex",
+    alignItems: "flex-start",
   }}
 >
   {item.name}
 </div>
 
-         <div
+     <div
   style={{
     color: "#0b8f88",
     fontSize: 20,
     fontWeight: 800,
-    marginTop: 10,
+    marginTop: "auto",
+    paddingTop: 10,
   }}
 >
   {Number(item.price || 0).toLocaleString()} ₫
