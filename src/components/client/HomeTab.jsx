@@ -26,7 +26,7 @@ const userName =
         }}>
           <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.45))"}} />
 
-          <div style={{position:"absolute",top:24,left:24,right:24,display:"flex",justifyContent:"space-between"}}>
+          <div style={{position:"absolute",top:12,left:24,right:24,display:"flex",justifyContent:"space-between"}}>
             <div style={{color:"#fff"}}>
               <div style={{fontSize:26,fontWeight:800}}>CityPass Asia</div>
               <div style={{fontSize:14}}>Клуб привилегий в Азии</div>
@@ -57,8 +57,7 @@ const userName =
     borderRadius:999,
     fontWeight:700
   }}
->
-  Gold Club
+
 </div>
 
 <div

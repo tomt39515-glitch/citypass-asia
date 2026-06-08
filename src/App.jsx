@@ -67,8 +67,8 @@ function App() {
   if (window.Telegram?.WebApp) {
     window.Telegram.WebApp.ready();
     window.Telegram.WebApp.expand();
-window.Telegram.WebApp.setHeaderColor("#0b0f14");
-window.Telegram.WebApp.setBackgroundColor("#0b0f14");
+window.Telegram.WebApp.setHeaderColor("#ffffff");
+window.Telegram.WebApp.setBackgroundColor("#ffffff");
     if (
       typeof window.Telegram.WebApp
         .disableVerticalSwipes === "function"
