@@ -317,6 +317,19 @@ function openRoute() {
         )
     );
   }
+function getCartQuantity(productId) {
+
+  const item = cart.find(
+
+    (x) => x.id === productId
+
+  );
+
+
+
+  return item?.quantity || 0;
+
+}
 const avgRating =
   reviews.length > 0
     ? (
@@ -896,22 +909,60 @@ finally {
             {item.description}
           </div>
 
-          {canOrder && (
-            <button
-              onClick={() =>
-                addToCart(
-                  item
-                )
-              }
-              style={{
-                width: "100%",
-                marginTop: 10,
-                padding: 10,
-              }}
-            >
-              🛒 Добавить
-            </button>
-          )}
+       {canOrder && (
+  <>
+    {getCartQuantity(item.id) === 0 ? (
+      <button
+        onClick={() =>
+          addToCart(item)
+        }
+        style={{
+          width: "100%",
+          marginTop: 10,
+          padding: 12,
+          border: "none",
+          borderRadius: 12,
+          background:
+            "linear-gradient(135deg,#22c7b8,#0b8f88)",
+          color: "#fff",
+          fontWeight: 700,
+        }}
+      >
+        🛒 Добавить
+      </button>
+    ) : (
+      <div
+        style={{
+          marginTop: 10,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 12,
+        }}
+      >
+        <button
+          onClick={() =>
+            decreaseQuantity(item.id)
+          }
+        >
+          −
+        </button>
+
+        <strong>
+          {getCartQuantity(item.id)}
+        </strong>
+
+        <button
+          onClick={() =>
+            increaseQuantity(item.id)
+          }
+        >
+          +
+        </button>
+      </div>
+    )}
+  </>
+)}
         </div>
       ))}
 
