@@ -989,32 +989,31 @@ finally {
     </div>
   )}
 
-  <button
-    onClick={() =>
-      setSelectedProduct(item)
-    }
-    style={{
-      position: "absolute",
-      top: 10,
-      right: 10,
-      width: 32,
-      height: 32,
-      border: "2px solid #22c7b8",
-      borderRadius: "50%",
-      background: "#fff",
-      color: "#22c7b8",
-      fontSize: 18,
-      fontWeight: 700,
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      boxShadow:
-        "0 4px 12px rgba(0,0,0,.12)",
-    }}
-  >
-    i
-  </button>
+ <button
+  onClick={() =>
+    setSelectedProduct(item)
+  }
+  style={{
+    position: "absolute",
+    top: 10,
+    right: 10,
+    width: 24,
+    height: 24,
+    border: "1px solid #22c7b8",
+    borderRadius: "50%",
+    background: "rgba(255,255,255,.92)",
+    color: "#22c7b8",
+    fontSize: 14,
+    fontWeight: 700,
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    
+  }}
+>
+  i
+</button>
 </div>
 
 <div
@@ -1032,7 +1031,7 @@ position: "relative",
     fontSize: 15,
     fontWeight: 700,
     marginBottom: 6,
-    minHeight: 72,
+    minHeight: 52,
     display: "flex",
     alignItems: "flex-start",
   }}
