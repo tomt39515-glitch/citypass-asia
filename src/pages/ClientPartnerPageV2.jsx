@@ -855,7 +855,8 @@ finally {
     {serviceType === "table" && (
       <div style={{ marginTop: 10 }}>
         <input
-          type="text"
+          type="number"
+          inputMode="numeric"
           placeholder="Номер столика"
           value={tableNumber}
           onChange={(e) =>
@@ -865,7 +866,11 @@ finally {
           }
           style={{
             width: "100%",
-            padding: 10,
+            padding: 14,
+            fontSize: 16,
+            borderRadius: 12,
+            border: "1px solid #ddd",
+            boxSizing: "border-box",
           }}
         />
       </div>
