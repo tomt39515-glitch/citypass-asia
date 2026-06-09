@@ -256,6 +256,22 @@ useEffect(() => {
               selectedOrder.status
             )}
           </div>
+
+{selectedOrder.bill_status === "open" && (
+  <div
+    style={{
+      marginBottom: 20,
+      padding: "10px 14px",
+      background: "#FEF3C7",
+      color: "#92400E",
+      borderRadius: 12,
+      fontWeight: 700,
+    }}
+  >
+    🟡 Счёт открыт
+  </div>
+)}
+
 <button
  onClick={async () => {
   await loadMessages(
@@ -410,6 +426,7 @@ if (error) {
             >
               🍽 Столик №
               {
+                selectedOrder.current_table_number ||
                 selectedOrder.table_number
               }
             </div>
@@ -550,7 +567,8 @@ if (error) {
               "table" && (
               <div>
                 🍽 Столик №
-                {order.table_number}
+                {order.current_table_number ||
+                  order.table_number}
               </div>
             )}
 
