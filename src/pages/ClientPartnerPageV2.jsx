@@ -493,6 +493,11 @@ ${client.telegram_id}
 Столик:
 ${tableNumber || existingOrder.current_table_number || "-"}
 
+Состав дозаказа:
+${cart
+  .map(item => `• ${item.name} × ${item.quantity}`)
+  .join("\n")}
+
 Сумма дозаказа:
 ${totalAmount.toLocaleString()} ₫`,
               }),
@@ -585,6 +590,11 @@ ${client.telegram_id}
 
 Столик:
 ${tableNumber || "-"}
+
+Состав заказа:
+${cart
+  .map(item => `• ${item.name} × ${item.quantity}`)
+  .join("\n")}
 
 Сумма:
 ${totalAmount.toLocaleString()} ₫`,
