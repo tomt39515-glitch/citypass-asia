@@ -11,6 +11,7 @@ const [newMessage, setNewMessage] = useState("");
 const [showChat, setShowChat] = useState(false);
 const [paymentLoading, setPaymentLoading] = useState(false);
 const [partnerQrUrl, setPartnerQrUrl] = useState("");
+const [confirmingPayment, setConfirmingPayment] = useState(false);
 
  useEffect(() => {
   loadOrders();
@@ -205,6 +206,21 @@ async function selectPaymentMethod(method) {
 
 async function confirmQrPayment() {
   try {
+    if (confirmingPayment) return;
+
+    if (selectedOrder.payment_status === "payment_claimed") {
+      alert("Оплата уже была отправлена на проверку");
+      return;
+    }
+
+    setConfirmingPayment(true);
+
+    const { data: partner } = await supabase
+      .from("partners")
+      .select("telegram_id,business_name")
+      .eq("id", selectedOrder.partner_id)
+      .single();
+
     const { error } = await supabase
       .from("orders")
       .update({
@@ -221,6 +237,27 @@ async function confirmQrPayment() {
       message: `💰 Клиент сообщил об оплате заказа ${selectedOrder.order_number}`,
     });
 
+    if (partner?.telegram_id) {
+      await fetch(
+        "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: partner.telegram_id,
+            text:
+              `💰 Клиент сообщил об оплате\n\n` +
+              `Заказ: ${selectedOrder.order_number}\n` +
+              `Сумма: ${selectedOrder.total_amount} ${selectedOrder.currency}\n` +
+              `Столик: ${selectedOrder.current_table_number || "-"}\n\n` +
+              `Проверьте поступление средств.`,
+          }),
+        }
+      );
+    }
+
     setSelectedOrder({
       ...selectedOrder,
       payment_status: "payment_claimed",
@@ -229,6 +266,8 @@ async function confirmQrPayment() {
     alert("Информация об оплате отправлена");
   } catch (err) {
     alert(err.message);
+  } finally {
+    setConfirmingPayment(false);
   }
 }
 
@@ -379,6 +418,7 @@ function statusStyle(status) {
 
         <button
           onClick={confirmQrPayment}
+          disabled={confirmingPayment || selectedOrder.payment_status === "payment_claimed"}
           style={{
             padding: 14,
             border: "none",
