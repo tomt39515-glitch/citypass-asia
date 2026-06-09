@@ -10,6 +10,7 @@ const [messages, setMessages] = useState([]);
 const [newMessage, setNewMessage] = useState("");
 const [showChat, setShowChat] = useState(false);
 const [paymentLoading, setPaymentLoading] = useState(false);
+const [partnerQrUrl, setPartnerQrUrl] = useState("");
 
  useEffect(() => {
   loadOrders();
@@ -98,6 +99,14 @@ const [paymentLoading, setPaymentLoading] = useState(false);
       .eq("order_id", order.id);
 
     setOrderItems(data || []);
+
+    const { data: partner } = await supabase
+      .from("partners")
+      .select("payment_qr_url")
+      .eq("id", order.partner_id)
+      .single();
+
+    setPartnerQrUrl(partner?.payment_qr_url || "");
   }
 async function loadMessages(orderId) {
   const { data } = await supabase
@@ -189,6 +198,37 @@ async function selectPaymentMethod(method) {
     alert(err.message);
   } finally {
     setPaymentLoading(false);
+  }
+}
+
+
+
+async function confirmQrPayment() {
+  try {
+    const { error } = await supabase
+      .from("orders")
+      .update({
+        payment_status: "payment_claimed",
+      })
+      .eq("id", selectedOrder.id);
+
+    if (error) throw error;
+
+    await supabase.from("order_messages").insert({
+      order_id: selectedOrder.id,
+      sender_role: "client",
+      sender_id: 0,
+      message: `💰 Клиент сообщил об оплате заказа ${selectedOrder.order_number}`,
+    });
+
+    setSelectedOrder({
+      ...selectedOrder,
+      payment_status: "payment_claimed",
+    });
+
+    alert("Информация об оплате отправлена");
+  } catch (err) {
+    alert(err.message);
   }
 }
 
@@ -308,9 +348,51 @@ function statusStyle(status) {
       fontWeight: 700,
     }}
   >
-    {selectedOrder.payment_method === "cash"
-      ? "💵 Выбрана оплата наличными. Ожидайте сотрудника."
-      : "📱 Выбрана оплата по QR. Следующим шагом подключим QR-код."}
+    {selectedOrder.payment_method === "cash" ? (
+      "💵 Выбрана оплата наличными. Ожидайте сотрудника."
+    ) : (
+      <div>
+        <div style={{ marginBottom: 12 }}>
+          📱 Оплата по QR
+        </div>
+
+        <div style={{ marginBottom: 12 }}>
+          Сумма: {Number(selectedOrder.total_amount || 0).toLocaleString()} ₫
+        </div>
+
+        {partnerQrUrl && (
+          <img
+            src={partnerQrUrl}
+            alt="QR"
+            style={{
+              width: 260,
+              maxWidth: "100%",
+              borderRadius: 12,
+              marginBottom: 12,
+            }}
+          />
+        )}
+
+        <div style={{ marginBottom: 12 }}>
+          Комментарий: {selectedOrder.order_number}
+        </div>
+
+        <button
+          onClick={confirmQrPayment}
+          style={{
+            padding: 14,
+            border: "none",
+            borderRadius: 12,
+            background: "#14B8A6",
+            color: "#fff",
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
+        >
+          ✅ Я оплатил
+        </button>
+      </div>
+    )}
   </div>
 )}
 
