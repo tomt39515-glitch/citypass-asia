@@ -108,7 +108,7 @@ async function loadReviews() {
   const { data: clientsData } =
     await supabase
       .from("clients")
-      .select("id, full_name")
+      .select("id, full_name, telegram_id")
       .in("id", clientIds);
 
   const reviewsWithNames =
@@ -137,7 +137,7 @@ async function checkReviewAccess() {
    const { data: client } =
   await supabase
     .from("clients")
-    .select("id, full_name")
+    .select("id, full_name, telegram_id")
         .eq(
   "telegram_id",
   String(telegramId)
@@ -197,7 +197,7 @@ async function submitReview() {
     const { data: client } =
       await supabase
         .from("clients")
-        .select("id, full_name")
+        .select("id, full_name, telegram_id")
         .eq(
           "telegram_id",
           telegramId
@@ -381,7 +381,7 @@ if (
       const { data: client } =
         await supabase
           .from("clients")
-          .select("id, full_name")
+          .select("id, full_name, telegram_id")
           .eq(
             "telegram_id",
             String(
@@ -487,8 +487,8 @@ ${existingOrder.order_number}
 Клиент:
 ${client.full_name || "Гость"}
 
-ID клиента:
-${client.id}
+Telegram:
+${client.telegram_id}
 
 Столик:
 ${tableNumber || existingOrder.current_table_number || "-"}
@@ -580,8 +580,8 @@ table_number:
 Клиент:
 ${client.full_name || "Гость"}
 
-ID клиента:
-${client.id}
+Telegram:
+${client.telegram_id}
 
 Столик:
 ${tableNumber || "-"}
