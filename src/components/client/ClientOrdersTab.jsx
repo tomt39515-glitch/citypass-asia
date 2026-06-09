@@ -253,6 +253,14 @@ async function confirmQrPayment() {
               `Сумма: ${selectedOrder.total_amount} ${selectedOrder.currency}\n` +
               `Столик: ${selectedOrder.current_table_number || "-"}\n\n` +
               `Проверьте поступление средств.`,
+            reply_markup: {
+              inline_keyboard: [[
+                {
+                  text: "✅ Подтвердить оплату",
+                  callback_data: `paid_${selectedOrder.id}`,
+                },
+              ]],
+            },
           }),
         }
       );
