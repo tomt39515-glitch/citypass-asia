@@ -423,15 +423,15 @@ if (
       const orderNumber =
         `CPA-${Date.now()}`;
 
-      const { data: existingOrder } =
-        await supabase
-          .from("orders")
-          .select("*")
-          .eq("client_id", client.id)
-          .eq("partner_id", partner.id)
-          .eq("service_type", "table")
-          .eq("bill_status", "open")
-          .maybeSingle();
+     const { data: existingOrder } =
+  await supabase
+    .from("orders")
+    .select("*")
+    .eq("partner_id", partner.id)
+    .eq("service_type", "table")
+    .eq("current_table_number", tableNumber)
+    .eq("bill_status", "open")
+    .maybeSingle();
 
       if (
         serviceType === "table" &&
