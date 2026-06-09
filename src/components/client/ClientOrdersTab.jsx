@@ -261,14 +261,31 @@ useEffect(() => {
   <div
     style={{
       marginBottom: 20,
-      padding: "10px 14px",
+      padding: "16px",
       background: "#FEF3C7",
       color: "#92400E",
       borderRadius: 12,
-      fontWeight: 700,
     }}
   >
-    🟡 Счёт открыт
+    <div
+      style={{
+        fontWeight: 700,
+        marginBottom: 8,
+      }}
+    >
+      🟡 Счёт открыт
+    </div>
+
+    <div
+      style={{
+        fontSize: 24,
+        fontWeight: 800,
+      }}
+    >
+      {Number(
+        selectedOrder.total_amount || 0
+      ).toLocaleString()} ₫
+    </div>
   </div>
 )}
 
