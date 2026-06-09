@@ -422,6 +422,56 @@ if (
       const orderNumber =
         `CPA-${Date.now()}`;
 
+      const { data: existingOrder } =
+        await supabase
+          .from("orders")
+          .select("*")
+          .eq("client_id", client.id)
+          .eq("partner_id", partner.id)
+          .eq("service_type", "table")
+          .eq("bill_status", "open")
+          .maybeSingle();
+
+      if (
+        serviceType === "table" &&
+        existingOrder
+      ) {
+        const items = cart.map((item) => ({
+          order_id: existingOrder.id,
+          item_id: item.id,
+          item_name_snapshot: item.name,
+          unit_price: item.price,
+          quantity: item.quantity,
+          total_price:
+            item.price * item.quantity,
+        }));
+
+        await supabase
+          .from("order_items")
+          .insert(items);
+
+        await supabase
+          .from("orders")
+          .update({
+            subtotal:
+              Number(existingOrder.subtotal || 0) +
+              subtotal,
+            discount_amount:
+              Number(existingOrder.discount_amount || 0) +
+              discountAmount,
+            total_amount:
+              Number(existingOrder.total_amount || 0) +
+              totalAmount,
+            current_table_number:
+              tableNumber,
+          })
+          .eq("id", existingOrder.id);
+
+        alert("Дозаказ отправлен");
+        setCart([]);
+        return;
+      }
+
       const {
         data: order,
         error: orderError,
@@ -456,6 +506,14 @@ table_number:
 
           total_amount:
             totalAmount,
+
+          bill_status:
+            "open",
+
+          current_table_number:
+            serviceType === "table"
+              ? tableNumber
+              : null,
         })
         .select()
         .single();
