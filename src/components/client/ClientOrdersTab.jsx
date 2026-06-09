@@ -286,6 +286,44 @@ useEffect(() => {
         selectedOrder.total_amount || 0
       ).toLocaleString()} ₫
     </div>
+
+    <div
+      style={{
+        display: "flex",
+        gap: 10,
+        marginTop: 16,
+      }}
+    >
+      <button
+        style={{
+          flex: 1,
+          padding: 14,
+          border: "none",
+          borderRadius: 12,
+          background: "#F59E0B",
+          color: "#fff",
+          fontWeight: 700,
+          cursor: "pointer",
+        }}
+      >
+        💵 Наличные
+      </button>
+
+      <button
+        style={{
+          flex: 1,
+          padding: 14,
+          border: "none",
+          borderRadius: 12,
+          background: "#14B8A6",
+          color: "#fff",
+          fontWeight: 700,
+          cursor: "pointer",
+        }}
+      >
+        📱 QR Оплата
+      </button>
+    </div>
   </div>
 )}
 
