@@ -20,7 +20,7 @@ text,
 reply_markup,
 } = await req.json();
 
-```
+
 const token =
   Deno.env.get("TELEGRAM_BOT_TOKEN");
 
@@ -53,7 +53,7 @@ return new Response(
     },
   }
 );
-```
+
 
 } catch (e) {
 return new Response(

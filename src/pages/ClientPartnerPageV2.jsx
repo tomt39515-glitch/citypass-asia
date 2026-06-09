@@ -570,16 +570,17 @@ table_number:
           total_amount: totalAmount,
         });
 
-        const response = await fetch(
-          "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
-          {
-            method: "POST",
-           headers: {
-  "Content-Type": "application/json"
-},
-            body: JSON.stringify({
-              chat_id: String(partner.telegram_id),
-              text:
+      const response = await fetch(
+  "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      chat_id: String(partner.telegram_id),
+
+      text:
 `🆕 Новый заказ
 
 Заказ: ${orderNumber}
@@ -600,9 +601,46 @@ ${cart
 
 Сумма:
 ${totalAmount.toLocaleString()} ₫`,
-            }),
-          }
-        );
+
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "✅ Принять",
+              callback_data: `accept_${order.id}`,
+            },
+          ],
+          [
+            {
+              text: "👨‍🍳 Готовится",
+              callback_data: `prepare_${order.id}`,
+            },
+          ],
+          [
+            {
+              text: "🍽 Заказ готов",
+              callback_data: `ready_${order.id}`,
+            },
+          ],
+          [
+            {
+              text: "✅ Выдан клиенту",
+              callback_data: `complete_${order.id}`,
+            },
+          ],
+          [
+            {
+              text: "💰 Подтвердить оплату",
+              callback_data: `paid_${order.id}`,
+            },
+          ],
+        ],
+      },
+    }),
+  }
+);
+
+
 
         console.log(
           "TELEGRAM RESPONSE",
