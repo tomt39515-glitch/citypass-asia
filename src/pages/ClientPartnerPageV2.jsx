@@ -49,6 +49,9 @@ const [
   selectedProduct,
   setSelectedProduct,
 ] = useState(null);
+
+const [showCartSheet, setShowCartSheet] =
+  useState(false);
   useEffect(() => {
   loadProducts();
   loadReviews();
@@ -1089,20 +1092,72 @@ position: "relative",
     onAdd={addToCart}
   />
 )}
-      <CartPanel
-        cart={cart}
-        partner={partner}
-        onIncrease={
-          increaseQuantity
-        }
-        onDecrease={
-          decreaseQuantity
-        }
-        onSubmitOrder={
-          submitOrder
-        }
-        loading={loading}
-      />
+
+{cart.length > 0 && (
+  <>
+    <div
+      onClick={() => setShowCartSheet(true)}
+      style={{
+        position: "fixed",
+        left: 16,
+        right: 16,
+        bottom: 90,
+        background:
+          "linear-gradient(135deg,#22c7b8,#0b8f88)",
+        color: "#fff",
+        borderRadius: 18,
+        padding: "14px 18px",
+        fontWeight: 700,
+        zIndex: 1000,
+        display: "flex",
+        justifyContent: "space-between",
+        boxShadow:
+          "0 10px 25px rgba(11,143,136,.35)",
+      }}
+    >
+      <span>🛒 Корзина ({cart.length})</span>
+      <span>
+        {cart.reduce((s,i)=>s+i.price*i.quantity,0).toLocaleString()} ₫
+      </span>
+    </div>
+
+    {showCartSheet && (
+      <div
+        onClick={() => setShowCartSheet(false)}
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,.5)",
+          zIndex: 2000,
+          display: "flex",
+          alignItems: "flex-end",
+        }}
+      >
+        <div
+          onClick={(e)=>e.stopPropagation()}
+          style={{
+            background:"#fff",
+            width:"100%",
+            borderTopLeftRadius:24,
+            borderTopRightRadius:24,
+            padding:16,
+            maxHeight:"80vh",
+            overflowY:"auto",
+          }}
+        >
+          <CartPanel
+            cart={cart}
+            partner={partner}
+            onIncrease={increaseQuantity}
+            onDecrease={decreaseQuantity}
+            onSubmitOrder={submitOrder}
+            loading={loading}
+          />
+        </div>
+      </div>
+    )}
+  </>
+)}
     </div>
   );
 }
