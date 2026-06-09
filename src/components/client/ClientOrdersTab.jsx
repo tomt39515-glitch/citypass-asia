@@ -9,6 +9,7 @@ export default function ClientOrdersTab() {
 const [messages, setMessages] = useState([]);
 const [newMessage, setNewMessage] = useState("");
 const [showChat, setShowChat] = useState(false);
+const [paymentLoading, setPaymentLoading] = useState(false);
 
  useEffect(() => {
   loadOrders();
@@ -154,7 +155,45 @@ useEffect(() => {
     }
   }
 
-  function statusStyle(status) {
+  
+async function selectPaymentMethod(method) {
+  try {
+    if (!selectedOrder) return;
+
+    setPaymentLoading(true);
+
+    const updateData = {
+      payment_method: method,
+      bill_status: "requested",
+      bill_requested_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+      .from("orders")
+      .update(updateData)
+      .eq("id", selectedOrder.id);
+
+    if (error) throw error;
+
+    setSelectedOrder({
+      ...selectedOrder,
+      ...updateData,
+    });
+
+    alert(
+      method === "cash"
+        ? "Выбрана оплата наличными"
+        : "Выбрана оплата по QR"
+    );
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    setPaymentLoading(false);
+  }
+}
+
+
+function statusStyle(status) {
     switch (status) {
       case "pending":
         return {
@@ -257,6 +296,25 @@ useEffect(() => {
             )}
           </div>
 
+
+{selectedOrder.bill_status === "requested" && (
+  <div
+    style={{
+      marginBottom: 20,
+      padding: "16px",
+      background: "#DCFCE7",
+      color: "#166534",
+      borderRadius: 12,
+      fontWeight: 700,
+    }}
+  >
+    {selectedOrder.payment_method === "cash"
+      ? "💵 Выбрана оплата наличными. Ожидайте сотрудника."
+      : "📱 Выбрана оплата по QR. Следующим шагом подключим QR-код."}
+  </div>
+)}
+
+
 {selectedOrder.bill_status === "open" && (
   <div
     style={{
@@ -295,6 +353,8 @@ useEffect(() => {
       }}
     >
       <button
+        onClick={() => selectPaymentMethod("cash")}
+        disabled={paymentLoading}
         style={{
           flex: 1,
           padding: 14,
@@ -310,6 +370,8 @@ useEffect(() => {
       </button>
 
       <button
+        onClick={() => selectPaymentMethod("qr")}
+        disabled={paymentLoading}
         style={{
           flex: 1,
           padding: 14,
