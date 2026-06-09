@@ -9,6 +9,7 @@ const [orderItems, setOrderItems] = useState([]);
 const [messages, setMessages] = useState([]);
 const [newMessage, setNewMessage] = useState("");
 const [showChat, setShowChat] = useState(false);
+const [confirmingPayment, setConfirmingPayment] = useState(false);
 
 useEffect(() => {
 loadOrders();
@@ -210,6 +211,66 @@ const oldStatus = selectedOrder.status;
 
 }
 
+
+async function confirmPayment() {
+try {
+  if (!selectedOrder) return;
+
+  setConfirmingPayment(true);
+
+  const now = new Date().toISOString();
+
+  const { error } = await supabase
+    .from("orders")
+    .update({
+      payment_status: "paid",
+      bill_status: "closed",
+      status: "completed",
+      paid_at: now,
+      closed_at: now,
+    })
+    .eq("id", selectedOrder.id);
+
+  if (error) throw error;
+
+  await supabase
+    .from("order_messages")
+    .insert({
+      order_id: selectedOrder.id,
+      sender_role: "partner",
+      sender_id: 0,
+      message:
+        "✅ Оплата подтверждена партнером. Счет закрыт. Спасибо за посещение.",
+    });
+
+  const updatedOrder = {
+    ...selectedOrder,
+    payment_status: "paid",
+    bill_status: "closed",
+    status: "completed",
+    paid_at: now,
+    closed_at: now,
+  };
+
+  setSelectedOrder(updatedOrder);
+
+  setOrders((prev) =>
+    prev.map((item) =>
+      item.id === selectedOrder.id
+        ? updatedOrder
+        : item
+    )
+  );
+
+  alert("Оплата подтверждена. Счет закрыт.");
+} catch (err) {
+  alert(err.message);
+} finally {
+  setConfirmingPayment(false);
+}
+}
+
+
 if (selectedOrder) {
 return (
 <div style={{ padding: 16 }}>
@@ -272,6 +333,37 @@ marginBottom: 20,
 >
   Статус: {selectedOrder.status}
 </div>
+
+{selectedOrder.payment_status === "payment_claimed" && (
+  <div
+    style={{
+      background: "#FEF3C7",
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 16,
+    }}
+  >
+    <div style={{ fontWeight: 700, marginBottom: 10 }}>
+      💰 Клиент сообщил об оплате
+    </div>
+
+    <button
+      onClick={confirmPayment}
+      disabled={confirmingPayment}
+      style={{
+        padding: 12,
+        border: "none",
+        borderRadius: 10,
+        background: "#16A34A",
+        color: "#fff",
+        fontWeight: 700,
+        cursor: "pointer",
+      }}
+    >
+      ✅ Подтвердить оплату
+    </button>
+  </div>
+)}
 
 <button
   onClick={async () => {
