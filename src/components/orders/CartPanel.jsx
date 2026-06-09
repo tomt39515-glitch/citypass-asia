@@ -6,6 +6,7 @@ export default function CartPanel({
   onIncrease,
   onDecrease,
   onSubmitOrder,
+  loading,
 }) {
   const subtotal = cart.reduce(
     (sum, item) =>
@@ -142,19 +143,28 @@ export default function CartPanel({
 
       <button
         onClick={onSubmitOrder}
+        disabled={loading}
         style={{
           width: "100%",
           marginTop: 12,
           padding: 14,
-          background: "#2563eb",
+          background: loading
+            ? "#94a3b8"
+            : "#2563eb",
           color: "#fff",
           border: "none",
           borderRadius: 10,
           fontSize: 16,
           fontWeight: 600,
+          opacity: loading ? 0.6 : 1,
+          cursor: loading
+            ? "not-allowed"
+            : "pointer",
         }}
       >
-        📤 Отправить заказ
+        {loading
+          ? "⏳ Отправка..."
+          : "📤 Отправить заказ"}
       </button>
     </div>
   );

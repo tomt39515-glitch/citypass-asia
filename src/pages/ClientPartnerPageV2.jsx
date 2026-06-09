@@ -349,6 +349,7 @@ const avgRating =
       ).toFixed(1)
     : 0;
   async function submitOrder() {
+if (loading) return;
     try {
     if (!cart.length) {
   alert("Корзина пуста");
