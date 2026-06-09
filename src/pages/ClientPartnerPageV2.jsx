@@ -467,6 +467,25 @@ if (
           })
           .eq("id", existingOrder.id);
 
+        try {
+          await fetch(
+            "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "apikey": "YOUR_API_KEY"
+              },
+              body: JSON.stringify({
+                chat_id: "8052071718",
+                text: `➕ Дозаказ к заказу ${existingOrder.order_number}`,
+              }),
+            }
+          );
+        } catch (e) {
+          console.error(e);
+        }
+
         alert("Дозаказ отправлен");
         setCart([]);
         return;
