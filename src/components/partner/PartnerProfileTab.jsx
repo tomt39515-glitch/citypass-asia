@@ -7,6 +7,7 @@ export default function PartnerProfileTab({ onOpenTopup }) {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [coverPhotoUrl, setCoverPhotoUrl] = useState("");
+  const [paymentQrUrl, setPaymentQrUrl] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -38,6 +39,7 @@ export default function PartnerProfileTab({ onOpenTopup }) {
       setLatitude(currentPartner.latitude || "");
       setLongitude(currentPartner.longitude || "");
       setCoverPhotoUrl(currentPartner.cover_photo_url || "");
+      setPaymentQrUrl(currentPartner.payment_qr_url || "");
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -105,6 +107,50 @@ export default function PartnerProfileTab({ onOpenTopup }) {
     }
   }
 
+
+  async function uploadPaymentQr(event) {
+    try {
+      const file = event.target.files?.[0];
+      if (!file || !partner) return;
+
+      setUploading(true);
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `qr_${partner.id}_${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("partner-images")
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from("partner-images")
+        .getPublicUrl(fileName);
+
+      const publicUrl = data.publicUrl;
+
+      const { error: updateError } = await supabase
+        .from("partners")
+        .update({
+          payment_qr_url: publicUrl,
+        })
+        .eq("id", partner.id);
+
+      if (updateError) throw updateError;
+
+      setPaymentQrUrl(publicUrl);
+
+      alert("QR-код оплаты загружен");
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+
   async function saveProfile() {
     if (!partner) return;
 
@@ -164,6 +210,29 @@ export default function PartnerProfileTab({ onOpenTopup }) {
           disabled={uploading}
           style={{ marginBottom: "16px" }}
         />
+
+        <div style={{ marginBottom: "20px" }}>
+          <h3>💳 QR-код оплаты</h3>
+
+          {paymentQrUrl && (
+            <img
+              src={paymentQrUrl}
+              alt="payment qr"
+              style={{
+                width: "220px",
+                borderRadius: "12px",
+                marginBottom: "12px",
+              }}
+            />
+          )}
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={uploadPaymentQr}
+            disabled={uploading}
+          />
+        </div>
 
         <div style={{ marginBottom: "12px" }}>
           <b>Название:</b><br />
