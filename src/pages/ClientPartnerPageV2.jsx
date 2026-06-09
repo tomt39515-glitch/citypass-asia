@@ -134,10 +134,10 @@ async function checkReviewAccess() {
     if (!telegramId || !partner?.id)
       return;
 
-    const { data: client } =
-      await supabase
-        .from("clients")
-        .select("id")
+   const { data: client } =
+  await supabase
+    .from("clients")
+    .select("id, full_name")
         .eq(
   "telegram_id",
   String(telegramId)
@@ -173,7 +173,7 @@ async function checkReviewAccess() {
       data: existingReview,
     } = await supabase
       .from("partner_reviews")
-      .select("id")
+       .select("id")
       .eq("visit_id", visit.id)
       .maybeSingle();
 
@@ -197,7 +197,7 @@ async function submitReview() {
     const { data: client } =
       await supabase
         .from("clients")
-        .select("id")
+        .select("id, full_name")
         .eq(
           "telegram_id",
           telegramId
@@ -380,7 +380,7 @@ if (
       const { data: client } =
         await supabase
           .from("clients")
-          .select("id")
+          .select("id, full_name")
           .eq(
             "telegram_id",
             String(
@@ -477,8 +477,24 @@ if (
                 "apikey": "YOUR_API_KEY"
               },
               body: JSON.stringify({
-                chat_id: "8052071718",
-                text: `➕ Дозаказ к заказу ${existingOrder.order_number}`,
+                chat_id: String(partner.telegram_id),
+                text:
+`➕ Дозаказ
+
+Заказ:
+${existingOrder.order_number}
+
+Клиент:
+${client.full_name || "Гость"}
+
+ID клиента:
+${client.id}
+
+Столик:
+${tableNumber || existingOrder.current_table_number || "-"}
+
+Сумма дозаказа:
+${totalAmount.toLocaleString()} ₫`,
               }),
             }
           );
@@ -556,8 +572,23 @@ table_number:
               "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvc3d6eXV1bWN3eGptbHRjZ2VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTMwNzUsImV4cCI6MjA5NTEyOTA3NX0.y0CUPEoH7QZl0VbBBiugoHb2qHwx7m1olXM3GDlrPCc",
                           },
             body: JSON.stringify({
-              chat_id: "8052071718",
-              text: `Новый заказ ${orderNumber}`,
+              chat_id: String(partner.telegram_id),
+              text:
+`🆕 Новый заказ
+
+Заказ: ${orderNumber}
+
+Клиент:
+${client.full_name || "Гость"}
+
+ID клиента:
+${client.id}
+
+Столик:
+${tableNumber || "-"}
+
+Сумма:
+${totalAmount.toLocaleString()} ₫`,
             }),
           }
         );
