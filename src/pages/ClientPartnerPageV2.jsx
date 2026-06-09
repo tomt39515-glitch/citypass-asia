@@ -258,6 +258,8 @@ function openRoute() {
   }
 }
   function addToCart(product) {
+    setShowCartSheet(false);
+
     setCart((prev) => {
       const existing =
         prev.find(
