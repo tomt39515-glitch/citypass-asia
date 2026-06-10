@@ -604,45 +604,19 @@ ${totalAmount.toLocaleString()} ₫`,
 
       reply_markup: {
         inline_keyboard: [
-          [
-            {
-              text: "✅ Принять",
-              callback_data: `accept_${order.id}`,
-            },
-          ],
-          [
-            {
-              text: "👨‍🍳 Готовится",
-              callback_data: `prepare_${order.id}`,
-            },
-          ],
-          [
-            {
-              text: "🍽 Заказ готов",
-              callback_data: `ready_${order.id}`,
-            },
-          ],
-          [
-            {
-              text: "✅ Выдан клиенту",
-              callback_data: `complete_${order.id}`,
-            },
-          ],
-          [
-            {
-              text: "💰 Подтвердить оплату",
-              callback_data: `paid_${order.id}`,
-            },
-          ],
+          [{ text: "✅ Принять", callback_data: `accept_${order.id}` }],
+          [{ text: "👨‍🍳 Готовится", callback_data: `prepare_${order.id}` }],
+          [{ text: "🍽 Заказ готов", callback_data: `ready_${order.id}` }],
+          [{ text: "✅ Выдан клиенту", callback_data: `complete_${order.id}` }],
+          [{ text: "✏️ Изменить стол", callback_data: `table_${order.id}` }],
+          [{ text: "💰 Подтвердить оплату", callback_data: `paid_${order.id}` }],
         ],
       },
     }),
   }
 );
 
-
-
-        console.log(
+console.log(
           "TELEGRAM RESPONSE",
           await response.text()
         );

@@ -19,7 +19,14 @@ chat_id,
 text,
 reply_markup,
 } = await req.json();
+console.log("REQUEST RECEIVED");
 
+console.log(
+  JSON.stringify({
+    chat_id,
+    text,
+  })
+);
 
 const token =
   Deno.env.get("TELEGRAM_BOT_TOKEN");
@@ -42,6 +49,10 @@ const response = await fetch(
 
 const result =
   await response.json();
+console.log(
+  "TELEGRAM RESULT",
+  JSON.stringify(result)
+);
 
 return new Response(
   JSON.stringify(result),
