@@ -14,8 +14,10 @@ const userName =
 
   return (
     <div style={{ background:"#f6f8fb", minHeight:"100vh", fontFamily:"Inter,system-ui,sans-serif" }}>
-      <div style={{ maxWidth:480, margin:"0 auto", padding:0, paddingBottom:120 }}>
-
+      <div style={{
+  width:"100vw",
+  paddingBottom:120
+}}>
         <div style={{
           height:"85vh",
           minHeight:720,
