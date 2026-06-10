@@ -4,6 +4,7 @@ import { Bell, QrCode, Utensils, Hotel, ShoppingBag, PartyPopper, MapPin } from 
 export default function HomeTab({ onChangeTab }) {
 const userName =
   window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name || "Гость";
+
   const categories = [
     { title: "Рестораны", count: "126 мест", icon: <Utensils size={20} />, image: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1200" },
     { title: "Отели", count: "42 объекта", icon: <Hotel size={20} />, image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200" },
@@ -13,24 +14,35 @@ const userName =
 
   return (
     <div style={{ background:"#f6f8fb", minHeight:"100vh", fontFamily:"Inter,system-ui,sans-serif" }}>
-      <div style={{ maxWidth:480, margin:"0 auto", padding:16, paddingBottom:120 }}>
+      <div style={{ maxWidth:480, margin:"0 auto", padding:0, paddingBottom:120 }}>
 
         <div style={{
-          height:480,
-          borderRadius:32,
+          height:"75vh",
+          minHeight:650,
+          borderBottomLeftRadius:36,
+          borderBottomRightRadius:36,
           overflow:"hidden",
           position:"relative",
           backgroundImage:`url(${heroImage})`,
           backgroundSize:"cover",
           backgroundPosition:"center"
         }}>
-       <div style={{
-  position:"absolute",
-  inset:0,
-  background:"linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,.05))"
-}} />
+          <div style={{
+            position:"absolute",
+            inset:0,
+            background:"linear-gradient(to top,rgba(0,0,0,.60),rgba(0,0,0,.05))"
+          }} />
 
-          <div style={{position:"absolute",top:12,left:24,right:24,display:"flex",justifyContent:"space-between"}}>
+          <div style={{
+            position:"absolute",
+            top:"max(env(safe-area-inset-top), 8px)",
+            left:20,
+            right:20,
+            display:"flex",
+            justifyContent:"space-between",
+            alignItems:"center",
+            zIndex:10
+          }}>
             <div style={{color:"#fff"}}>
               <div style={{fontSize:26,fontWeight:800}}>CityPass Asia</div>
               <div style={{fontSize:14}}>Клуб привилегий в Азии</div>
@@ -44,29 +56,35 @@ const userName =
             </div>
           </div>
 
-          <div style={{position:"absolute",left:24,right:24,bottom:32,color:"#fff"}}>
-        <div style={{fontSize:42,fontWeight:800,lineHeight:1.1}}>
-  Добро пожаловать,
-  <br />
-  {userName} 👋
-</div>
+          <div style={{
+            position:"absolute",
+            left:24,
+            right:24,
+            top:170,
+            color:"#fff",
+            zIndex:10
+          }}>
+            <div style={{fontSize:42,fontWeight:800,lineHeight:1.1}}>
+              Добро пожаловать,
+              <br />
+              {userName} 👋
+            </div>
 
-<div
-  style={{
-    marginTop:16,
-    fontSize:18,
-    maxWidth:340,
-    lineHeight:1.5
-  }}
->
-  Скидки, бонусы и специальные предложения
-  по всей Азии
-</div>
+            <div style={{
+              marginTop:16,
+              fontSize:18,
+              maxWidth:340,
+              lineHeight:1.5
+            }}>
+              Скидки, бонусы и специальные предложения по всей Азии
+            </div>
           </div>
         </div>
 
         <div onClick={()=>onChangeTab?.("qr")} style={{
-          marginTop:-10,
+          marginTop:-60,
+          marginLeft:16,
+          marginRight:16,
           position:"relative",
           background:"linear-gradient(135deg,#0e8f8f,#06656c)",
           color:"#fff",
@@ -81,55 +99,9 @@ const userName =
             <QrCode size={42}/>
           </div>
           <div>
-           <div style={{fontSize:20,fontWeight:800}}>
-  Моя карта CityPass
-</div>
-
-<div style={{opacity:.9}}>
-  Откройте QR-код для получения привилегий
-</div>
+            <div style={{fontSize:20,fontWeight:800}}>Моя карта CityPass</div>
+            <div style={{opacity:.9}}>Откройте QR-код для получения привилегий</div>
           </div>
-        </div>
-
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginTop:18}}>
-          {categories.map(c=>(
-            <div key={c.title} style={{position:"relative",height:170,borderRadius:22,overflow:"hidden"}}>
-              <img src={c.image} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-              <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.75),transparent)"}}/>
-              <div style={{position:"absolute",top:10,left:10,width:36,height:36,borderRadius:"50%",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}}>{c.icon}</div>
-              <div style={{position:"absolute",left:10,bottom:10,color:"#fff"}}>
-                <div style={{fontWeight:700}}>{c.title}</div>
-                <div style={{fontSize:12}}>{c.count}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{marginTop:18,background:"linear-gradient(135deg,#015d63,#037f87)",color:"#fff",borderRadius:28,padding:24}}>
-          <div>Вы сэкономили</div>
-          <div style={{fontSize:48,fontWeight:800}}>12 458 000 ₫</div>
-          <div>за всё время</div>
-        </div>
-
-        <div style={{marginTop:20,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <h2>Рядом с вами</h2>
-          <div style={{color:"#0e8f8f"}}>Смотреть все</div>
-        </div>
-
-        <div style={{display:"flex",gap:12,overflowX:"auto"}}>
-          {[1,2,3,4].map(i=>(
-            <div key={i} style={{minWidth:170,height:180,borderRadius:20,overflow:"hidden",position:"relative"}}>
-              <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1200" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-              <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.75),transparent)"}}/>
-              <div style={{position:"absolute",left:12,bottom:12,color:"#fff"}}>Duck Cafe</div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{marginTop:20,textAlign:"center"}}>
-          <button onClick={()=>onChangeTab?.("map")} style={{background:"#0b7777",color:"#fff",border:"none",padding:"18px 30px",borderRadius:999}}>
-            <MapPin size={20} style={{verticalAlign:"middle"}}/> Смотреть на карте
-          </button>
         </div>
       </div>
     </div>

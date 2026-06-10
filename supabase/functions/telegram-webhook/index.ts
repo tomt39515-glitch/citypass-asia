@@ -1,271 +1,602 @@
+
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 Deno.serve(async (req) => {
-try {
-const update = await req.json();
+  try {
+    const update = await req.json();
 
+    console.log(
+      "UPDATE:",
+      JSON.stringify(update, null, 2)
+    );
 
-console.log(
-  "UPDATE:",
-  JSON.stringify(update, null, 2)
-);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
 
-const callback = update.callback_query;
+    const token =
+      Deno.env.get("TELEGRAM_BOT_TOKEN");
 
-if (!callback) {
-  return new Response("ok");
-}
+    const allowedTransitions: Record<
+      string,
+      string
+    > = {
+      pending: "accepted",
+      accepted: "preparing",
+      preparing: "ready",
+      ready: "completed",
+    };
 
-const data = callback.data;
+    async function getOrder(
+      orderId: number
+    ) {
+      const { data, error } =
+        await supabase
+          .from("orders")
+          .select("*")
+          .eq("id", orderId)
+          .single();
 
-console.log("CALLBACK DATA:", data);
+      if (error) {
+        throw error;
+      }
 
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-);
-
-const token =
-  Deno.env.get("TELEGRAM_BOT_TOKEN");
-const allowedTransitions: Record<string, string> = {
-  pending: "accepted",
-  accepted: "preparing",
-  preparing: "ready",
-  ready: "completed",
-};
-
-async function getOrder(orderId: number) {
-  const { data, error } = await supabase
-    .from("orders")
-    .select("*")
-    .eq("id", orderId)
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-}
-
-async function changeStatus(
-  orderId: number,
-  nextStatus: string,
-  successText: string
-) {
-  const order = await getOrder(orderId);
-
-  const expectedStatus =
-    allowedTransitions[order.status];
-
-  if (expectedStatus !== nextStatus) {
-    await answer("❌ Неверный этап заказа");
-    return false;
-  }
-
-  const result = await supabase
-  .from("orders")
-  .update({
-    status: nextStatus,
-  })
-  .eq("id", orderId)
-  .select();
-
-if (result.error) {
-  console.error(result.error);
-  await answer("❌ Ошибка обновления заказа");
-  return false;
-}
-
-  console.log(
-    "STATUS UPDATE:",
-    JSON.stringify(result)
-  );
-
-  await answer(successText);
-
-  return true;
-}
-async function answer(text: string) {
-  const response = await fetch(
-    `https://api.telegram.org/bot${token}/answerCallbackQuery`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        callback_query_id: callback.id,
-        text,
-      }),
+      return data;
     }
-  );
 
-  const result = await response.json();
+    const message = update.message;
 
-  console.log(
-    "TELEGRAM ANSWER:",
-    JSON.stringify(result)
-  );
-}
+    if (message?.text) {
+      const telegramId = String(
+        message.from.id
+      );
 
-if (data.startsWith("accept_")) {
-  const orderId = Number(
-    data.replace("accept_", "")
-  );
+      const newTable =
+        message.text.trim();
 
-  console.log("ACCEPT ORDER:", orderId);
+      const { data: session } =
+        await supabase
+          .from("telegram_sessions")
+          .select("*")
+          .eq(
+            "telegram_id",
+            telegramId
+          )
+          .eq(
+            "action",
+            "change_table"
+          )
+          .single();
 
-  await changeStatus(
-    orderId,
-    "accepted",
-    "Заказ принят"
-  );
+      if (session) {
+        const orderId =
+          session.order_id;
 
-  return new Response("ok");
-}
+        const order =
+          await getOrder(orderId);
 
-if (data.startsWith("prepare_")) {
-  const orderId = Number(
-    data.replace("prepare_", "")
-  );
+        const oldTable =
+          order.current_table_number;
 
-  console.log("PREPARE ORDER:", orderId);
+        const updateResult =
+          await supabase
+            .from("orders")
+            .update({
+              current_table_number:
+                newTable,
+            })
+            .eq("id", orderId);
 
-  await changeStatus(
-    orderId,
-    "preparing",
-    "Заказ готовится"
-  );
+        if (updateResult.error) {
+          console.error(
+            updateResult.error
+          );
 
-  return new Response("ok");
-}
+          return new Response(
+            "ok"
+          );
+        }
 
-if (data.startsWith("ready_")) {
-  const orderId = Number(
-    data.replace("ready_", "")
-  );
+       await supabase
+  .from("order_table_history")
+  .insert({
+    order_id: orderId,
+    old_table_number: oldTable,
+    new_table_number: newTable,
+  });
 
-  console.log("READY ORDER:", orderId);
+        await supabase
+          .from(
+            "telegram_sessions"
+          )
+          .delete()
+          .eq(
+            "telegram_id",
+            telegramId
+          );
 
-  await changeStatus(
-    orderId,
-    "ready",
-    "Заказ готов"
-  );
+        await fetch(
+          `https://api.telegram.org/bot${token}/sendMessage`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              chat_id:
+                telegramId,
+              text: `✅ Столик изменён на ${newTable}`,
+            }),
+          }
+        );
 
-  return new Response("ok");
-}
+        return new Response("ok");
+      }
+    }
 
-if (data.startsWith("complete_")) {
-  const orderId = Number(
-    data.replace("complete_", "")
-  );
+    const callback =
+      update.callback_query;
 
-  console.log("COMPLETE ORDER:", orderId);
+    if (!callback) {
+      return new Response("ok");
+    }
 
-  await changeStatus(
-    orderId,
-    "completed",
-    "Заказ выдан клиенту"
-  );
+    const data = callback.data;
 
-  return new Response("ok");
-}
-if (data.startsWith("table_")) {
-  const orderId = Number(
-    data.replace("table_", "")
-  );
+    console.log(
+      "CALLBACK DATA:",
+      data
+    );
+
+    async function answer(
+      text: string
+    ) {
+      const response =
+        await fetch(
+          `https://api.telegram.org/bot${token}/answerCallbackQuery`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              callback_query_id:
+                callback.id,
+              text,
+            }),
+          }
+        );
+
+      const result =
+        await response.json();
+
+      console.log(
+        "TELEGRAM ANSWER:",
+        JSON.stringify(result)
+      );
+    }
+
+    async function changeStatus(
+      orderId: number,
+      nextStatus: string,
+      successText: string
+    ) {
+      const order =
+        await getOrder(orderId);
+
+      const expectedStatus =
+        allowedTransitions[
+          order.status
+        ];
+
+      if (
+        expectedStatus !==
+        nextStatus
+      ) {
+        await answer(
+          "❌ Неверный этап заказа"
+        );
+        return false;
+      }
+
+      const result =
+        await supabase
+          .from("orders")
+          .update({
+            status:
+              nextStatus,
+          })
+          .eq("id", orderId)
+          .select();
+
+      if (result.error) {
+        console.error(
+          result.error
+        );
+
+        await answer(
+          "❌ Ошибка обновления заказа"
+        );
+
+        return false;
+      }
+
+      console.log(
+        "STATUS UPDATE:",
+        JSON.stringify(result)
+      );
+
+      await answer(
+        successText
+      );
+
+      return true;
+    }
+
+    if (
+  data.startsWith(
+    "accept_"
+  )
+) {
+  const orderId =
+    Number(
+      data.replace(
+        "accept_",
+        ""
+      )
+    );
 
   const telegramId =
-    String(callback.from.id);
+    String(
+      callback.from.id
+    );
 
+  const { data: staff, error: staffError } =
   await supabase
-    .from("telegram_sessions")
-    .delete()
-    .eq("telegram_id", telegramId);
+    .from("partner_staff")
+    .select("*")
+    .eq("telegram_id", telegramId)
+    .eq("active", true)
+    .single();
 
-  const sessionResult =
-    await supabase
-      .from("telegram_sessions")
-      .insert({
-        telegram_id: telegramId,
-        order_id: orderId,
-        action: "change_table",
-      });
-
-  console.log(
-    "TABLE SESSION:",
-    JSON.stringify(sessionResult)
-  );
-
-  await answer(
-    "Введите новый номер столика"
-  );
-
-  return new Response("ok");
-}
-if (data.startsWith("paid_")) {
-  const orderId = Number(
-    data.replace("paid_", "")
-  );
-
-  const now =
-    new Date().toISOString();
-
-  console.log("PAID ORDER:", orderId);
-
-  const result = await supabase
-    .from("orders")
-    .update({
-  payment_status: "paid",
-  bill_status: "closed",
-  paid_at: now,
-  closed_at: now,
-})
-    .eq("id", orderId)
-    .select();
-if (result.error) {
-  console.error(result.error);
-
-  await answer(
-    "❌ Ошибка подтверждения оплаты"
-  );
-
-  return new Response("ok");
-}
-  console.log(
-    "SUPABASE PAID:",
-    JSON.stringify(result)
-  );
-
-  await answer("Оплата подтверждена");
-
-  return new Response("ok");
-}
-
-return new Response("ok");
-
-
-} catch (e) {
-console.error(
-"WEBHOOK ERROR:",
-e
+console.log(
+  "STAFF:",
+  JSON.stringify(staff)
 );
 
+console.log(
+  "STAFF ERROR:",
+  JSON.stringify(staffError)
+);
 
-return new Response(
-  JSON.stringify({
-    error: String(e),
-  }),
-  {
-    status: 500,
-    headers: {
-      "Content-Type": "application/json",
-    },
+  if (!staff) {
+    await answer(
+      "❌ Сотрудник не найден"
+    );
+
+    return new Response(
+      "ok"
+    );
   }
-);
 
+  const order =
+    await getOrder(orderId);
 
+  if (
+    order.assigned_staff_id
+  ) {
+    await answer(
+      "❌ Заказ уже принят"
+    );
+
+    return new Response(
+      "ok"
+    );
+  }
+
+  const assignResult =
+    await supabase
+      .from("orders")
+      .update({
+        assigned_staff_id:
+          staff.id,
+      })
+      .eq(
+        "id",
+        orderId
+      )
+      .is(
+        "assigned_staff_id",
+        null
+      )
+      .select();
+
+  if (
+    assignResult.error
+  ) {
+    console.error(
+      assignResult.error
+    );
+
+    await answer(
+      "❌ Ошибка назначения"
+    );
+
+    return new Response(
+      "ok"
+    );
+  }
+
+  const success =
+    await changeStatus(
+      orderId,
+      "accepted",
+      `Заказ принят: ${staff.full_name}`
+    );
+
+  if (!success) {
+    return new Response(
+      "ok"
+    );
+  }
+
+  try {
+    await fetch(
+      `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          chat_id:
+            callback.message.chat.id,
+          message_id:
+            callback.message.message_id,
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: `👨‍🍳 ${staff.full_name}`,
+                  callback_data:
+                    "accepted",
+                },
+              ],
+              [
+                {
+                  text:
+                    "🍳 Готовится",
+                  callback_data:
+                    `prepare_${orderId}`,
+                },
+              ],
+            ],
+          },
+        }),
+      }
+    );
+  } catch (e) {
+    console.error(
+      "BUTTON UPDATE ERROR",
+      e
+    );
+  }
+
+  return new Response(
+    "ok"
+  );
 }
+
+    if (
+      data.startsWith(
+        "prepare_"
+      )
+    ) {
+      const orderId =
+        Number(
+          data.replace(
+            "prepare_",
+            ""
+          )
+        );
+
+      await changeStatus(
+        orderId,
+        "preparing",
+        "Заказ готовится"
+      );
+
+      return new Response(
+        "ok"
+      );
+    }
+
+    if (
+      data.startsWith(
+        "ready_"
+      )
+    ) {
+      const orderId =
+        Number(
+          data.replace(
+            "ready_",
+            ""
+          )
+        );
+
+      await changeStatus(
+        orderId,
+        "ready",
+        "Заказ готов"
+      );
+
+      return new Response(
+        "ok"
+      );
+    }
+
+    if (
+      data.startsWith(
+        "complete_"
+      )
+    ) {
+      const orderId =
+        Number(
+          data.replace(
+            "complete_",
+            ""
+          )
+        );
+
+      await changeStatus(
+        orderId,
+        "completed",
+        "Заказ выдан клиенту"
+      );
+
+      return new Response(
+        "ok"
+      );
+    }
+
+    if (
+      data.startsWith(
+        "table_"
+      )
+    ) {
+      const orderId =
+        Number(
+          data.replace(
+            "table_",
+            ""
+          )
+        );
+
+      const telegramId =
+        String(
+          callback.from.id
+        );
+
+      await supabase
+        .from(
+          "telegram_sessions"
+        )
+        .delete()
+        .eq(
+          "telegram_id",
+          telegramId
+        );
+
+      const sessionResult =
+        await supabase
+          .from(
+            "telegram_sessions"
+          )
+          .insert({
+            telegram_id:
+              telegramId,
+            order_id:
+              orderId,
+            action:
+              "change_table",
+          });
+
+      console.log(
+        "TABLE SESSION:",
+        JSON.stringify(
+          sessionResult
+        )
+      );
+
+      await answer(
+        "Введите новый номер столика"
+      );
+
+      return new Response(
+        "ok"
+      );
+    }
+
+    if (
+      data.startsWith(
+        "paid_"
+      )
+    ) {
+      const orderId =
+        Number(
+          data.replace(
+            "paid_",
+            ""
+          )
+        );
+
+      const now =
+        new Date().toISOString();
+
+      const result =
+        await supabase
+          .from("orders")
+          .update({
+            payment_status:
+              "paid",
+            bill_status:
+              "closed",
+            paid_at: now,
+            closed_at: now,
+          })
+          .eq("id", orderId)
+          .select();
+
+      if (result.error) {
+        console.error(
+          result.error
+        );
+
+        await answer(
+          "❌ Ошибка подтверждения оплаты"
+        );
+
+        return new Response(
+          "ok"
+        );
+      }
+
+      console.log(
+        "SUPABASE PAID:",
+        JSON.stringify(result)
+      );
+
+      await answer(
+        "Оплата подтверждена"
+      );
+
+      return new Response(
+        "ok"
+      );
+    }
+
+    return new Response("ok");
+  } catch (e) {
+    console.error(
+      "WEBHOOK ERROR:",
+      e
+    );
+
+    return new Response(
+      JSON.stringify({
+        error: String(e),
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+      }
+    );
+  }
 });
