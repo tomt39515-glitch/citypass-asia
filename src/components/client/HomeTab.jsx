@@ -17,8 +17,8 @@ const userName =
       <div style={{ maxWidth:480, margin:"0 auto", padding:0, paddingBottom:120 }}>
 
         <div style={{
-          height:"75vh",
-          minHeight:650,
+          height:"85vh",
+          minHeight:720,
           borderBottomLeftRadius:36,
           borderBottomRightRadius:36,
           overflow:"hidden",
@@ -35,7 +35,7 @@ const userName =
 
           <div style={{
             position:"absolute",
-            top:"max(env(safe-area-inset-top), 8px)",
+            top:-4,
             left:20,
             right:20,
             display:"flex",

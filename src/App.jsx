@@ -65,17 +65,22 @@ function App() {
 
   useEffect(() => {
   if (window.Telegram?.WebApp) {
-    window.Telegram.WebApp.ready();
-    window.Telegram.WebApp.expand();
-window.Telegram.WebApp.setHeaderColor("#ffffff");
-window.Telegram.WebApp.setBackgroundColor("#ffffff");
-    if (
-      typeof window.Telegram.WebApp
-        .disableVerticalSwipes === "function"
-    ) {
-      window.Telegram.WebApp.disableVerticalSwipes();
-    }
+  const tg = window.Telegram.WebApp;
+
+  tg.ready();
+  tg.expand();
+
+  if (typeof tg.requestFullscreen === "function") {
+    tg.requestFullscreen();
   }
+
+  tg.setHeaderColor("#000000");
+  tg.setBackgroundColor("#000000");
+
+  if (typeof tg.disableVerticalSwipes === "function") {
+    tg.disableVerticalSwipes();
+  }
+}
 
   registerClient();
 }, []);
