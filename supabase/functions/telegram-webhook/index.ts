@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
       pending: "accepted",
       accepted: "preparing",
       preparing: "ready",
-      ready: "completed",
+      ready: "served",
     };
 
     async function getOrder(
@@ -523,8 +523,8 @@ console.log(
                 inline_keyboard: [
                   [
                     {
-                      text: "✅ Выдан клиенту",
-                      callback_data: `complete_${orderId}`,
+                      text: "✅ Выдать клиенту",
+                      callback_data: `serve_${orderId}`,
                     },
                   ],
                   [
@@ -606,7 +606,63 @@ console.log(
       );
     }
 
+    
     if (
+      data.startsWith(
+        "serve_"
+      )
+    ) {
+      const orderId =
+        Number(
+          data.replace(
+            "serve_",
+            ""
+          )
+        );
+
+      const success =
+        await changeStatus(
+          orderId,
+          "served",
+          "Заказ выдан клиенту"
+        );
+
+      if (success) {
+        await fetch(
+          `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              chat_id: callback.message.chat.id,
+              message_id: callback.message.message_id,
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: "✅ Выдано",
+                      callback_data: "done",
+                    },
+                  ],
+                  [
+                    {
+                      text: "💰 Подтвердить оплату",
+                      callback_data: `paid_${orderId}`,
+                    },
+                  ],
+                ],
+              },
+            }),
+          }
+        );
+      }
+
+      return new Response("ok");
+    }
+
+if (
       data.startsWith(
         "table_"
       )
