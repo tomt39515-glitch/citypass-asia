@@ -545,13 +545,13 @@ ${tableNumber}
                 [
                   {
                     text: "✅ Подтвердить",
-                    callback_data: `join_accept_${activeSession.id}_${client.id}`
+                    callback_data: `joinapprove_${request.id}`
                   }
                 ],
                 [
                   {
                     text: "❌ Отклонить",
-                   callback_data: `join_reject_${activeSession.id}_${client.id}`
+                   callback_data: `joinreject_${request.id}`
                   }
                 ]
               ]
