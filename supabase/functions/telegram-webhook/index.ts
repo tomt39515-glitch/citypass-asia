@@ -785,12 +785,30 @@ if (
         return new Response("ok");
       }
 
-      await supabase
-        .from("table_session_members")
-        .insert({
-          table_session_id: joinRequest.table_session_id,
-          client_id: joinRequest.client_id,
-        });
+    const { data: existingMember } =
+  await supabase
+    .from("table_session_members")
+    .select("*")
+    .eq(
+      "table_session_id",
+      joinRequest.table_session_id
+    )
+    .eq(
+      "client_id",
+      joinRequest.client_id
+    )
+    .maybeSingle();
+
+if (!existingMember) {
+  await supabase
+    .from("table_session_members")
+    .insert({
+      table_session_id:
+        joinRequest.table_session_id,
+      client_id:
+        joinRequest.client_id,
+    });
+}
 
       await supabase
         .from("table_join_requests")
@@ -801,6 +819,30 @@ if (
         .eq("id", requestId);
 
       await answer("Гость подключён к столу");
+await fetch(
+  `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      chat_id: callback.message.chat.id,
+      message_id: callback.message.message_id,
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "👥 Клиент присоединён",
+              callback_data: "joined",
+            },
+          ],
+        ],
+      },
+    }),
+  }
+);
+
       return new Response("ok");
     }
 
