@@ -425,6 +425,27 @@ if (
       const orderNumber =
         `CPA-${Date.now()}`;
 
+      if (serviceType === "table") {
+        const { data: occupiedTable } =
+          await supabase
+            .from("orders")
+            .select("id, client_id")
+            .eq("partner_id", partner.id)
+            .eq("current_table_number", tableNumber)
+            .eq("bill_status", "open")
+            .neq("client_id", client.id)
+            .limit(1)
+            .maybeSingle();
+
+        if (occupiedTable) {
+          alert(
+            `Столик ${tableNumber} уже занят`
+          );
+          setLoading(false);
+          return;
+        }
+      }
+
      const { data: existingOrder } =
   await supabase
     .from("orders")
