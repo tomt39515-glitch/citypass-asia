@@ -492,17 +492,84 @@ if (serviceType === "table" && activeSession) {
         .eq("status", "pending")
         .maybeSingle();
 
-    if (!existingRequest) {
+   if (!existingRequest) {
+
+  await supabase
+    .from("table_join_requests")
+    .insert({
+      table_session_id: activeSession.id,
+      client_id: client.id,
+      partner_id: partner.id,
+      table_number: tableNumber,
+      status: "pending",
+    });
+
+  try {
+
+    const { data: owner } =
       await supabase
-        .from("table_join_requests")
-        .insert({
-          table_session_id: activeSession.id,
-          client_id: client.id,
-          partner_id: partner.id,
-          table_number: tableNumber,
-          status: "pending",
-        });
+        .from("partner_staff")
+        .select("*")
+        .eq("partner_id", partner.id)
+        .eq("role", "owner")
+        .maybeSingle();
+
+    if (owner?.telegram_id) {
+
+      await fetch(
+        "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: String(owner.telegram_id),
+
+            text:
+`👥 Запрос на присоединение к столику
+
+Клиент:
+${client.full_name || "Гость"}
+
+Telegram:
+${client.telegram_id}
+
+Столик:
+${tableNumber}
+
+Требуется подтверждение.`,
+
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "✅ Подтвердить",
+                    callback_data: `join_accept_${activeSession.id}_${client.id}`
+                  }
+                ],
+                [
+                  {
+                    text: "❌ Отклонить",
+                   callback_data: `join_reject_${activeSession.id}_${client.id}`
+                  }
+                ]
+              ]
+            }
+          }),
+        }
+      );
+
     }
+
+  } catch (e) {
+    console.error(
+      "JOIN REQUEST NOTIFICATION ERROR",
+      e
+    );
+  }
+
+}
 
     alert(
       "Запрос на подключение к столу отправлен. Дождитесь подтверждения официанта."
