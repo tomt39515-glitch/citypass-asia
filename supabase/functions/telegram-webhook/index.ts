@@ -717,6 +717,42 @@ console.log(
         "Оплата подтверждена"
       );
 
+      await fetch(
+        `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: callback.message.chat.id,
+            message_id: callback.message.message_id,
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "✅ Выдан клиенту",
+                    callback_data: "done",
+                  },
+                ],
+                [
+                  {
+                    text: "✅ Оплата получена",
+                    callback_data: "done",
+                  },
+                ],
+                [
+                  {
+                    text: "🔒 Счёт закрыт",
+                    callback_data: "done",
+                  },
+                ],
+              ],
+            },
+          }),
+        }
+      );
+
       return new Response(
         "ok"
       );
