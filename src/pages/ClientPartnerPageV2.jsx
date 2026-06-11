@@ -432,6 +432,7 @@ if (
     .eq("partner_id", partner.id)
     .eq("client_id", client.id)
     .eq("bill_status", "open")
+    .eq("order_type", "main")
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -537,7 +538,10 @@ table_number:
     ? tableNumber
     : null,
           order_type:
-            "food",
+            "main",
+
+          parent_order_id:
+            null,
 
           status:
             "pending",
