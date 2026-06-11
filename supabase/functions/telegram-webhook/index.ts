@@ -675,45 +675,7 @@ if (
           )
         );
 
-      const now =
-        new Date().toISOString();
-
-      const result =
-        await supabase
-          .from("orders")
-          .update({
-            payment_status:
-              "paid",
-            bill_status:
-              "closed",
-            paid_at: now,
-            closed_at: now,
-          })
-          .eq("id", orderId)
-          .select();
-
-      if (result.error) {
-        console.error(
-          result.error
-        );
-
-        await answer(
-          "❌ Ошибка подтверждения оплаты"
-        );
-
-        return new Response(
-          "ok"
-        );
-      }
-
-      console.log(
-        "SUPABASE PAID:",
-        JSON.stringify(result)
-      );
-
-      await answer(
-        "Оплата подтверждена"
-      );
+      const order = await getOrder(orderId);
 
       await fetch(
         `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
@@ -729,16 +691,61 @@ if (
               inline_keyboard: [
                 [
                   {
-                    text: "✅ Выдано",
-                    callback_data: "done",
+                    text: "✅ Да, оплата получена",
+                    callback_data: `confirm_payment_${orderId}`,
                   },
                 ],
                 [
                   {
-                    text: "✅ Оплата получена",
-                    callback_data: "done",
+                    text: "❌ Отмена",
+                    callback_data: `cancel_payment_${orderId}`,
                   },
                 ],
+              ],
+            },
+          }),
+        }
+      );
+
+      await answer(`Подтвердите оплату. Сумма: ${order.total_amount || 0}`);
+
+      return new Response("ok");
+    }
+
+    if (data.startsWith("confirm_payment_")) {
+      const orderId = Number(data.replace("confirm_payment_", ""));
+
+      const now = new Date().toISOString();
+
+      const result = await supabase
+        .from("orders")
+        .update({
+          payment_status: "paid",
+          bill_status: "closed",
+          paid_at: now,
+          closed_at: now,
+        })
+        .eq("id", orderId);
+
+      if (result.error) {
+        await answer("❌ Ошибка подтверждения оплаты");
+        return new Response("ok");
+      }
+
+      await answer("Оплата подтверждена. Счёт закрыт.");
+
+      await fetch(
+        `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: callback.message.chat.id,
+            message_id: callback.message.message_id,
+            reply_markup: {
+              inline_keyboard: [
                 [
                   {
                     text: "🔒 Счёт закрыт",
@@ -751,9 +758,12 @@ if (
         }
       );
 
-      return new Response(
-        "ok"
-      );
+      return new Response("ok");
+    }
+
+    if (data.startsWith("cancel_payment_")) {
+      await answer("Подтверждение оплаты отменено");
+      return new Response("ok");
     }
 
     // ===============================
