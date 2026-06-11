@@ -436,6 +436,34 @@ if (
     .eq("status", "active")
     .maybeSingle();
 
+if (
+  serviceType === "table" &&
+  !activeSession
+) {
+  const { data: newSession, error: sessionError } =
+    await supabase
+      .from("table_sessions")
+      .insert({
+        partner_id: partner.id,
+        table_number: tableNumber,
+        status: "active",
+      })
+      .select()
+      .single();
+
+  if (sessionError) {
+    throw sessionError;
+  }
+
+  await supabase
+    .from("table_session_members")
+    .insert({
+      table_session_id: newSession.id,
+      client_id: client.id,
+      role: "member",
+    });
+}
+
 if (serviceType === "table" && activeSession) {
 
   const { data: member } =
