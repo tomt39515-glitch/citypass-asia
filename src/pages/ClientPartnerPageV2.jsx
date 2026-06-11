@@ -432,14 +432,22 @@ alert(
     type: typeof tableNumber
   })
 );
-     const { data: activeSession } =
+    const { data: activeSession } =
   await supabase
     .from("table_sessions")
     .select("*")
     .eq("partner_id", partner.id)
     .eq("table_number", tableNumber)
     .eq("status", "active")
+    .order("created_at", {
+      ascending: false,
+    })
+    .limit(1)
     .maybeSingle();
+console.log(
+  "ACTIVE SESSION",
+  activeSession
+);
 
 if (
   serviceType === "table" &&
@@ -478,6 +486,10 @@ if (serviceType === "table" && activeSession) {
       .eq("table_session_id", activeSession.id)
       .eq("client_id", client.id)
       .maybeSingle();
+console.log(
+  "TABLE MEMBER",
+  member
+);
 
   if (!member) {
 
