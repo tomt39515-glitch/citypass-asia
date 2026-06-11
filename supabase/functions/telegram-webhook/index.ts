@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
       pending: "accepted",
       accepted: "preparing",
       preparing: "ready",
-      ready: "served",
+      ready: "completed",
     };
 
     async function getOrder(
@@ -551,64 +551,6 @@ console.log(
 
     if (
       data.startsWith(
-        "complete_"
-      )
-    ) {
-      const orderId =
-        Number(
-          data.replace(
-            "complete_",
-            ""
-          )
-        );
-
-      const success =
-        await changeStatus(
-          orderId,
-          "completed",
-          "Заказ выдан клиенту"
-        );
-
-      if (success) {
-        await fetch(
-          `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              chat_id: callback.message.chat.id,
-              message_id: callback.message.message_id,
-              reply_markup: {
-                inline_keyboard: [
-                  [
-                    {
-                      text: "✅ Выдан клиенту",
-                      callback_data: "done",
-                    },
-                  ],
-                  [
-                    {
-                      text: "💰 Оплата подтверждена",
-                      callback_data: `paid_${orderId}`,
-                    },
-                  ],
-                ],
-              },
-            }),
-          }
-        );
-      }
-
-      return new Response(
-        "ok"
-      );
-    }
-
-    
-    if (
-      data.startsWith(
         "serve_"
       )
     ) {
@@ -623,7 +565,7 @@ console.log(
       const success =
         await changeStatus(
           orderId,
-          "served",
+          "completed",
           "Заказ выдан клиенту"
         );
 
@@ -787,7 +729,7 @@ if (
               inline_keyboard: [
                 [
                   {
-                    text: "✅ Выдан клиенту",
+                    text: "✅ Выдано",
                     callback_data: "done",
                   },
                 ],
@@ -835,3 +777,57 @@ if (
     );
   }
 });
+
+
+// ===============================
+// CITYPASS ASIA TABLE SESSION PATCH
+// Добавить перед return new Response("ok"); в обработке callback
+// ===============================
+
+    if (data.startsWith("joinapprove_")) {
+      const requestId = Number(data.replace("joinapprove_", ""));
+
+      const { data: joinRequest } = await supabase
+        .from("table_join_requests")
+        .select("*")
+        .eq("id", requestId)
+        .single();
+
+      if (!joinRequest) {
+        await answer("Заявка не найдена");
+        return new Response("ok");
+      }
+
+      await supabase
+        .from("table_session_members")
+        .insert({
+          table_session_id: joinRequest.table_session_id,
+          client_id: joinRequest.client_id,
+        });
+
+      await supabase
+        .from("table_join_requests")
+        .update({
+          status: "approved",
+          approved_at: new Date().toISOString(),
+        })
+        .eq("id", requestId);
+
+      await answer("Гость подключён к столу");
+      return new Response("ok");
+    }
+
+    if (data.startsWith("joinreject_")) {
+      const requestId = Number(data.replace("joinreject_", ""));
+
+      await supabase
+        .from("table_join_requests")
+        .update({
+          status: "rejected",
+        })
+        .eq("id", requestId);
+
+      await answer("Подключение отклонено");
+      return new Response("ok");
+    }
+

@@ -427,7 +427,58 @@ if (
 
       
 
-     const { data: existingOrder } =
+     const { data: activeSession } =
+  await supabase
+    .from("table_sessions")
+    .select("*")
+    .eq("partner_id", partner.id)
+    .eq("table_number", tableNumber)
+    .eq("status", "active")
+    .maybeSingle();
+
+if (serviceType === "table" && activeSession) {
+
+  const { data: member } =
+    await supabase
+      .from("table_session_members")
+      .select("*")
+      .eq("table_session_id", activeSession.id)
+      .eq("client_id", client.id)
+      .maybeSingle();
+
+  if (!member) {
+
+    const { data: existingRequest } =
+      await supabase
+        .from("table_join_requests")
+        .select("*")
+        .eq("table_session_id", activeSession.id)
+        .eq("client_id", client.id)
+        .eq("status", "pending")
+        .maybeSingle();
+
+    if (!existingRequest) {
+      await supabase
+        .from("table_join_requests")
+        .insert({
+          table_session_id: activeSession.id,
+          client_id: client.id,
+          partner_id: partner.id,
+          table_number: tableNumber,
+          status: "pending",
+        });
+    }
+
+    alert(
+      "Запрос на подключение к столу отправлен. Дождитесь подтверждения официанта."
+    );
+
+    setLoading(false);
+    return;
+  }
+}
+
+const { data: existingOrder } =
   await supabase
     .from("orders")
     .select("*")
