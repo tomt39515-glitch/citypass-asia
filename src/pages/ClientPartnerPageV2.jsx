@@ -521,6 +521,29 @@ if (requestError) {
   throw requestError;
 }
 
+const { error: pendingError } =
+  await supabase
+    .from("pending_join_orders")
+    .insert({
+      table_join_request_id: request.id,
+
+      client_id: client.id,
+      partner_id: partner.id,
+
+      table_number: tableNumber,
+
+      cart,
+
+      subtotal,
+      discount_amount: discountAmount,
+      total_amount: totalAmount,
+    });
+
+console.log(
+  "PENDING ORDER ERROR",
+  pendingError
+);
+
   try {
 
     const { data: owner } =
