@@ -756,30 +756,7 @@ if (
       );
     }
 
-    return new Response("ok");
-  } catch (e) {
-    console.error(
-      "WEBHOOK ERROR:",
-      e
-    );
-
-    return new Response(
-      JSON.stringify({
-        error: String(e),
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-      }
-    );
-  }
-});
-
-
-// ===============================
+    // ===============================
 // CITYPASS ASIA TABLE SESSION PATCH
 // Добавить перед return new Response("ok"); в обработке callback
 // ===============================
@@ -830,4 +807,29 @@ if (
       await answer("Подключение отклонено");
       return new Response("ok");
     }
+
+
+
+    return new Response("ok");
+  } catch (e) {
+    console.error(
+      "WEBHOOK ERROR:",
+      e
+    );
+
+    return new Response(
+      JSON.stringify({
+        error: String(e),
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+      }
+    );
+  }
+});
+
 
