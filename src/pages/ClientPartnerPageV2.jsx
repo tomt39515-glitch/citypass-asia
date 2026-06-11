@@ -494,6 +494,7 @@ if (serviceType === "table" && activeSession) {
 
    if (!existingRequest) {
 
+ const { data: request, error: requestError } =
   await supabase
     .from("table_join_requests")
     .insert({
@@ -502,7 +503,13 @@ if (serviceType === "table" && activeSession) {
       partner_id: partner.id,
       table_number: tableNumber,
       status: "pending",
-    });
+    })
+    .select()
+    .single();
+
+if (requestError) {
+  throw requestError;
+}
 
   try {
 
