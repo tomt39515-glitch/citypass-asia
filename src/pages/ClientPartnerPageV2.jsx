@@ -426,13 +426,11 @@ if (
         `CPA-${Date.now()}`;
 
       
-console.log(
-  "TABLE NUMBER:",
-  tableNumber
-);
-
 alert(
-  "Стол: " + tableNumber
+  JSON.stringify({
+    tableNumber,
+    type: typeof tableNumber
+  })
 );
      const { data: activeSession } =
   await supabase
