@@ -562,11 +562,44 @@ console.log(
           )
         );
 
-      await changeStatus(
-        orderId,
-        "completed",
-        "Заказ выдан клиенту"
-      );
+      const success =
+        await changeStatus(
+          orderId,
+          "completed",
+          "Заказ выдан клиенту"
+        );
+
+      if (success) {
+        await fetch(
+          `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              chat_id: callback.message.chat.id,
+              message_id: callback.message.message_id,
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: "✅ Выдан клиенту",
+                      callback_data: "done",
+                    },
+                  ],
+                  [
+                    {
+                      text: "💰 Оплата подтверждена",
+                      callback_data: `paid_${orderId}`,
+                    },
+                  ],
+                ],
+              },
+            }),
+          }
+        );
+      }
 
       return new Response(
         "ok"
