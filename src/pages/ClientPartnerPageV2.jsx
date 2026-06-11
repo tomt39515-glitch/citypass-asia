@@ -430,9 +430,10 @@ if (
     .from("orders")
     .select("*")
     .eq("partner_id", partner.id)
-    .eq("service_type", "table")
-    .eq("current_table_number", tableNumber)
+    .eq("client_id", client.id)
     .eq("bill_status", "open")
+    .order("created_at", { ascending: false })
+    .limit(1)
     .maybeSingle();
 
       if (

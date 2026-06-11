@@ -187,6 +187,42 @@ Deno.serve(async (req) => {
       const order =
         await getOrder(orderId);
 
+      const telegramId = String(
+        callback.from.id
+      );
+
+      const { data: staff } =
+        await supabase
+          .from("partner_staff")
+          .select("*")
+          .eq(
+            "telegram_id",
+            telegramId
+          )
+          .eq(
+            "active",
+            true
+          )
+          .single();
+
+      if (!staff) {
+        await answer(
+          "❌ Сотрудник не найден"
+        );
+        return false;
+      }
+
+      if (
+        order.assigned_staff_id &&
+        order.assigned_staff_id !==
+          staff.id
+      ) {
+        await answer(
+          "❌ Заказ закреплен за другим сотрудником"
+        );
+        return false;
+      }
+
       const expectedStatus =
         allowedTransitions[
           order.status
@@ -404,15 +440,52 @@ console.log(
           )
         );
 
-      await changeStatus(
-        orderId,
-        "preparing",
-        "Заказ готовится"
-      );
+      const success =
+        await changeStatus(
+          orderId,
+          "preparing",
+          "Заказ готовится"
+        );
 
-      return new Response(
-        "ok"
-      );
+      if (success) {
+        await fetch(
+          `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              chat_id: callback.message.chat.id,
+              message_id: callback.message.message_id,
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: "🍽 Заказ готов",
+                      callback_data: `ready_${orderId}`,
+                    },
+                  ],
+                  [
+                    {
+                      text: "✏️ Изменить стол",
+                      callback_data: `table_${orderId}`,
+                    },
+                  ],
+                  [
+                    {
+                      text: "💰 Подтвердить оплату",
+                      callback_data: `paid_${orderId}`,
+                    },
+                  ],
+                ],
+              },
+            }),
+          }
+        );
+      }
+
+      return new Response("ok");
     }
 
     if (
@@ -428,15 +501,52 @@ console.log(
           )
         );
 
-      await changeStatus(
-        orderId,
-        "ready",
-        "Заказ готов"
-      );
+      const success =
+        await changeStatus(
+          orderId,
+          "ready",
+          "Заказ готов"
+        );
 
-      return new Response(
-        "ok"
-      );
+      if (success) {
+        await fetch(
+          `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              chat_id: callback.message.chat.id,
+              message_id: callback.message.message_id,
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: "✅ Выдан клиенту",
+                      callback_data: `complete_${orderId}`,
+                    },
+                  ],
+                  [
+                    {
+                      text: "✏️ Изменить стол",
+                      callback_data: `table_${orderId}`,
+                    },
+                  ],
+                  [
+                    {
+                      text: "💰 Подтвердить оплату",
+                      callback_data: `paid_${orderId}`,
+                    },
+                  ],
+                ],
+              },
+            }),
+          }
+        );
+      }
+
+      return new Response("ok");
     }
 
     if (
