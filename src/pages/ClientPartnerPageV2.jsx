@@ -558,29 +558,75 @@ const channel = supabase
     async (payload) => {
       const status = payload.new.status;
 
-     if (status === "approved") {
+      if (status === "approved") {
+        clearInterval(pollInterval);
 
-  supabase.removeChannel(channel);
+        supabase.removeChannel(channel);
 
-  setCart([]);
+        setCart([]);
+        setLoading(false);
 
-  setLoading(false);
+        alert(
+          "Вы подключены к столику. Дозаказ автоматически добавлен в общий счет."
+        );
 
-  alert(
-    "Вы подключены к столику. Дозаказ автоматически добавлен в общий счет."
-  );
-
-  window.location.reload();
-
-}
+        window.location.reload();
+      }
 
       if (status === "rejected") {
+        clearInterval(pollInterval);
+
         supabase.removeChannel(channel);
-        alert("Запрос на подключение отклонён.");
+
+        setLoading(false);
+
+        alert(
+          "Запрос на подключение отклонён."
+        );
       }
     }
   )
   .subscribe();
+
+const pollInterval = setInterval(
+  async () => {
+    const { data } = await supabase
+      .from("table_join_requests")
+      .select("status")
+      .eq("id", request.id)
+      .single();
+
+    if (!data) return;
+
+    if (data.status === "approved") {
+      clearInterval(pollInterval);
+
+      supabase.removeChannel(channel);
+
+      setCart([]);
+      setLoading(false);
+
+      alert(
+        "Вы подключены к столику. Дозаказ автоматически добавлен в общий счет."
+      );
+
+      window.location.reload();
+    }
+
+    if (data.status === "rejected") {
+      clearInterval(pollInterval);
+
+      supabase.removeChannel(channel);
+
+      setLoading(false);
+
+      alert(
+        "Запрос на подключение отклонён."
+      );
+    }
+  },
+  2000
+);
 
 
   try {
