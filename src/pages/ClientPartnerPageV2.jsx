@@ -539,10 +539,39 @@ const { error: pendingError } =
       total_amount: totalAmount,
     });
 
+
 console.log(
   "PENDING ORDER ERROR",
   pendingError
 );
+
+const channel = supabase
+  .channel(`join-request-${request.id}`)
+  .on(
+    "postgres_changes",
+    {
+      event: "UPDATE",
+      schema: "public",
+      table: "table_join_requests",
+      filter: `id=eq.${request.id}`,
+    },
+    async (payload) => {
+      const status = payload.new.status;
+
+      if (status === "approved") {
+        supabase.removeChannel(channel);
+        setCart([]);
+        alert("Вы подключены к столику. Дозаказ отправлен.");
+      }
+
+      if (status === "rejected") {
+        supabase.removeChannel(channel);
+        alert("Запрос на подключение отклонён.");
+      }
+    }
+  )
+  .subscribe();
+
 
   try {
 

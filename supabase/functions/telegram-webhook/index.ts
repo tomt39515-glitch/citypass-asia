@@ -818,6 +818,55 @@ if (!existingMember) {
         })
         .eq("id", requestId);
 
+      const { data: pendingOrder } = await supabase
+        .from("pending_join_orders")
+        .select("*")
+        .eq("table_join_request_id", requestId)
+        .maybeSingle();
+
+      if (pendingOrder) {
+
+        const { data: existingOrder } = await supabase
+          .from("orders")
+          .select("*")
+          .eq("partner_id", pendingOrder.partner_id)
+          .eq("current_table_number", pendingOrder.table_number)
+          .eq("bill_status", "open")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (existingOrder) {
+
+          await supabase
+            .from("order_items")
+            .insert(
+              (pendingOrder.cart || []).map((item: any) => ({
+                order_id: existingOrder.id,
+                item_id: item.id,
+                item_name_snapshot: item.name,
+                unit_price: item.price || 0,
+                quantity: item.quantity || 1,
+                total_price: (item.price || 0) * (item.quantity || 1),
+              }))
+            );
+
+          await supabase
+            .from("orders")
+            .update({
+              subtotal: Number(existingOrder.subtotal || 0) + Number(pendingOrder.subtotal || 0),
+              discount_amount: Number(existingOrder.discount_amount || 0) + Number(pendingOrder.discount_amount || 0),
+              total_amount: Number(existingOrder.total_amount || 0) + Number(pendingOrder.total_amount || 0),
+            })
+            .eq("id", existingOrder.id);
+        }
+
+        await supabase
+          .from("pending_join_orders")
+          .delete()
+          .eq("id", pendingOrder.id);
+      }
+
       await answer("Гость подключён к столу");
 await fetch(
   `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
