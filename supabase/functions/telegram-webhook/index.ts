@@ -874,39 +874,6 @@ console.log(
               total_amount: Number(existingOrder.total_amount || 0) + Number(pendingOrder.total_amount || 0),
             })
             .eq("id", existingOrder.id);
-
-          const orderText = (pendingOrder.cart || [])
-            .map((item: any) => `• ${item.name} x${item.quantity || 1}`)
-            .join("\n");
-
-          const messageText =
-            `🆕 ДОЗАКАЗ К СТОЛУ ${pendingOrder.table_number}\n\n` +
-            orderText +
-            `\n\n💰 Сумма: ${pendingOrder.total_amount || 0}`;
-
-          await fetch(
-            `https://api.telegram.org/bot${token}/sendMessage`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                chat_id: callback.message.chat.id,
-                text: messageText,
-                reply_markup: {
-                  inline_keyboard: [
-                    [
-                      {
-                        text: "✅ Принять",
-                        callback_data: `accept_${existingOrder.id}`,
-                      },
-                    ],
-                  ],
-                },
-              }),
-            }
-          );
         }
 
         await supabase
