@@ -826,15 +826,28 @@ if (!existingMember) {
 
       if (pendingOrder) {
 
-        const { data: existingOrder } = await supabase
-          .from("orders")
-          .select("*")
-          .eq("partner_id", pendingOrder.partner_id)
-          .eq("current_table_number", pendingOrder.table_number)
-          .eq("bill_status", "open")
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
+       const { data: existingOrders } = await supabase
+  .from("orders")
+  .select("*")
+  .eq("partner_id", pendingOrder.partner_id)
+  .eq("bill_status", "open")
+  .order("created_at", { ascending: false });
+
+const existingOrder =
+  existingOrders?.find(
+    (o) =>
+      String(o.current_table_number) ===
+      String(pendingOrder.table_number)
+  ) || null;
+console.log(
+  "PENDING ORDER",
+  JSON.stringify(pendingOrder)
+);
+
+console.log(
+  "FOUND ORDER",
+  JSON.stringify(existingOrder)
+);
 
         if (existingOrder) {
 
