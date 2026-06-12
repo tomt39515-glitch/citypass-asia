@@ -558,11 +558,21 @@ const channel = supabase
     async (payload) => {
       const status = payload.new.status;
 
-      if (status === "approved") {
-        supabase.removeChannel(channel);
-        setCart([]);
-        alert("Вы подключены к столику. Дозаказ отправлен.");
-      }
+     if (status === "approved") {
+
+  supabase.removeChannel(channel);
+
+  setCart([]);
+
+  setLoading(false);
+
+  alert(
+    "Вы подключены к столику. Дозаказ автоматически добавлен в общий счет."
+  );
+
+  window.location.reload();
+
+}
 
       if (status === "rejected") {
         supabase.removeChannel(channel);
