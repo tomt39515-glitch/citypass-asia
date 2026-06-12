@@ -272,7 +272,105 @@ Deno.serve(async (req) => {
       return true;
     }
 
-    if (
+    
+// ===== ADDON ORDER FLOW =====
+
+if (data.startsWith("accept_addon_")) {
+  const orderId = Number(data.replace("accept_addon_", ""));
+  const telegramId = String(callback.from.id);
+
+  const { data: staff } = await supabase
+    .from("partner_staff")
+    .select("*")
+    .eq("telegram_id", telegramId)
+    .eq("active", true)
+    .single();
+
+  if (!staff) {
+    await answer("❌ Сотрудник не найден");
+    return new Response("ok");
+  }
+
+  await answer("Дозаказ принят");
+
+  await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: callback.message.chat.id,
+      message_id: callback.message.message_id,
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: `👨‍🍳 ${staff.full_name}`, callback_data: "addon_accepted" }],
+          [{ text: "🍳 Готовится", callback_data: `addon_prepare_${orderId}` }]
+        ]
+      }
+    })
+  });
+
+  return new Response("ok");
+}
+
+if (data.startsWith("addon_prepare_")) {
+  const orderId = Number(data.replace("addon_prepare_", ""));
+
+  await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: callback.message.chat.id,
+      message_id: callback.message.message_id,
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "🍽 Заказ готов", callback_data: `addon_ready_${orderId}` }]
+        ]
+      }
+    })
+  });
+
+  return new Response("ok");
+}
+
+if (data.startsWith("addon_ready_")) {
+  const orderId = Number(data.replace("addon_ready_", ""));
+
+  await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: callback.message.chat.id,
+      message_id: callback.message.message_id,
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "✅ Выдать клиенту", callback_data: `addon_serve_${orderId}` }]
+        ]
+      }
+    })
+  });
+
+  return new Response("ok");
+}
+
+if (data.startsWith("addon_serve_")) {
+  await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: callback.message.chat.id,
+      message_id: callback.message.message_id,
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "✅ Выдано", callback_data: "done" }]
+        ]
+      }
+    })
+  });
+
+  return new Response("ok");
+}
+
+
+if (
   data.startsWith(
     "accept_"
   )
@@ -875,7 +973,46 @@ console.log(
             })
             .eq("id", existingOrder.id);
         }
+const orderText = (pendingOrder.cart || [])
+  .map(
+    (item: any) =>
+      `• ${item.name} x${item.quantity || 1}`
+  )
+  .join("\n");
 
+const messageText =
+  `🆕 ДОЗАКАЗ К СТОЛУ ${pendingOrder.table_number}\n\n` +
+  orderText +
+  `\n\n💰 Сумма: ${pendingOrder.total_amount || 0}`;
+
+await fetch(
+  `https://api.telegram.org/bot${token}/sendMessage`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      chat_id: callback.message.chat.id,
+      text: messageText,
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "✅ Принять",
+              callback_data: `accept_addon_${existingOrder.id}`,
+            },
+          ],
+        ],
+      },
+    }),
+  }
+);
+
+console.log(
+  "DOORDER SENT",
+  callback.message.chat.id
+);
         await supabase
           .from("pending_join_orders")
           .delete()
