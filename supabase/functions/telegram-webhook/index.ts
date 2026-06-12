@@ -837,8 +837,10 @@ const existingOrder =
   existingOrders?.find(
     (o) =>
       String(o.current_table_number) ===
-      String(pendingOrder.table_number)
-  ) || null;
+        String(pendingOrder.table_number) ||
+      String(o.table_number) ===
+        String(pendingOrder.table_number)
+  ) || existingOrders?.[0] || null;
 console.log(
   "PENDING ORDER",
   JSON.stringify(pendingOrder)
