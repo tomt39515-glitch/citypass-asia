@@ -133,15 +133,8 @@ if (client) {
     .limit(1)
     .single();
 
-  if (visit) {
-    const { data: existingReview } = await supabase
-      .from("partner_reviews")
-      .select("id")
-      .eq("visit_id", visit.id)
-      .maybeSingle();
-
-    setReviewExists(!!existingReview);
-  }
+ setReviewExists(false);
+}
 }
   }
 async function loadMessages(orderId) {
