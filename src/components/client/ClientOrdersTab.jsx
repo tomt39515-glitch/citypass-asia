@@ -12,6 +12,10 @@ const [showChat, setShowChat] = useState(false);
 const [paymentLoading, setPaymentLoading] = useState(false);
 const [partnerQrUrl, setPartnerQrUrl] = useState("");
 const [confirmingPayment, setConfirmingPayment] = useState(false);
+const [showReviewModal, setShowReviewModal] = useState(false);
+const [reviewRating, setReviewRating] = useState(5);
+const [reviewText, setReviewText] = useState("");
+const [savingReview, setSavingReview] = useState(false);
 
  useEffect(() => {
   loadOrders();
@@ -467,6 +471,142 @@ function statusStyle(status) {
         </button>
       </div>
     )}
+  </div>
+)}
+
+
+
+{selectedOrder.bill_status === "closed" && (
+  <div
+    style={{
+      marginBottom: 20,
+      padding: 16,
+      background: "#DCFCE7",
+      borderRadius: 12,
+      color: "#166534",
+    }}
+  >
+    <div
+      style={{
+        fontWeight: 700,
+        marginBottom: 10,
+      }}
+    >
+      ✅ Оплата подтверждена
+    </div>
+
+    <div>
+      Счёт закрыт. Спасибо за посещение.
+    </div>
+
+    <button
+      onClick={() => {
+        setShowReviewModal(true);
+      }}
+      style={{
+        marginTop: 12,
+        width: "100%",
+        padding: 14,
+        border: "none",
+        borderRadius: 12,
+        background: "#F59E0B",
+        color: "#fff",
+        fontWeight: 700,
+      }}
+    >
+      ⭐ Оставить отзыв
+    </button>
+  </div>
+)}
+
+
+
+{showReviewModal && (
+  <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:9999,display:"flex",justifyContent:"center",alignItems:"center",padding:20}}>
+    <div style={{background:"#fff",borderRadius:20,padding:20,width:"100%",maxWidth:400}}>
+      <h3>⭐ Оставьте отзыв</h3>
+
+      <div style={{display:"flex",gap:10,marginBottom:15,fontSize:28}}>
+        {[1,2,3,4,5].map((star) => (
+          <span key={star} onClick={() => setReviewRating(star)} style={{cursor:"pointer"}}>
+            {star <= reviewRating ? "⭐" : "☆"}
+          </span>
+        ))}
+      </div>
+
+      <textarea
+        value={reviewText}
+        onChange={(e)=>setReviewText(e.target.value)}
+        placeholder="Комментарий"
+        rows={4}
+        style={{width:"100%",marginBottom:15}}
+      />
+
+      <button
+        onClick={async()=>{
+          try{
+            setSavingReview(true);
+
+            const telegramId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+            const { data: client } = await supabase
+              .from("clients")
+              .select("id,full_name")
+              .eq("telegram_id", String(telegramId))
+              .single();
+
+            const { data: visit } = await supabase
+              .from("client_visits")
+              .select("*")
+              .eq("client_id", client.id)
+              .eq("partner_id", selectedOrder.partner_id)
+              .order("created_at",{ascending:false})
+              .limit(1)
+              .single();
+
+            await supabase.from("partner_reviews").insert({
+              partner_id:selectedOrder.partner_id,
+              client_id:client.id,
+              visit_id:visit.id,
+              rating:reviewRating,
+              review_text:reviewText
+            });
+
+            const { data: partner } = await supabase
+              .from("partners")
+              .select("telegram_id")
+              .eq("id", selectedOrder.partner_id)
+              .single();
+
+            if(partner?.telegram_id){
+              await fetch(
+                "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
+                {
+                  method:"POST",
+                  headers:{"Content-Type":"application/json"},
+                  body:JSON.stringify({
+                    chat_id:partner.telegram_id,
+                    text:`⭐ Новый отзыв\n\nЗаказ: ${selectedOrder.order_number}\nОценка: ${reviewRating}/5\n\n${reviewText || "Без комментария"}`
+                  })
+                }
+              );
+            }
+
+            alert("Спасибо за отзыв");
+            setShowReviewModal(false);
+            setReviewText("");
+            setReviewRating(5);
+          }catch(err){
+            alert(err.message);
+          }finally{
+            setSavingReview(false);
+          }
+        }}
+        style={{width:"100%",padding:12}}
+      >
+        {savingReview ? "Сохранение..." : "Отправить отзыв"}
+      </button>
+    </div>
   </div>
 )}
 
