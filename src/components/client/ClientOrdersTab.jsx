@@ -136,7 +136,6 @@ if (client) {
  setReviewExists(false);
 }
 }
-  }
 async function loadMessages(orderId) {
   const { data } = await supabase
     .from("order_messages")
