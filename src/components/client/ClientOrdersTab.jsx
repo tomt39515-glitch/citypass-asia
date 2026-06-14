@@ -1053,3 +1053,24 @@ if (partner?.telegram_id) {
     </div>
   );
 }
+
+/*
+CITYPASS FINAL LOGIC
+
+1. После оплаты скрыть:
+- Чат с партнером
+- Позвать официанта
+
+Показывать только кнопку отзыва.
+
+2. После сохранения отзыва:
+setReviewExists(true)
+
+3. Кнопка отзыва отображается только если:
+payment_status === "paid"
+bill_status === "closed"
+!reviewExists
+
+4. После reviewExists:
+показывать блок "Отзыв отправлен"
+*/
