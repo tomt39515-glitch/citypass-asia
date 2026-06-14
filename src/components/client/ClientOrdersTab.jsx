@@ -16,7 +16,7 @@ const [showReviewModal, setShowReviewModal] = useState(false);
 const [reviewRating, setReviewRating] = useState(5);
 const [reviewText, setReviewText] = useState("");
 const [savingReview, setSavingReview] = useState(false);
-
+const [reviewExists, setReviewExists] = useState(false);
  useEffect(() => {
   loadOrders();
 
@@ -112,6 +112,37 @@ const [savingReview, setSavingReview] = useState(false);
       .single();
 
     setPartnerQrUrl(partner?.payment_qr_url || "");
+const telegramId =
+  window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+
+const { data: client } = await supabase
+  .from("clients")
+  .select("id")
+  .eq("telegram_id", String(telegramId))
+  .single();
+
+if (client) {
+  const { data: visit } = await supabase
+    .from("client_visits")
+    .select("id")
+    .eq("client_id", client.id)
+    .eq("partner_id", order.partner_id)
+    .order("created_at", {
+      ascending: false,
+    })
+    .limit(1)
+    .single();
+
+  if (visit) {
+    const { data: existingReview } = await supabase
+      .from("partner_reviews")
+      .select("id")
+      .eq("visit_id", visit.id)
+      .maybeSingle();
+
+    setReviewExists(!!existingReview);
+  }
+}
   }
 async function loadMessages(orderId) {
   const { data } = await supabase
@@ -499,23 +530,38 @@ function statusStyle(status) {
       Счёт закрыт. Спасибо за посещение.
     </div>
 
-    <button
-      onClick={() => {
-        setShowReviewModal(true);
-      }}
-      style={{
-        marginTop: 12,
-        width: "100%",
-        padding: 14,
-        border: "none",
-        borderRadius: 12,
-        background: "#F59E0B",
-        color: "#fff",
-        fontWeight: 700,
-      }}
-    >
-      ⭐ Оставить отзыв
-    </button>
+    {!reviewExists ? (
+      <button
+        onClick={() => {
+          setShowReviewModal(true);
+        }}
+        style={{
+          marginTop: 12,
+          width: "100%",
+          padding: 14,
+          border: "none",
+          borderRadius: 12,
+          background: "#F59E0B",
+          color: "#fff",
+          fontWeight: 700,
+        }}
+      >
+        ⭐ Оставить отзыв
+      </button>
+    ) : (
+      <div
+        style={{
+          marginTop: 12,
+          background: "#e8f8ec",
+          padding: 16,
+          borderRadius: 12,
+        }}
+      >
+        ⭐ Отзыв отправлен
+        <br />
+        Спасибо за посещение.
+      </div>
+    )}
   </div>
 )}
 
@@ -592,8 +638,11 @@ function statusStyle(status) {
               );
             }
 
-            alert("Спасибо за отзыв");
-            setShowReviewModal(false);
+            setReviewExists(true);
+
+alert("Спасибо за отзыв");
+
+setShowReviewModal(false);
             setReviewText("");
             setReviewRating(5);
           }catch(err){
@@ -684,7 +733,7 @@ function statusStyle(status) {
     </div>
   </div>
 )}
-
+{selectedOrder.payment_status !== "paid" && (
 <button
  onClick={async () => {
   await loadMessages(
@@ -708,6 +757,8 @@ function statusStyle(status) {
 >
   💬 Чат с партнером
 </button>
+)}
+{selectedOrder.payment_status !== "paid" && (
 <button
   onClick={async () => {
     const { error } = await supabase
@@ -766,7 +817,9 @@ function statusStyle(status) {
 >
   🔔 Позвать официанта
 </button>
-{showChat && (
+)}
+{selectedOrder.payment_status !== "paid" &&
+ showChat && (
   <div
     style={{
       background: "#F8FAFC",
