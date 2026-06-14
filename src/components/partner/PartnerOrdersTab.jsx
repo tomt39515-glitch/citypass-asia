@@ -234,6 +234,16 @@ try {
   if (error) throw error;
 
   await supabase
+    .from("client_visits")
+    .insert({
+      client_id: selectedOrder.client_id,
+      partner_id: selectedOrder.partner_id,
+      transaction_id: selectedOrder.id,
+      amount: Number(selectedOrder.total_amount || 0),
+      discount: Number(selectedOrder.discount_amount || 0),
+    });
+
+  await supabase
     .from("order_messages")
     .insert({
       order_id: selectedOrder.id,

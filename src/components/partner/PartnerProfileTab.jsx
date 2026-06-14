@@ -4,6 +4,7 @@ import { supabase } from "../../supabase";
 export default function PartnerProfileTab({ onOpenTopup }) {
   const [partner, setPartner] = useState(null);
   const [description, setDescription] = useState("");
+const [workingHours, setWorkingHours] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [coverPhotoUrl, setCoverPhotoUrl] = useState("");
@@ -36,6 +37,7 @@ export default function PartnerProfileTab({ onOpenTopup }) {
 
       setPartner(currentPartner);
       setDescription(currentPartner.description || "");
+setWorkingHours(currentPartner.working_hours || "");
       setLatitude(currentPartner.latitude || "");
       setLongitude(currentPartner.longitude || "");
       setCoverPhotoUrl(currentPartner.cover_photo_url || "");
@@ -160,10 +162,11 @@ export default function PartnerProfileTab({ onOpenTopup }) {
       const { error } = await supabase
         .from("partners")
         .update({
-          description,
-          latitude: latitude || null,
-          longitude: longitude || null,
-        })
+  description,
+  working_hours: workingHours,
+  latitude: latitude || null,
+  longitude: longitude || null,
+})
         .eq("id", partner.id);
 
       if (error) throw error;
@@ -249,22 +252,41 @@ export default function PartnerProfileTab({ onOpenTopup }) {
           {partner?.category || "-"}
         </div>
 
-        <div style={{ marginBottom: "12px" }}>
-          <b>Описание бизнеса</b>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            style={{
-              width: "100%",
-              minHeight: "100px",
-              marginTop: "8px",
-              borderRadius: "12px",
-              padding: "12px",
-              border: "1px solid #CBD5E1",
-              boxSizing: "border-box",
-            }}
-          />
-        </div>
+   <div style={{ marginBottom: "12px" }}>
+  <b>Описание бизнеса</b>
+
+  <textarea
+    value={description}
+    onChange={(e) => setDescription(e.target.value)}
+    style={{
+      width: "100%",
+      minHeight: "100px",
+      marginTop: "8px",
+      borderRadius: "12px",
+      padding: "12px",
+      border: "1px solid #CBD5E1",
+      boxSizing: "border-box",
+    }}
+  />
+</div>
+
+<div style={{ marginBottom: "12px" }}>
+  <b>Часы работы</b>
+
+  <input
+    value={workingHours}
+    onChange={(e) => setWorkingHours(e.target.value)}
+    placeholder="08:00 - 22:00"
+    style={{
+      width: "100%",
+      marginTop: "8px",
+      borderRadius: "12px",
+      padding: "12px",
+      border: "1px solid #CBD5E1",
+      boxSizing: "border-box",
+    }}
+  />
+</div>
 
         <div style={{ marginBottom: "12px" }}>
           <b>Latitude:</b><br />

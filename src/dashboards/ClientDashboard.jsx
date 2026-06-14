@@ -6,6 +6,7 @@ import ProfileTab from "../components/client/ProfileTab";
 import NotificationsTab from "../components/client/NotificationsTab";
 import OffersTab from "../components/client/OffersTab";
 import ClientOrdersTab from "../components/client/ClientOrdersTab";
+import SpecialOffersTab from "../components/client/SpecialOffersTab";
 
 export default function ClientDashboard(props) {
   const { currentTab } = props;
@@ -28,6 +29,10 @@ export default function ClientDashboard(props) {
 
   if (currentTab === "offers") {
     return <OffersTab {...props} />;
+  }
+
+  if (currentTab === "special-offers") {
+    return <SpecialOffersTab {...props} />;
   }
 
   if (currentTab === "map") {

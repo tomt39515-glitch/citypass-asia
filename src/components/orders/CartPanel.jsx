@@ -67,6 +67,22 @@ export default function CartPanel({
               {item.name}
             </strong>
 
+            {item.is_special_offer && (
+              <div
+                style={{
+                  color: "#DC2626",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  marginTop: 4,
+                }}
+              >
+                🔥 СПЕЦПРЕДЛОЖЕНИЕ
+                {item.offer_text
+                  ? ` • ${item.offer_text}`
+                  : ""}
+              </div>
+            )}
+
             <div>
               {item.price.toLocaleString()}{" "}
               VND

@@ -289,6 +289,15 @@ function openRoute() {
             product.price || 0
           ),
           quantity: 1,
+
+          is_special_offer:
+            product.is_special_offer || false,
+
+          offer_type:
+            product.offer_type || null,
+
+          offer_text:
+            product.offer_text || null,
         },
       ];
     });
@@ -728,6 +737,15 @@ const { data: existingOrder } =
           quantity: item.quantity,
           total_price:
             item.price * item.quantity,
+
+          is_special_offer:
+            item.is_special_offer || false,
+
+          offer_type:
+            item.offer_type || null,
+
+          offer_text:
+            item.offer_text || null,
         }));
 
         await supabase
@@ -778,7 +796,7 @@ ${tableNumber || existingOrder.current_table_number || "-"}
 
 Состав дозаказа:
 ${cart
-  .map(item => `• ${item.name} × ${item.quantity}`)
+  .map(item => item.is_special_offer ? `• ${item.name} × ${item.quantity}\n🔥 АКЦИЯ\n${item.offer_text || ""}` : `• ${item.name} × ${item.quantity}`)
   .join("\n")}
 
 Сумма дозаказа:
@@ -880,7 +898,7 @@ ${tableNumber || "-"}
 
 Состав заказа:
 ${cart
-  .map(item => `• ${item.name} × ${item.quantity}`)
+  .map(item => item.is_special_offer ? `• ${item.name} × ${item.quantity}\n🔥 АКЦИЯ\n${item.offer_text || ""}` : `• ${item.name} × ${item.quantity}`)
   .join("\n")}
 
 Сумма:
@@ -931,6 +949,15 @@ console.log(
           total_price:
             item.price *
             item.quantity,
+
+          is_special_offer:
+            item.is_special_offer || false,
+
+          offer_type:
+            item.offer_type || null,
+
+          offer_text:
+            item.offer_text || null,
         }));
 
       const {
@@ -1061,6 +1088,19 @@ finally {
     >
       🎁 Скидка {partner?.discount_percent || 0}%
     </div>
+{partner?.description && (
+  <div
+    style={{
+      marginTop: 12,
+      fontSize: 15,
+      lineHeight: 1.5,
+      color: "#fff",
+      maxWidth: 500,
+    }}
+  >
+    {partner.description}
+  </div>
+)}
   </div>
 </div>
 
@@ -1080,6 +1120,14 @@ finally {
   {" "}
   {partner?.address ||
     "Не указан"}
+</div>
+
+<div
+  style={{
+    marginTop: 8,
+  }}
+>
+  🕒 {partner?.working_hours || "Не указано"}
 </div>
 
 <button
@@ -1324,6 +1372,25 @@ finally {
     position: "relative",
   }}
 >
+  {item.is_special_offer && (
+    <div
+      style={{
+        position: "absolute",
+        top: 10,
+        left: 10,
+        zIndex: 20,
+        background: "#EF4444",
+        color: "#fff",
+        padding: "6px 10px",
+        borderRadius: 999,
+        fontWeight: 700,
+        fontSize: 12,
+      }}
+    >
+      🔥 СПЕЦПРЕДЛОЖЕНИЕ
+    </div>
+  )}
+
   {item.photo_url && (
     <img
       src={item.photo_url}
@@ -1461,6 +1528,20 @@ position: "relative",
 >
   {item.name}
 </div>
+
+{item.is_special_offer && item.offer_text && (
+  <div
+    style={{
+      marginBottom: 8,
+      color: "#DC2626",
+      fontWeight: 600,
+      fontSize: 13,
+    }}
+  >
+    🎁 {item.offer_text}
+  </div>
+)}
+
 
      <div
   style={{

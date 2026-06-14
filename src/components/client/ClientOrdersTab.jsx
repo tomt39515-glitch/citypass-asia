@@ -185,6 +185,32 @@ async function selectPaymentMethod(method) {
 
     if (error) throw error;
 
+    const { data: partner } = await supabase
+      .from("partners")
+      .select("telegram_id")
+      .eq("id", selectedOrder.partner_id)
+      .single();
+
+    if (partner?.telegram_id) {
+      await fetch(
+        "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: partner.telegram_id,
+            text:
+              `${method === "cash" ? "💵" : "📱"} Клиент выбрал способ оплаты\n\n` +
+              `Заказ: ${selectedOrder.order_number}\n` +
+              `Столик: ${selectedOrder.current_table_number || "-"}\n` +
+              `Способ: ${method === "cash" ? "Наличные" : "QR"}`,
+          }),
+        }
+      );
+    }
+
     setSelectedOrder({
       ...selectedOrder,
       ...updateData,
@@ -558,6 +584,31 @@ function statusStyle(status) {
       return;
     }
 
+    const { data: partner } = await supabase
+      .from("partners")
+      .select("telegram_id")
+      .eq("id", selectedOrder.partner_id)
+      .single();
+
+    if (partner?.telegram_id) {
+      await fetch(
+        "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: partner.telegram_id,
+            text:
+              `🔔 ВЫЗОВ ОФИЦИАНТА\n\n` +
+              `Заказ: ${selectedOrder.order_number}\n` +
+              `Столик: ${selectedOrder.current_table_number || "-"}`,
+          }),
+        }
+      );
+    }
+
     alert("Официант вызван");
   }}
   style={{
@@ -645,6 +696,32 @@ console.log("INSERT ERROR", error);
 if (error) {
   alert(error.message);
   return;
+}
+
+const { data: partner } = await supabase
+  .from("partners")
+  .select("telegram_id")
+  .eq("id", selectedOrder.partner_id)
+  .single();
+
+if (partner?.telegram_id) {
+  await fetch(
+    "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        chat_id: partner.telegram_id,
+        text:
+          `💬 Новое сообщение от клиента\n\n` +
+          `Заказ: ${selectedOrder.order_number}\n` +
+          `Столик: ${selectedOrder.current_table_number || "-"}\n\n` +
+          `${newMessage}`,
+      }),
+    }
+  );
 }
 
         setNewMessage("");

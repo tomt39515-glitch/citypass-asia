@@ -760,109 +760,230 @@ if (
       );
     }
 
-    if (
-      data.startsWith(
-        "paid_"
-      )
-    ) {
-      const orderId =
-        Number(
-          data.replace(
-            "paid_",
-            ""
-          )
-        );
+  
 
-      const order = await getOrder(orderId);
+   if (data.startsWith("paid_")) {
+  const orderId = Number(
+    data.replace("paid_", "")
+  );
 
-      await fetch(
-        `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chat_id: callback.message.chat.id,
-            message_id: callback.message.message_id,
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: "✅ Да, оплата получена",
-                    callback_data: `confirm_payment_${orderId}`,
-                  },
-                ],
-                [
-                  {
-                    text: "❌ Отмена",
-                    callback_data: `cancel_payment_${orderId}`,
-                  },
-                ],
-              ],
-            },
-          }),
-        }
-      );
-
-      await answer(`Подтвердите оплату. Сумма: ${order.total_amount || 0}`);
-
-      return new Response("ok");
+  await fetch(
+    `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        chat_id: callback.message.chat.id,
+        message_id: callback.message.message_id,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "💵 Наличные",
+                callback_data: `payment_cash_${orderId}`,
+              },
+            ],
+            [
+              {
+                text: "💳 Карта",
+                callback_data: `payment_card_${orderId}`,
+              },
+            ],
+            [
+              {
+                text: "📱 QR",
+                callback_data: `payment_qr_${orderId}`,
+              },
+            ],
+          ],
+        },
+      }),
     }
+  );
 
-    if (data.startsWith("confirm_payment_")) {
-      const orderId = Number(data.replace("confirm_payment_", ""));
+  await answer(
+    "Выберите способ оплаты"
+  );
 
-      const now = new Date().toISOString();
+  return new Response("ok");
+}
+if (
+  data.startsWith("payment_cash_") ||
+  data.startsWith("payment_card_") ||
+  data.startsWith("payment_qr_")
+) {
+  let paymentMethod = "";
 
-      const result = await supabase
-        .from("orders")
-        .update({
-          payment_status: "paid",
-          bill_status: "closed",
-          paid_at: now,
-          closed_at: now,
-        })
-        .eq("id", orderId);
+  if (data.startsWith("payment_cash_")) {
+    paymentMethod = "cash";
+  }
 
-      if (result.error) {
-        await answer("❌ Ошибка подтверждения оплаты");
-        return new Response("ok");
-      }
+  if (data.startsWith("payment_card_")) {
+    paymentMethod = "card";
+  }
 
-      await answer("Оплата подтверждена. Счёт закрыт.");
+  if (data.startsWith("payment_qr_")) {
+    paymentMethod = "qr";
+  }
 
-      await fetch(
-        `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chat_id: callback.message.chat.id,
-            message_id: callback.message.message_id,
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: "🔒 Счёт закрыт",
-                    callback_data: "done",
-                  },
-                ],
-              ],
-            },
-          }),
-        }
-      );
+  const orderId = Number(
+    data.split("_").pop()
+  );
 
-      return new Response("ok");
+  const order =
+    await getOrder(orderId);
+
+  await supabase
+    .from("orders")
+    .update({
+      payment_method:
+        paymentMethod,
+    })
+    .eq("id", orderId);
+
+  const methodText =
+    paymentMethod === "cash"
+      ? "💵 Наличные"
+      : paymentMethod === "card"
+      ? "💳 Карта"
+      : "📱 QR";
+
+  await fetch(
+    `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        chat_id:
+          callback.message.chat.id,
+        message_id:
+          callback.message.message_id,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text:
+                  "✅ Оплата получена",
+                callback_data:
+                  `confirm_payment_${orderId}`,
+              },
+            ],
+            [
+              {
+                text: "❌ Отмена",
+                callback_data:
+                  `cancel_payment_${orderId}`,
+              },
+            ],
+          ],
+        },
+      }),
     }
+  );
 
-    if (data.startsWith("cancel_payment_")) {
-      await answer("Подтверждение оплаты отменено");
-      return new Response("ok");
+  await answer(
+    `${methodText}. Сумма: ${
+      order.total_amount || 0
+    }`
+  );
+
+  return new Response("ok");
+}
+if (
+  data.startsWith(
+    "confirm_payment_"
+  )
+) {
+  const orderId = Number(
+    data.replace(
+      "confirm_payment_",
+      ""
+    )
+  );
+
+  const now =
+    new Date().toISOString();
+
+  const result =
+    await supabase
+      .from("orders")
+      .update({
+        payment_status:
+          "paid",
+        bill_status:
+          "closed",
+        paid_at: now,
+        closed_at: now,
+      })
+      .eq("id", orderId);
+
+  if (result.error) {
+    console.error(
+      result.error
+    );
+
+    await answer(
+      "❌ Ошибка оплаты"
+    );
+
+    return new Response(
+      "ok"
+    );
+  }
+
+  await fetch(
+    `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        chat_id:
+          callback.message.chat.id,
+        message_id:
+          callback.message.message_id,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text:
+                  "🔒 Счёт закрыт",
+                callback_data:
+                  "done",
+              },
+            ],
+          ],
+        },
+      }),
     }
+  );
+
+  await answer(
+    "Оплата подтверждена"
+  );
+
+  return new Response("ok");
+}
+if (
+  data.startsWith(
+    "cancel_payment_"
+  )
+) {
+  await answer(
+    "Оплата отменена"
+  );
+
+  return new Response(
+    "ok"
+  );
+}
 
     // ===============================
 // CITYPASS ASIA TABLE SESSION PATCH

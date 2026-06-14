@@ -11,8 +11,16 @@ export default function PartnerProductsTab() {
   const [price, setPrice] = useState("");
   const [photo, setPhoto] = useState(null);
 
+
   const [saving, setSaving] = useState(false);
   const [loadingProducts, setLoadingProducts] = useState(false);
+  
+  const [expandedOfferId, setExpandedOfferId] = useState(null);
+  const [offerType, setOfferType] = useState("");
+  const [offerText, setOfferText] = useState("");
+  const [offerStartsAt, setOfferStartsAt] = useState("");
+  const [offerExpiresAt, setOfferExpiresAt] = useState("");
+
 
   useEffect(() => {
     loadPartner();
@@ -122,6 +130,58 @@ export default function PartnerProductsTab() {
       alert(err.message);
     }
   }
+
+
+  async function saveOffer(productId) {
+    try {
+      const { error } = await supabase
+        .from("partner_products")
+        .update({
+          is_special_offer: true,
+          offer_type: offerType,
+          offer_text: offerText,
+          offer_starts_at: offerStartsAt || null,
+          offer_expires_at: offerExpiresAt || null,
+        })
+        .eq("id", productId);
+
+      if (error) throw error;
+
+      alert("Акция сохранена");
+
+      await loadProducts(partner.id);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  }
+
+
+
+  async function disableOffer(productId) {
+    try {
+      const { error } = await supabase
+        .from("partner_products")
+        .update({
+          is_special_offer: false,
+          offer_type: null,
+          offer_text: null,
+          offer_starts_at: null,
+          offer_expires_at: null,
+        })
+        .eq("id", productId);
+
+      if (error) throw error;
+
+      alert("Акция отключена");
+
+      await loadProducts(partner.id);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  }
+
 
   async function saveProduct() {
     try {
@@ -349,6 +409,119 @@ export default function PartnerProductsTab() {
                 ? "🟢 Активен"
                 : "🔴 Скрыт"}
             </div>
+
+
+            <button
+              onClick={() =>
+                setExpandedOfferId(
+                  expandedOfferId === item.id ? null : item.id
+                )
+              }
+              style={{
+                marginTop: 10,
+                marginRight: 10,
+                padding: "10px 14px",
+                borderRadius: 8,
+                border: "none",
+                cursor: "pointer",
+                background: "#F59E0B",
+                color: "#fff",
+              }}
+            >
+              🔥 Акция
+            </button>
+
+            {expandedOfferId === item.id && (
+              <div
+                style={{
+                  marginTop: 12,
+                  padding: 12,
+                  background: "#FFF7ED",
+                  borderRadius: 12,
+                }}
+              >
+                <div style={{fontWeight:'bold',marginBottom:10}}>🔥 Настройка акции</div>
+
+                <select style={{width:'100%',marginBottom:10}} value={offerType} onChange={(e)=>setOfferType(e.target.value)}>
+                  <option value=''>Выберите тип акции</option>
+                  <option>🔥 Скидка</option>
+                  <option>🎁 Подарок</option>
+                  <option>💰 Спеццена</option>
+                  <option>📦 Пакет / Комбо</option>
+                  <option>⭐ Бонус</option>
+                  <option>🎉 Спецусловие</option>
+                </select>
+
+                <textarea
+                  placeholder='Описание акции'
+                  value={offerText}
+                  onChange={(e)=>setOfferText(e.target.value)}
+                  style={{width:'100%',minHeight:80,marginBottom:10}}
+                />
+
+                <div>Дата начала</div>
+                <input
+                  type='date'
+                  value={offerStartsAt}
+                  onChange={(e)=>setOfferStartsAt(e.target.value)}
+                  style={{width:'100%',marginBottom:10}}
+                />
+
+                <div>Дата окончания</div>
+                <input
+                  type='date'
+                  value={offerExpiresAt}
+                  onChange={(e)=>setOfferExpiresAt(e.target.value)}
+                  style={{width:'100%',marginBottom:10}}
+                />
+
+                {item.is_special_offer ? (
+                  <>
+                    <div
+                      style={{
+                        marginTop: 10,
+                        padding: 12,
+                        background: "#DCFCE7",
+                        borderRadius: 8,
+                        fontWeight: 600,
+                        color: "#166534",
+                      }}
+                    >
+                      🟢 Акция опубликована
+                    </div>
+
+                    <button
+                      onClick={() => disableOffer(item.id)}
+                      style={{
+                        marginTop: 10,
+                        padding: "10px 14px",
+                        background: "#EF4444",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                      }}
+                    >
+                      ❌ Отключить акцию
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => saveOffer(item.id)}
+                    style={{
+                      padding: "10px 14px",
+                      background: "#10B981",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 8,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Сохранить акцию
+                  </button>
+                )}
+              </div>
+            )}
 
             <button
               onClick={() =>
