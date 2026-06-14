@@ -133,7 +133,13 @@ if (client) {
     .limit(1)
     .single();
 
- setReviewExists(false);
+ const { data: existingReview } = await supabase
+  .from("partner_reviews")
+  .select("id")
+  .eq("order_id", order.id)
+  .maybeSingle();
+
+setReviewExists(!!existingReview);
 }
 }
 async function loadMessages(orderId) {
@@ -601,14 +607,26 @@ function statusStyle(status) {
               .order("created_at",{ascending:false})
               .limit(1)
               .single();
+const { data: existingReview } = await supabase
+  .from("partner_reviews")
+  .select("id")
+  .eq("order_id", selectedOrder.id)
+  .maybeSingle();
 
-            await supabase.from("partner_reviews").insert({
-              partner_id:selectedOrder.partner_id,
-              client_id:client.id,
-              visit_id:visit.id,
-              rating:reviewRating,
-              review_text:reviewText
-            });
+if (existingReview) {
+  alert("Отзыв уже был отправлен");
+  return;
+}
+            await supabase
+  .from("partner_reviews")
+  .insert({
+    order_id: selectedOrder.id,
+    partner_id: selectedOrder.partner_id,
+    client_id: client.id,
+    rating: reviewRating,
+    review_text: reviewText,
+    visit_id: visit.id,
+  });
 
             const { data: partner } = await supabase
               .from("partners")
