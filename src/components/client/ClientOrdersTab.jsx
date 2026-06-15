@@ -1029,24 +1029,9 @@ if (partner?.telegram_id) {
   Сумма: {Number(item.total_price || 0).toLocaleString()} ₫
 </div>
 
-          
-            style={{
-              marginTop: 24,
-              paddingTop: 20,
-              borderTop:
-                "2px solid #E2E8F0",
-              fontWeight: 700,
-              fontSize: 20,
-            }}
-          >
-            Итого:{" "}
-            {
-              selectedOrder.total_amount
-            }{" "}
-            {
-              selectedOrder.currency
-            }
-          </div>
+</div>
+))}
+        
         </div>
       </div>
     );
