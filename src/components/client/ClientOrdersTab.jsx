@@ -1029,7 +1029,7 @@ if (partner?.telegram_id) {
   Сумма: {Number(item.total_price || 0).toLocaleString()} ₫
 </div>
 
-          <div
+          
             style={{
               marginTop: 24,
               paddingTop: 20,
