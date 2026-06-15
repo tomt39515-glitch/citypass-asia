@@ -1031,6 +1031,41 @@ if (partner?.telegram_id) {
 
 </div>
 ))}
+<div
+  style={{
+    marginTop: 20,
+    paddingTop: 16,
+    borderTop: "2px solid #E5E7EB",
+  }}
+>
+  <div
+    style={{
+      fontSize: 16,
+      marginBottom: 6,
+    }}
+  >
+    Сумма: {Number(selectedOrder.subtotal || 0).toLocaleString()} ₫
+  </div>
+
+  <div
+    style={{
+      color: "#16A34A",
+      fontWeight: 700,
+      marginBottom: 6,
+    }}
+  >
+    🎁 Скидка: -{Number(selectedOrder.discount_amount || 0).toLocaleString()} ₫
+  </div>
+
+  <div
+    style={{
+      fontSize: 20,
+      fontWeight: 800,
+    }}
+  >
+    К оплате: {Number(selectedOrder.total_amount || 0).toLocaleString()} ₫
+  </div>
+</div>
         
         </div>
       </div>
