@@ -1055,8 +1055,7 @@ if (
 
 Заказ №${order.order_number}
 
-Сумма: ${order.total_amount || 0} ₫
-
+Сумма: ${order.total_amount || 0} ₫`,
         }),
       }
     );
