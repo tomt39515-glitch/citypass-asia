@@ -608,11 +608,7 @@ function statusStyle(status) {
               .order("created_at",{ascending:false})
               .limit(1)
               .single();
-console.log("ORDER ID:", selectedOrder.id);
-console.log("PARTNER ID:", selectedOrder.partner_id);
-console.log("CLIENT ID:", client.id);
-console.log("VISIT:", visit);
-console.log("VISIT ID:", visit?.id);
+
 const { data: existingReview } = await supabase
   .from("partner_reviews")
   .select("id")
@@ -624,10 +620,7 @@ if (existingReview) {
   alert("Отзыв уже был отправлен");
   return;
 }
-    console.log("INSERT REVIEW");
-console.log("ORDER:", selectedOrder.id);
-console.log("VISIT USED:", visit?.id);
-
+   
 const { data: insertedReview, error: reviewError } = await supabase
   .from("partner_reviews")
   .insert({
@@ -640,8 +633,7 @@ const { data: insertedReview, error: reviewError } = await supabase
   })
   .select();
 
-console.log("REVIEW INSERT", insertedReview);
-console.log("REVIEW ERROR", reviewError);
+
 
 if (reviewError) {
   alert(reviewError.message);
