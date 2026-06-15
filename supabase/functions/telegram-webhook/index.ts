@@ -1007,25 +1007,41 @@ const { data: client } =
     .single();
 
 if (client?.telegram_id) {
-  await fetch(
-    `https://api.telegram.org/bot${token}/sendMessage`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
-      body: JSON.stringify({
-        chat_id:
-          client.telegram_id,
-        text:
-          `💳 Оплата подтверждена
+
+  console.log(
+    "CLIENT TG ID:",
+    client.telegram_id
+  );
+
+  const tgResponse =
+    await fetch(
+      `https://api.telegram.org/bot${token}/sendMessage`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          chat_id: Number(
+            client.telegram_id
+          ),
+          text:
+            `💳 Оплата подтверждена
 
 Заказ №${order.order_number}
 
 Спасибо за посещение.`,
-      }),
-    }
+        }),
+      }
+    );
+
+  const tgResult =
+    await tgResponse.json();
+
+  console.log(
+    "PAYMENT MESSAGE RESULT:",
+    JSON.stringify(tgResult)
   );
 }
   await fetch(
@@ -1041,34 +1057,16 @@ if (client?.telegram_id) {
           callback.message.chat.id,
         message_id:
           callback.message.message_id,
-       reply_markup: {
-  inline_keyboard: [
-    [
-      {
-        text: "🔒 Счёт закрыт",
-        callback_data: "done",
-      },
-    ],
-    [
-      {
-        text: "🍳 Готовится",
-        callback_data: `prepare_${orderId}`,
-      },
-    ],
-    [
-      {
-        text: "🍽 Заказ готов",
-        callback_data: `ready_${orderId}`,
-      },
-    ],
-    [
-      {
-        text: "✅ Выдать клиенту",
-        callback_data: `serve_${orderId}`,
-      },
-    ],
-  ],
-},
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "🔒 Счёт закрыт",
+                callback_data: "done",
+              },
+            ],
+          ],
+        },
       }),
     }
   );
