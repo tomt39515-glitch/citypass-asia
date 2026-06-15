@@ -225,8 +225,7 @@ try {
     .update({
       payment_status: "paid",
       bill_status: "closed",
-      status: "completed",
-      paid_at: now,
+            paid_at: now,
       closed_at: now,
     })
     .eq("id", selectedOrder.id);
@@ -257,8 +256,7 @@ try {
     ...selectedOrder,
     payment_status: "paid",
     bill_status: "closed",
-    status: "completed",
-    paid_at: now,
+        paid_at: now,
     closed_at: now,
   };
 
