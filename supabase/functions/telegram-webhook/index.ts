@@ -287,9 +287,10 @@ Deno.serve(async (req) => {
   };
 
   if (
-    client?.telegram_id &&
-    statusMessages[nextStatus]
-  ) {
+  client?.telegram_id &&
+  statusMessages[nextStatus]
+) {
+  const tgResponse =
     await fetch(
       `https://api.telegram.org/bot${token}/sendMessage`,
       {
@@ -300,7 +301,9 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           chat_id:
-            client.telegram_id,
+            Number(
+              client.telegram_id
+            ),
           text:
             `${statusMessages[nextStatus]}
 
@@ -308,7 +311,17 @@ Deno.serve(async (req) => {
         }),
       }
     );
-  }
+
+  const tgResult =
+    await tgResponse.json();
+
+  console.log(
+    "CLIENT TELEGRAM RESULT:",
+    JSON.stringify(
+      tgResult
+    )
+  );
+}
 
   await answer(
     successText
