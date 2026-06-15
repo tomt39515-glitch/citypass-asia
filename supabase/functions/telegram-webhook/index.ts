@@ -1030,6 +1030,39 @@ if (
     }
   );
 
+  const order =
+    await getOrder(orderId);
+
+  const { data: client } =
+    await supabase
+      .from("clients")
+      .select("telegram_id")
+      .eq("id", order.client_id)
+      .single();
+
+  if (client?.telegram_id) {
+    await fetch(
+      `https://api.telegram.org/bot${token}/sendMessage`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chat_id: Number(client.telegram_id),
+          text:
+            `💳 Оплата подтверждена
+
+Заказ №${order.order_number}
+
+Сумма: ${order.total_amount || 0} ₫
+
+Спасибо за посещение!`,
+        }),
+      }
+    );
+  }
+
   await answer(
     "Оплата подтверждена"
   );
