@@ -607,6 +607,11 @@ function statusStyle(status) {
               .order("created_at",{ascending:false})
               .limit(1)
               .single();
+console.log("ORDER ID:", selectedOrder.id);
+console.log("PARTNER ID:", selectedOrder.partner_id);
+console.log("CLIENT ID:", client.id);
+console.log("VISIT:", visit);
+console.log("VISIT ID:", visit?.id);
 const { data: existingReview } = await supabase
   .from("partner_reviews")
   .select("id")
