@@ -179,98 +179,143 @@ Deno.serve(async (req) => {
       );
     }
 
-    async function changeStatus(
-      orderId: number,
-      nextStatus: string,
-      successText: string
-    ) {
-      const order =
-        await getOrder(orderId);
+ async function changeStatus(
+  orderId: number,
+  nextStatus: string,
+  successText: string
+) {
+  const order =
+    await getOrder(orderId);
 
-      const telegramId = String(
-        callback.from.id
-      );
+  const { data: client } =
+    await supabase
+      .from("clients")
+      .select("telegram_id")
+      .eq("id", order.client_id)
+      .single();
 
-      const { data: staff } =
-        await supabase
-          .from("partner_staff")
-          .select("*")
-          .eq(
-            "telegram_id",
-            telegramId
-          )
-          .eq(
-            "active",
-            true
-          )
-          .single();
+  const telegramId = String(
+    callback.from.id
+  );
 
-      if (!staff) {
-        await answer(
-          "❌ Сотрудник не найден"
-        );
-        return false;
+  const { data: staff } =
+    await supabase
+      .from("partner_staff")
+      .select("*")
+      .eq(
+        "telegram_id",
+        telegramId
+      )
+      .eq(
+        "active",
+        true
+      )
+      .single();
+
+  if (!staff) {
+    await answer(
+      "❌ Сотрудник не найден"
+    );
+    return false;
+  }
+
+  if (
+    order.assigned_staff_id &&
+    order.assigned_staff_id !==
+      staff.id
+  ) {
+    await answer(
+      "❌ Заказ закреплен за другим сотрудником"
+    );
+    return false;
+  }
+
+  const expectedStatus =
+    allowedTransitions[
+      order.status
+    ];
+
+  if (
+    expectedStatus !==
+    nextStatus
+  ) {
+    await answer(
+      "❌ Неверный этап заказа"
+    );
+    return false;
+  }
+
+  const result =
+    await supabase
+      .from("orders")
+      .update({
+        status:
+          nextStatus,
+      })
+      .eq("id", orderId)
+      .select();
+
+  if (result.error) {
+    console.error(
+      result.error
+    );
+
+    await answer(
+      "❌ Ошибка обновления заказа"
+    );
+
+    return false;
+  }
+
+  console.log(
+    "STATUS UPDATE:",
+    JSON.stringify(result)
+  );
+
+  const statusMessages: Record<
+    string,
+    string
+  > = {
+    accepted:
+      "✅ Ваш заказ принят в работу",
+    preparing:
+      "👨‍🍳 Ваш заказ готовится",
+    ready:
+      "🍽 Ваш заказ готов",
+    completed:
+      "✅ Ваш заказ выдан. Спасибо за посещение",
+  };
+
+  if (
+    client?.telegram_id &&
+    statusMessages[nextStatus]
+  ) {
+    await fetch(
+      `https://api.telegram.org/bot${token}/sendMessage`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          chat_id:
+            client.telegram_id,
+          text:
+            `${statusMessages[nextStatus]}
+
+Заказ №${order.order_number}`,
+        }),
       }
+    );
+  }
 
-      if (
-        order.assigned_staff_id &&
-        order.assigned_staff_id !==
-          staff.id
-      ) {
-        await answer(
-          "❌ Заказ закреплен за другим сотрудником"
-        );
-        return false;
-      }
+  await answer(
+    successText
+  );
 
-      const expectedStatus =
-        allowedTransitions[
-          order.status
-        ];
-
-      if (
-        expectedStatus !==
-        nextStatus
-      ) {
-        await answer(
-          "❌ Неверный этап заказа"
-        );
-        return false;
-      }
-
-      const result =
-        await supabase
-          .from("orders")
-          .update({
-            status:
-              nextStatus,
-          })
-          .eq("id", orderId)
-          .select();
-
-      if (result.error) {
-        console.error(
-          result.error
-        );
-
-        await answer(
-          "❌ Ошибка обновления заказа"
-        );
-
-        return false;
-      }
-
-      console.log(
-        "STATUS UPDATE:",
-        JSON.stringify(result)
-      );
-
-      await answer(
-        successText
-      );
-
-      return true;
-    }
+  return true;
+}
 
     
 // ===== ADDON ORDER FLOW =====
@@ -935,7 +980,41 @@ if (
       "ok"
     );
   }
+const order =
+  await getOrder(orderId);
 
+const { data: client } =
+  await supabase
+    .from("clients")
+    .select("telegram_id")
+    .eq(
+      "id",
+      order.client_id
+    )
+    .single();
+
+if (client?.telegram_id) {
+  await fetch(
+    `https://api.telegram.org/bot${token}/sendMessage`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        chat_id:
+          client.telegram_id,
+        text:
+          `💳 Оплата подтверждена
+
+Заказ №${order.order_number}
+
+Спасибо за посещение.`,
+      }),
+    }
+  );
+}
   await fetch(
     `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
     {
