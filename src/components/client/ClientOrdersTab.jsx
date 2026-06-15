@@ -619,6 +619,7 @@ const { data: existingReview } = await supabase
   .maybeSingle();
 
 if (existingReview) {
+  setSavingReview(false);
   alert("Отзыв уже был отправлен");
   return;
 }
