@@ -615,7 +615,7 @@ console.log("VISIT ID:", visit?.id);
 const { data: existingReview } = await supabase
   .from("partner_reviews")
   .select("id")
-  .eq("order_id", selectedOrder.id)
+  .eq("visit_id", visit.id)
   .maybeSingle();
 
 if (existingReview) {
