@@ -949,18 +949,34 @@ if (
           callback.message.chat.id,
         message_id:
           callback.message.message_id,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text:
-                  "🔒 Счёт закрыт",
-                callback_data:
-                  "done",
-              },
-            ],
-          ],
-        },
+       reply_markup: {
+  inline_keyboard: [
+    [
+      {
+        text: "🔒 Счёт закрыт",
+        callback_data: "done",
+      },
+    ],
+    [
+      {
+        text: "🍳 Готовится",
+        callback_data: `prepare_${orderId}`,
+      },
+    ],
+    [
+      {
+        text: "🍽 Заказ готов",
+        callback_data: `ready_${orderId}`,
+      },
+    ],
+    [
+      {
+        text: "✅ Выдать клиенту",
+        callback_data: `serve_${orderId}`,
+      },
+    ],
+  ],
+},
       }),
     }
   );
