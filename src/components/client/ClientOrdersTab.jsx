@@ -622,7 +622,11 @@ if (existingReview) {
   alert("Отзыв уже был отправлен");
   return;
 }
-    const { data: insertedReview, error: reviewError } = await supabase
+    console.log("INSERT REVIEW");
+console.log("ORDER:", selectedOrder.id);
+console.log("VISIT USED:", visit?.id);
+
+const { data: insertedReview, error: reviewError } = await supabase
   .from("partner_reviews")
   .insert({
     order_id: selectedOrder.id,
@@ -1130,24 +1134,3 @@ if (partner?.telegram_id) {
     </div>
   );
 }
-
-/*
-CITYPASS FINAL LOGIC
-
-1. После оплаты скрыть:
-- Чат с партнером
-- Позвать официанта
-
-Показывать только кнопку отзыва.
-
-2. После сохранения отзыва:
-setReviewExists(true)
-
-3. Кнопка отзыва отображается только если:
-payment_status === "paid"
-bill_status === "closed"
-!reviewExists
-
-4. После reviewExists:
-показывать блок "Отзыв отправлен"
-*/
