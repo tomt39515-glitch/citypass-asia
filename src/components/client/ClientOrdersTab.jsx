@@ -617,7 +617,7 @@ if (existingReview) {
   alert("Отзыв уже был отправлен");
   return;
 }
-            await supabase
+    const { data: insertedReview, error: reviewError } = await supabase
   .from("partner_reviews")
   .insert({
     order_id: selectedOrder.id,
@@ -626,7 +626,16 @@ if (existingReview) {
     rating: reviewRating,
     review_text: reviewText,
     visit_id: visit.id,
-  });
+  })
+  .select();
+
+console.log("REVIEW INSERT", insertedReview);
+console.log("REVIEW ERROR", reviewError);
+
+if (reviewError) {
+  alert(reviewError.message);
+  return;
+}
 
             const { data: partner } = await supabase
               .from("partners")
