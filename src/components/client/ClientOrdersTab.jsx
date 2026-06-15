@@ -16,7 +16,7 @@ const [showReviewModal, setShowReviewModal] = useState(false);
 const [reviewRating, setReviewRating] = useState(5);
 const [reviewText, setReviewText] = useState("");
 const [savingReview, setSavingReview] = useState(false);
-const [reviewExists, setReviewExists] = useState(false);
+const [reviewExists, setReviewExists] = useState(null);
  useEffect(() => {
   loadOrders();
 
@@ -97,6 +97,7 @@ const [reviewExists, setReviewExists] = useState(false);
 
   async function openOrder(order) {
     setSelectedOrder(order);
+setReviewExists(null);
 
     const { data } = await supabase
       .from("order_items")
@@ -528,7 +529,7 @@ function statusStyle(status) {
       Счёт закрыт. Спасибо за посещение.
     </div>
 
-    {!reviewExists ? (
+    {reviewExists === null ? null : !reviewExists ? (
       <button
         onClick={() => {
           setShowReviewModal(true);
