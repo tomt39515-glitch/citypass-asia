@@ -982,33 +982,52 @@ if (partner?.telegram_id) {
                 marginBottom: 12,
               }}
             >
-              <div
-                style={{
-                  fontWeight: 600,
-                  marginBottom: 8,
-                }}
-              >
-                {
-                  item.item_name_snapshot
-                }
-              </div>
+             <div
+  style={{
+    fontWeight: 600,
+    marginBottom: 8,
+  }}
+>
+  {item.item_name_snapshot}
+</div>
 
-              <div>
-                Количество:{" "}
-                {item.quantity}
-              </div>
+{item.is_special_offer && (
+  <div
+    style={{
+      background: "#FEF2F2",
+      color: "#DC2626",
+      padding: 10,
+      borderRadius: 10,
+      marginBottom: 10,
+      fontWeight: 600,
+    }}
+  >
+    🔥 СПЕЦПРЕДЛОЖЕНИЕ
 
-              <div>
-                Цена:{" "}
-                {item.unit_price}
-              </div>
+    {item.offer_text && (
+      <div
+        style={{
+          marginTop: 4,
+          fontWeight: 400,
+        }}
+      >
+        {item.offer_text}
+      </div>
+    )}
+  </div>
+)}
 
-              <div>
-                Сумма:{" "}
-                {item.total_price}
-              </div>
-            </div>
-          ))}
+<div>
+  Количество: {item.quantity}
+</div>
+
+<div>
+  Цена: {Number(item.unit_price || 0).toLocaleString()} ₫
+</div>
+
+<div>
+  Сумма: {Number(item.total_price || 0).toLocaleString()} ₫
+</div>
 
           <div
             style={{
