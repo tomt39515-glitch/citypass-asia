@@ -915,28 +915,23 @@ const targetLanguage = partnerLangData?.language_code || "vi";
 let translatedText = newMessage;
 
 if (sourceLanguage !== targetLanguage) {
-  try {
-    const translateResponse = await fetch(
-      "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/translate-text",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: newMessage,
-          targetLanguage,
-        }),
-      }
-    );
-
-    if (translateResponse.ok) {
-      const translateData = await translateResponse.json();
-      translatedText = translateData.translated || newMessage;
+  const translateResponse = await fetch(
+    "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/translate-text",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: newMessage,
+        targetLanguage
+      }),
     }
-  } catch (e) {
-    console.error("TRANSLATE ERROR", e);
-    translatedText = newMessage;
+  );
+
+  if (translateResponse.ok) {
+    const translateData = await translateResponse.json();
+    translatedText = translateData.translated || newMessage;
   }
 }
 
