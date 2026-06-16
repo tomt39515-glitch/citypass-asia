@@ -26,17 +26,25 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",
+          response_format: { type: "json_object" },
           messages: [
             {
               role: "system",
-              content: `You are a professional translator.
-Translate the text into ${targetLanguage}.
-Return ONLY the translated text.
-Do not explain anything.`,
+              content: `You are a translation service.
+
+Detect the source language of the incoming text.
+Translate it into the target language.
+
+Return ONLY valid JSON:
+
+{
+  "sourceLanguage": "ru",
+  "translated": "translated text"
+}`,
             },
             {
               role: "user",
-              content: text,
+              content: `Target language: ${targetLanguage}\n\nText:\n${text}`,
             },
           ],
           temperature: 0,
@@ -46,12 +54,26 @@ Do not explain anything.`,
 
     const data = await response.json();
 
-    const translated =
-      data?.choices?.[0]?.message?.content?.trim() || text;
+    const content =
+      data?.choices?.[0]?.message?.content || "{}";
+
+    let parsed;
+
+    try {
+      parsed = JSON.parse(content);
+    } catch {
+      parsed = {
+        sourceLanguage: "unknown",
+        translated: text,
+      };
+    }
 
     return new Response(
       JSON.stringify({
-        translated,
+        sourceLanguage:
+          parsed.sourceLanguage || "unknown",
+        translated:
+          parsed.translated || text,
       }),
       {
         headers: {
