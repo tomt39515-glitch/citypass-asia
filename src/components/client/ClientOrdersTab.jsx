@@ -894,9 +894,10 @@ setShowReviewModal(false);
 
     <button
       onClick={async () => {
-        if (!newMessage.trim()) return;
+        try {
+          if (!newMessage.trim()) return;
 
-        const { data: clientLangData } = await supabase
+          const { data: clientLangData } = await supabase
   .from("clients")
   .select("language_code")
   .eq("id", selectedOrder.client_id)
@@ -928,8 +929,10 @@ if (sourceLanguage !== targetLanguage) {
     }
   );
 
-  const translateData = await translateResponse.json();
-  translatedText = translateData.translated || newMessage;
+  if (translateResponse.ok) {
+    const translateData = await translateResponse.json();
+    translatedText = translateData.translated || newMessage;
+  }
 }
 
 const { error } = await supabase
@@ -977,6 +980,10 @@ if (partner?.telegram_id) {
 }
 
         setNewMessage("");
+        } catch (err) {
+          console.error("CHAT SEND ERROR", err);
+          alert(err?.message || "Ошибка отправки сообщения");
+        }
       }}
       style={{
         width: "100%",
