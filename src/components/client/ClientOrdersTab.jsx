@@ -909,35 +909,39 @@ const { data: partnerLangData } = await supabase
   .eq("id", selectedOrder.partner_id)
   .single();
 
-const sourceLanguage = clientLangData?.language_code || "en";
-const targetLanguage = partnerLangData?.language_code || "vi";
+const targetLanguage =
+  partnerLangData?.language_code || "vi";
 
 let translatedText = newMessage;
+let sourceLanguage = "auto";
 
-if (sourceLanguage !== targetLanguage) {
-  try {
-    const translateResponse = await fetch(
-      "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/translate-text",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: newMessage,
-          targetLanguage,
-        }),
-      }
-    );
-
-    if (translateResponse.ok) {
-      const translateData = await translateResponse.json();
-      translatedText = translateData.translated || newMessage;
+try {
+  const translateResponse = await fetch(
+    "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/translate-text",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: newMessage,
+        targetLanguage,
+      }),
     }
-  } catch (e) {
-    console.error("TRANSLATE ERROR", e);
-    translatedText = newMessage;
+  );
+
+  if (translateResponse.ok) {
+    const translateData =
+      await translateResponse.json();
+
+    translatedText =
+      translateData?.translated || newMessage;
+
+    sourceLanguage =
+      translateData?.sourceLanguage || "auto";
   }
+} catch (e) {
+  console.error("TRANSLATE ERROR", e);
 }
 
 const { error } = await supabase
