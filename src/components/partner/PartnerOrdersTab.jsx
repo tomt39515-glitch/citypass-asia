@@ -519,13 +519,51 @@ marginBottom: 20,
   onClick={async () => {
     if (!newMessage.trim()) return;
 
+    const { data: clientLangData } = await supabase
+      .from("clients")
+      .select("language_code")
+      .eq("id", selectedOrder.client_id)
+      .single();
+
+    const { data: partnerLangData } = await supabase
+      .from("partners")
+      .select("language_code")
+      .eq("id", selectedOrder.partner_id)
+      .single();
+
+    const sourceLanguage = partnerLangData?.language_code || "vi";
+    const targetLanguage = clientLangData?.language_code || "en";
+
+    let translatedText = newMessage;
+
+    if (sourceLanguage !== targetLanguage) {
+      const translateResponse = await fetch(
+        "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/translate-text",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: newMessage,
+            targetLanguage
+          }),
+        }
+      );
+
+      const translateData = await translateResponse.json();
+      translatedText = translateData.translated || newMessage;
+    }
+
     const { error } = await supabase
       .from("order_messages")
       .insert({
         order_id: selectedOrder.id,
         sender_role: "partner",
         sender_id: 0,
-        message: newMessage,
+        message: translatedText,
+        original_message: newMessage,
+        translated_message: translatedText,
+        source_language: sourceLanguage,
+        target_language: targetLanguage,
       });
 
     if (error) {

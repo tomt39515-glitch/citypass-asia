@@ -46,7 +46,6 @@ Deno.serve(async (req) => {
     }
 
     const message = update.message;
-
     if (message?.text) {
       const telegramId = String(
         message.from.id
