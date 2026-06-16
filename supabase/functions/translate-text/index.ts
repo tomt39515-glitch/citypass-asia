@@ -30,21 +30,28 @@ Deno.serve(async (req) => {
           messages: [
             {
               role: "system",
-              content: `You are a translation service.
+              content: `You are a translation API.
 
-Detect the source language of the incoming text.
-Translate it into the target language.
+Always detect the source language.
+Always translate the text into the target language.
+Return ONLY valid JSON.
 
-Return ONLY valid JSON:
-
+Example:
 {
   "sourceLanguage": "ru",
-  "translated": "translated text"
-}`,
+  "translated": "Xin chào"
+}
+
+Do not return markdown.
+Do not return explanations.
+Do not return code fences.`,
             },
             {
               role: "user",
-              content: `Target language: ${targetLanguage}\n\nText:\n${text}`,
+              content: JSON.stringify({
+                text,
+                targetLanguage,
+              }),
             },
           ],
           temperature: 0,
@@ -62,6 +69,14 @@ Return ONLY valid JSON:
     try {
       parsed = JSON.parse(content);
     } catch {
+      parsed = null;
+    }
+
+    if (
+      !parsed ||
+      typeof parsed.translated !== "string" ||
+      !parsed.translated.trim()
+    ) {
       parsed = {
         sourceLanguage: "unknown",
         translated: text,
@@ -78,6 +93,7 @@ Return ONLY valid JSON:
       {
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
       }
     );
@@ -90,6 +106,7 @@ Return ONLY valid JSON:
         status: 500,
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
       }
     );
