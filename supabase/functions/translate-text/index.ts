@@ -4,6 +4,19 @@ Deno.serve(async (req) => {
   try {
     const { text, targetLanguage } = await req.json();
 
+    if (!text || !targetLanguage) {
+      return new Response(
+        JSON.stringify({ error: "text and targetLanguage are required" }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
+    }
+
     const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
     if (!OPENAI_API_KEY) {
@@ -11,7 +24,10 @@ Deno.serve(async (req) => {
         JSON.stringify({ error: "OPENAI_API_KEY not configured" }),
         {
           status: 500,
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+          },
         }
       );
     }
@@ -27,24 +43,34 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           model: "gpt-4o-mini",
           response_format: { type: "json_object" },
+          temperature: 0,
           messages: [
             {
               role: "system",
-              content: `You are a translation API.
+              content: `You are a professional translation engine.
 
-Always detect the source language.
-Always translate the text into the target language.
-Return ONLY valid JSON.
+TASK:
+1. Detect the source language of the provided text.
+2. Translate the text into the requested target language.
 
-Example:
+STRICT RULES:
+- sourceLanguage MUST be an ISO-639-1 language code.
+- Examples:
+  ru, en, vi, zh, th, ja, ko, ar, fr, de, es, it.
+- translated MUST contain only the translated text.
+- Never answer the user's question.
+- Never explain anything.
+- Never summarize.
+- Never add comments.
+- Never change the meaning.
+- Preserve names, numbers and context.
+- Return ONLY valid JSON.
+
+Required format:
 {
   "sourceLanguage": "ru",
-  "translated": "Xin chào"
-}
-
-Do not return markdown.
-Do not return explanations.
-Do not return code fences.`,
+  "translated": "Xin chào người bạn của tôi"
+}`,
             },
             {
               role: "user",
@@ -54,22 +80,24 @@ Do not return code fences.`,
               }),
             },
           ],
-          temperature: 0,
         }),
       }
     );
 
     const data = await response.json();
 
-    const content =
-      data?.choices?.[0]?.message?.content || "{}";
+    const content = data?.choices?.[0]?.message?.content ?? "{}";
 
-    let parsed;
+    let parsed: {
+      sourceLanguage?: string;
+      translated?: string;
+    } | null = null;
 
     try {
       parsed = JSON.parse(content);
-    } catch {
-      parsed = null;
+    } catch (e) {
+      console.error("JSON parse error:", e);
+      console.error("Raw content:", content);
     }
 
     if (
@@ -85,14 +113,12 @@ Do not return code fences.`,
 
     return new Response(
       JSON.stringify({
-        sourceLanguage:
-          parsed.sourceLanguage || "unknown",
-        translated:
-          parsed.translated || text,
+        sourceLanguage: parsed.sourceLanguage || "unknown",
+        translated: parsed.translated || text,
       }),
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json; charset=utf-8",
           "Access-Control-Allow-Origin": "*",
         },
       }
@@ -100,12 +126,12 @@ Do not return code fences.`,
   } catch (error) {
     return new Response(
       JSON.stringify({
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       }),
       {
         status: 500,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json; charset=utf-8",
           "Access-Control-Allow-Origin": "*",
         },
       }
