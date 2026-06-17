@@ -950,9 +950,9 @@ const { error } = await supabase
     order_id: selectedOrder.id,
     sender_role: "client",
     sender_id: 0,
-    message: newMessage,
+    message: translatedText,
     original_message: newMessage,
-    translated_message: newMessage,
+    translated_message: translatedText,
     source_language: sourceLanguage,
     target_language: targetLanguage,
   });
@@ -982,7 +982,7 @@ if (partner?.telegram_id) {
           `💬 Новое сообщение от клиента\n\n` +
           `Заказ: ${selectedOrder.order_number}\n` +
           `Столик: ${selectedOrder.current_table_number || "-"}\n\n` +
-          `${newMessage}`,
+          `${translatedText}`,
       }),
     }
   );
