@@ -520,19 +520,22 @@ marginBottom: 20,
     if (!newMessage.trim()) return;
 
     const { data: clientLangData } = await supabase
-      .from("clients")
-      .select("language_code")
-      .eq("id", selectedOrder.client_id)
-      .single();
+  .from("clients")
+  .select("preferred_language")
+  .eq("id", selectedOrder.client_id)
+  .single();
 
-    const { data: partnerLangData } = await supabase
-      .from("partners")
-      .select("language_code")
-      .eq("id", selectedOrder.partner_id)
-      .single();
+const { data: partnerLangData } = await supabase
+  .from("partners")
+  .select("preferred_language")
+  .eq("id", selectedOrder.partner_id)
+  .single();
 
-    const sourceLanguage = partnerLangData?.language_code || "vi";
-    const targetLanguage = clientLangData?.language_code || "en";
+const sourceLanguage =
+  partnerLangData?.preferred_language || "vi";
+
+const targetLanguage =
+  clientLangData?.preferred_language || "en";
 
     let translatedText = newMessage;
 

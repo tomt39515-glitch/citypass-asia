@@ -896,22 +896,20 @@ setShowReviewModal(false);
       onClick={async () => {
         try {
           if (!newMessage.trim()) return;
-
-          const { data: clientLangData } = await supabase
+const { data: clientLangData } = await supabase
   .from("clients")
-  .select("language_code")
+  .select("preferred_language")
   .eq("id", selectedOrder.client_id)
   .single();
 
 const { data: partnerLangData } = await supabase
   .from("partners")
-  .select("language_code,telegram_id")
+  .select("preferred_language,telegram_id")
   .eq("id", selectedOrder.partner_id)
   .single();
 
 const targetLanguage =
-  partnerLangData?.language_code || "vi";
-
+  partnerLangData?.preferred_language || "vi";
 let translatedText = newMessage;
 let sourceLanguage = "auto";
 
