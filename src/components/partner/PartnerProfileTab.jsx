@@ -4,6 +4,7 @@ import { supabase } from "../../supabase";
 export default function PartnerProfileTab({ onOpenTopup }) {
   const [partner, setPartner] = useState(null);
   const [description, setDescription] = useState("");
+const [preferredLanguage, setPreferredLanguage] = useState("vi");
 const [workingHours, setWorkingHours] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
@@ -42,6 +43,9 @@ setWorkingHours(currentPartner.working_hours || "");
       setLongitude(currentPartner.longitude || "");
       setCoverPhotoUrl(currentPartner.cover_photo_url || "");
       setPaymentQrUrl(currentPartner.payment_qr_url || "");
+setPreferredLanguage(
+  currentPartner.preferred_language || "vi"
+);
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -166,6 +170,7 @@ setWorkingHours(currentPartner.working_hours || "");
   working_hours: workingHours,
   latitude: latitude || null,
   longitude: longitude || null,
+  preferred_language: preferredLanguage,
 })
         .eq("id", partner.id);
 
@@ -314,7 +319,28 @@ setWorkingHours(currentPartner.working_hours || "");
         >
           📍 Определить локацию
         </button>
+<div style={{ marginBottom: "12px" }}>
+  <b>🌐 Язык общения</b>
 
+  <select
+    value={preferredLanguage}
+    onChange={(e) =>
+      setPreferredLanguage(e.target.value)
+    }
+    style={{
+      width: "100%",
+      marginTop: "8px",
+      borderRadius: "12px",
+      padding: "12px",
+      border: "1px solid #CBD5E1",
+      boxSizing: "border-box",
+    }}
+  >
+    <option value="vi">🇻🇳 Tiếng Việt</option>
+    <option value="en">🇺🇸 English</option>
+    <option value="ru">🇷🇺 Русский</option>
+  </select>
+</div>
         <button
           onClick={saveProfile}
           disabled={saving}
@@ -330,7 +356,7 @@ setWorkingHours(currentPartner.working_hours || "");
             fontWeight: 600,
             cursor: "pointer",
           }}
-        >
+ >
           {saving ? "Сохранение..." : "💾 Сохранить"}
         </button>
 
