@@ -2,7 +2,15 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 
 Deno.serve(async (req) => {
   try {
-    const { text, targetLanguage } = await req.json();
+    const bodyText = await req.text();
+
+    console.log("REQUEST BODY:", bodyText);
+
+    if (!bodyText) {
+      throw new Error("Empty request body");
+    }
+
+    const { text, targetLanguage } = JSON.parse(bodyText);
 
     if (!text || !targetLanguage) {
       return new Response(
@@ -31,6 +39,8 @@ Deno.serve(async (req) => {
         }
       );
     }
+
+    console.log("TRANSLATE REQUEST:", { text, targetLanguage });
 
     const response = await fetch(
       "https://api.openai.com/v1/chat/completions",
@@ -64,6 +74,8 @@ Return ONLY JSON:
     );
 
     const rawResponse = await response.text();
+
+    console.log("OPENAI STATUS:", response.status);
     console.log("OPENAI RAW:", rawResponse);
 
     if (!response.ok) {
@@ -71,16 +83,21 @@ Return ONLY JSON:
     }
 
     let data;
+
     try {
       data = JSON.parse(rawResponse);
-    } catch (e) {
+    } catch {
       throw new Error(`Invalid OpenAI JSON: ${rawResponse}`);
     }
 
-    const content =
-      data?.choices?.[0]?.message?.content || "";
+    const content = data?.choices?.[0]?.message?.content;
+
+    if (!content) {
+      throw new Error(`No content returned from OpenAI: ${JSON.stringify(data)}`);
+    }
 
     let parsed;
+
     try {
       parsed = JSON.parse(content);
     } catch {
