@@ -159,6 +159,9 @@ function App() {
     try {
       if (!telegramId) return;
 
+      const tgLanguage =
+        telegramUser?.language_code || "en";
+
       const {
         data: existingClient,
       } = await supabase
@@ -171,6 +174,13 @@ function App() {
         .maybeSingle();
 
       if (existingClient) {
+        await supabase
+          .from("clients")
+          .update({
+            telegram_language: tgLanguage,
+          })
+          .eq("telegram_id", String(telegramId));
+
         setClientId(existingClient.id);
         return;
       }
@@ -194,6 +204,9 @@ function App() {
             ),
             full_name: fullName,
             total_spent: 0,
+            language_code: tgLanguage,
+            telegram_language: tgLanguage,
+            preferred_language: tgLanguage,
           })
           .select()
           .single();

@@ -133,6 +133,14 @@ export default function AdminDashboard({
           app.business_name || ""
         ),
         category: String(app.category || ""),
+        telegram_language:
+          app.telegram_language || "vi",
+        preferred_language:
+          app.preferred_language ||
+          app.telegram_language ||
+          "vi",
+        language_code:
+          app.telegram_language || "vi",
         status: "approved",
         is_active: true,
         contact_person:

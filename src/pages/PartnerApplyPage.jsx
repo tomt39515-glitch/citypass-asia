@@ -77,6 +77,8 @@ export default function PartnerApplyPage({ telegramUser, onSuccess }) {
             {
               telegram_id: telegramUser.id,
               telegram_username: telegramUser.username || "",
+              telegram_language: telegramUser.language_code || "vi",
+              preferred_language: telegramUser.language_code || "vi",
               business_name: form.business_name,
               category: form.category,
               contact_name: form.contact_name,
