@@ -872,7 +872,7 @@ setShowReviewModal(false);
                 : "#FFFFFF",
           }}
         >
-          {msg.message}
+          {msg.translated_message || msg.message}
         </div>
       ))}
     </div>
@@ -950,9 +950,9 @@ const { error } = await supabase
     order_id: selectedOrder.id,
     sender_role: "client",
     sender_id: 0,
-    message: translatedText,
+    message: newMessage,
     original_message: newMessage,
-    translated_message: translatedText,
+    translated_message: newMessage,
     source_language: sourceLanguage,
     target_language: targetLanguage,
   });
