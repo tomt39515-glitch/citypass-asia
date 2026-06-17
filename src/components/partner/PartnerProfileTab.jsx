@@ -336,9 +336,66 @@ setPreferredLanguage(
       boxSizing: "border-box",
     }}
   >
-    <option value="vi">🇻🇳 Tiếng Việt</option>
-    <option value="en">🇺🇸 English</option>
-    <option value="ru">🇷🇺 Русский</option>
+   <option value="vi">🇻🇳 Tiếng Việt</option>
+<option value="en">🇺🇸 English</option>
+<option value="ru">🇷🇺 Русский</option>
+
+<option value="zh">🇨🇳 中文（简体）</option>
+<option value="zh-TW">🇹🇼 中文（繁體）</option>
+<option value="ko">🇰🇷 한국어</option>
+<option value="ja">🇯🇵 日本語</option>
+
+<option value="th">🇹🇭 ไทย</option>
+<option value="ms">🇲🇾 Bahasa Melayu</option>
+<option value="id">🇮🇩 Bahasa Indonesia</option>
+<option value="tl">🇵🇭 Filipino</option>
+
+<option value="hi">🇮🇳 हिन्दी</option>
+<option value="bn">🇧🇩 বাংলা</option>
+<option value="ur">🇵🇰 اردو</option>
+<option value="ta">🇮🇳 தமிழ்</option>
+
+<option value="tr">🇹🇷 Türkçe</option>
+<option value="ar">🇸🇦 العربية</option>
+<option value="fa">🇮🇷 فارسی</option>
+<option value="he">🇮🇱 עברית</option>
+
+<option value="uz">🇺🇿 Oʻzbekcha</option>
+<option value="tg">🇹🇯 Тоҷикӣ</option>
+<option value="kk">🇰🇿 Қазақша</option>
+<option value="ky">🇰🇬 Кыргызча</option>
+<option value="az">🇦🇿 Azərbaycanca</option>
+<option value="uk">🇺🇦 Українська</option>
+
+<option value="fr">🇫🇷 Français</option>
+<option value="de">🇩🇪 Deutsch</option>
+<option value="es">🇪🇸 Español</option>
+<option value="it">🇮🇹 Italiano</option>
+<option value="pt">🇵🇹 Português</option>
+<option value="nl">🇳🇱 Nederlands</option>
+<option value="pl">🇵🇱 Polski</option>
+<option value="cs">🇨🇿 Čeština</option>
+<option value="ro">🇷🇴 Română</option>
+<option value="el">🇬🇷 Ελληνικά</option>
+<option value="sv">🇸🇪 Svenska</option>
+<option value="no">🇳🇴 Norsk</option>
+<option value="da">🇩🇰 Dansk</option>
+<option value="fi">🇫🇮 Suomi</option>
+
+<option value="sw">🇰🇪 Kiswahili</option>
+<option value="am">🇪🇹 አማርኛ</option>
+<option value="ha">🇳🇬 Hausa</option>
+<option value="yo">🇳🇬 Yoruba</option>
+
+<option value="sr">🇷🇸 Српски</option>
+<option value="hr">🇭🇷 Hrvatski</option>
+<option value="sk">🇸🇰 Slovenčina</option>
+<option value="sl">🇸🇮 Slovenščina</option>
+<option value="hu">🇭🇺 Magyar</option>
+
+<option value="be">🇧🇾 Беларуская</option>
+<option value="hy">🇦🇲 Հայերեն</option>
+<option value="ka">🇬🇪 ქართული</option>
   </select>
 </div>
         <button
