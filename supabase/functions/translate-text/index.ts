@@ -4,9 +4,6 @@ Deno.serve(async (req) => {
   try {
     const { text, targetLanguage } = await req.json();
 
-    console.log("INPUT TEXT:", text);
-    console.log("TARGET LANGUAGE:", targetLanguage);
-
     if (!text || !targetLanguage) {
       return new Response(
         JSON.stringify({ error: "text and targetLanguage are required" }),
@@ -116,7 +113,6 @@ Required format:
 
     return new Response(
       JSON.stringify({
-        debugText: text,
         sourceLanguage: parsed.sourceLanguage || "unknown",
         translated: parsed.translated || text,
       }),
