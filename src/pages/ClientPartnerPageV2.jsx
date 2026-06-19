@@ -752,6 +752,48 @@ table_number:
           order_number: orderNumber,
           total_amount: totalAmount,
         });
+console.log(
+  "PARTNER OBJECT",
+  JSON.stringify(partner)
+);
+
+console.log(
+  "PARTNER LANGUAGE",
+  partner?.preferred_language
+);
+console.log(
+  "PARTNER FULL OBJECT",
+  JSON.stringify(partner)
+);
+
+console.log(
+  "PARTNER LANGUAGE",
+  partner?.preferred_language
+);
+      const partnerLang = "tr";
+
+      const getTemplate = async (key, fallback) => {
+        const { data, error } = await supabase
+          .from("notification_templates")
+          .select("message")
+          .eq("template_key", key)
+          .eq("language_code", partnerLang);
+
+        console.log("TEMPLATE KEY:", key);
+        console.log("PARTNER LANG:", partnerLang);
+        console.log("TEMPLATE DATA:", data);
+        console.log("TEMPLATE ERROR:", error);
+
+        if (error) return fallback;
+        return data?.[0]?.message || fallback;
+      };
+
+      const acceptButton = await getTemplate("accept_button", "Accept");
+      const preparingButton = await getTemplate("preparing_button", "Preparing");
+      const readyButton = await getTemplate("ready_button", "Ready");
+      const completedButton = await getTemplate("completed_button", "Completed");
+      const changeTableButton = await getTemplate("change_table_button", "Change table");
+      const paymentButton = await getTemplate("payment_button", "Payment");
 
       const response = await fetch(
   "https://doswzyuumcwxjmltcgeh.supabase.co/functions/v1/send-telegram-notification",
@@ -787,12 +829,12 @@ ${totalAmount.toLocaleString()} ₫`,
 
       reply_markup: {
         inline_keyboard: [
-          [{ text: "✅ Принять", callback_data: `accept_${order.id}` }],
-          [{ text: "👨‍🍳 Готовится", callback_data: `prepare_${order.id}` }],
-          [{ text: "🍽 Заказ готов", callback_data: `ready_${order.id}` }],
-          [{ text: "✅ Выдан клиенту", callback_data: `complete_${order.id}` }],
-          [{ text: "✏️ Изменить стол", callback_data: `table_${order.id}` }],
-          [{ text: "💰 Подтвердить оплату", callback_data: `paid_${order.id}` }],
+          [{ text: acceptButton, callback_data: `accept_${order.id}` }],
+          [{ text: preparingButton, callback_data: `prepare_${order.id}` }],
+          [{ text: readyButton, callback_data: `ready_${order.id}` }],
+          [{ text: completedButton, callback_data: `complete_${order.id}` }],
+          [{ text: changeTableButton, callback_data: `table_${order.id}` }],
+          [{ text: paymentButton, callback_data: `paid_${order.id}` }],
         ],
       },
     }),

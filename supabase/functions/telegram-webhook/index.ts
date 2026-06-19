@@ -177,7 +177,19 @@ Deno.serve(async (req) => {
         JSON.stringify(result)
       );
     }
+async function getTranslation(
+  templateKey: string,
+  languageCode = "en"
+) {
+  const { data } = await supabase
+    .from("notification_templates")
+    .select("message")
+    .eq("template_key", templateKey)
+    .eq("language_code", languageCode)
+    .maybeSingle();
 
+  return data?.message || templateKey;
+}
     async function changeStatus(
       orderId: number,
       nextStatus: string,
@@ -264,34 +276,32 @@ Deno.serve(async (req) => {
         JSON.stringify(result)
       );
 
-      const { data: client } =
-        await supabase
-          .from("clients")
-          .select("telegram_id")
-          .eq(
-            "id",
-            order.client_id
-          )
-          .single();
+     const { data: client } =
+  await supabase
+    .from("clients")
+    .select("telegram_id, preferred_language")
+    .eq("id", order.client_id)
+    .single();
 
-      const statusMessages: Record<
-        string,
-        string
-      > = {
-        accepted:
-          "✅ Ваш заказ принят в работу",
-        preparing:
-          "👨‍🍳 Ваш заказ готовится",
-        ready:
-          "🍽 Ваш заказ готов",
-        completed:
-          "✅ Ваш заказ выдан. Спасибо за посещение",
-      };
+const lang =
+  client?.preferred_language || "en";
 
-      if (
-        client?.telegram_id &&
-        statusMessages[nextStatus]
-      ) {
+const templateKey =
+  `order_${nextStatus}`;
+
+const { data: template } =
+  await supabase
+    .from("notification_templates")
+    .select("message")
+    .eq("template_key", templateKey)
+    .eq("language_code", lang)
+    .maybeSingle();
+
+const statusMessage =
+  template?.message ||
+  "Order status updated";
+
+      if (client?.telegram_id) {
         try {
           const tgResponse =
             await fetch(
@@ -307,7 +317,7 @@ Deno.serve(async (req) => {
                     client.telegram_id
                   ),
                   text:
-                    `${statusMessages[nextStatus]}\n\nЗаказ №${order.order_number}`,
+                    `${statusMessage}\n\nOrder #${order.order_number}`,
                 }),
               }
             );
@@ -341,6 +351,23 @@ Deno.serve(async (req) => {
 
 if (data.startsWith("accept_addon_")) {
   const orderId = Number(data.replace("accept_addon_", ""));
+const order = await getOrder(orderId);
+
+const { data: partner } =
+  await supabase
+    .from("partners")
+    .select("preferred_language")
+    .eq("id", order.partner_id)
+    .single();
+
+const partnerLang =
+  partner?.preferred_language || "en";
+
+const preparingButton =
+  await getTranslation(
+    "preparing_button",
+    partnerLang
+  );
   const telegramId = String(callback.from.id);
 
   const { data: staff } = await supabase
@@ -366,7 +393,12 @@ if (data.startsWith("accept_addon_")) {
       reply_markup: {
         inline_keyboard: [
           [{ text: `👨‍🍳 ${staff.full_name}`, callback_data: "addon_accepted" }],
-          [{ text: "🍳 Готовится", callback_data: `addon_prepare_${orderId}` }]
+         [
+  {
+    text: preparingButton,
+    callback_data: `addon_prepare_${orderId}`,
+  },
+]
         ]
       }
     })
@@ -416,19 +448,52 @@ if (data.startsWith("addon_ready_")) {
 }
 
 if (data.startsWith("addon_serve_")) {
-  await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: callback.message.chat.id,
-      message_id: callback.message.message_id,
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "✅ Выдано", callback_data: "done" }]
-        ]
-      }
-    })
-  });
+  const orderId = Number(
+    data.replace("addon_serve_", "")
+  );
+
+  const order = await getOrder(orderId);
+
+  const { data: partner } =
+    await supabase
+      .from("partners")
+      .select("preferred_language")
+      .eq("id", order.partner_id)
+      .single();
+
+  const partnerLang =
+    partner?.preferred_language || "en";
+
+  const completedButton =
+    await getTranslation(
+      "completed_button",
+      partnerLang
+    );
+
+  await fetch(
+    `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        chat_id: callback.message.chat.id,
+        message_id: callback.message.message_id,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: completedButton,
+                callback_data: "done",
+              },
+            ],
+          ],
+        },
+      }),
+    }
+  );
 
   return new Response("ok");
 }
@@ -482,6 +547,21 @@ console.log(
 
   const order =
     await getOrder(orderId);
+const { data: partner } =
+  await supabase
+    .from("partners")
+    .select("preferred_language")
+    .eq("id", order.partner_id)
+    .single();
+
+const partnerLang =
+  partner?.preferred_language || "en";
+
+const preparingButton =
+  await getTranslation(
+    "preparing_button",
+    partnerLang
+  );
 
   if (
     order.assigned_staff_id
@@ -566,11 +646,9 @@ console.log(
               ],
               [
                 {
-                  text:
-                    "🍳 Готовится",
-                  callback_data:
-                    `prepare_${orderId}`,
-                },
+  text: preparingButton,
+  callback_data: `prepare_${orderId}`,
+}
               ],
             ],
           },
@@ -589,17 +667,39 @@ console.log(
   );
 }
 
-    if (
-      data.startsWith(
-        "prepare_"
-      )
-    ) {
-      const orderId =
-        Number(
-          data.replace(
-            "prepare_",
-            ""
-          )
+    if (data.startsWith("prepare_")) {
+      const orderId = Number(
+        data.replace("prepare_", "")
+      );
+
+      const order = await getOrder(orderId);
+
+      const { data: partner } =
+        await supabase
+          .from("partners")
+          .select("preferred_language")
+          .eq("id", order.partner_id)
+          .single();
+
+      const partnerLang =
+        partner?.preferred_language || "en";
+
+      const readyButton =
+        await getTranslation(
+          "ready_button",
+          partnerLang
+        );
+
+      const paymentButton =
+        await getTranslation(
+          "payment_button",
+          partnerLang
+        );
+
+      const changeTableButton =
+        await getTranslation(
+          "change_table_button",
+          partnerLang
         );
 
       const success =
@@ -624,19 +724,19 @@ console.log(
                 inline_keyboard: [
                   [
                     {
-                      text: "🍽 Заказ готов",
+                      text: readyButton,
                       callback_data: `ready_${orderId}`,
                     },
                   ],
                   [
                     {
-                      text: "✏️ Изменить стол",
+                      text: changeTableButton,
                       callback_data: `table_${orderId}`,
                     },
                   ],
                   [
                     {
-                      text: "💰 Подтвердить оплату",
+                      text: paymentButton,
                       callback_data: `paid_${orderId}`,
                     },
                   ],
@@ -650,17 +750,39 @@ console.log(
       return new Response("ok");
     }
 
-    if (
-      data.startsWith(
-        "ready_"
-      )
-    ) {
-      const orderId =
-        Number(
-          data.replace(
-            "ready_",
-            ""
-          )
+    if (data.startsWith("ready_")) {
+      const orderId = Number(
+        data.replace("ready_", "")
+      );
+
+      const order = await getOrder(orderId);
+
+      const { data: partner } =
+        await supabase
+          .from("partners")
+          .select("preferred_language")
+          .eq("id", order.partner_id)
+          .single();
+
+      const partnerLang =
+        partner?.preferred_language || "en";
+
+      const serveButton =
+        await getTranslation(
+          "serve_button",
+          partnerLang
+        );
+
+      const paymentButton =
+        await getTranslation(
+          "payment_button",
+          partnerLang
+        );
+
+      const changeTableButton =
+        await getTranslation(
+          "change_table_button",
+          partnerLang
         );
 
       const success =
@@ -685,19 +807,19 @@ console.log(
                 inline_keyboard: [
                   [
                     {
-                      text: "✅ Выдать клиенту",
+                      text: serveButton,
                       callback_data: `serve_${orderId}`,
                     },
                   ],
                   [
                     {
-                      text: "✏️ Изменить стол",
+                      text: changeTableButton,
                       callback_data: `table_${orderId}`,
                     },
                   ],
                   [
                     {
-                      text: "💰 Подтвердить оплату",
+                      text: paymentButton,
                       callback_data: `paid_${orderId}`,
                     },
                   ],
@@ -723,7 +845,17 @@ console.log(
             ""
           )
         );
+const order = await getOrder(orderId);
 
+const { data: partner } =
+  await supabase
+    .from("partners")
+    .select("preferred_language")
+    .eq("id", order.partner_id)
+    .single();
+
+const partnerLang =
+  partner?.preferred_language || "en";
       const success =
         await changeStatus(
           orderId,
@@ -746,13 +878,13 @@ console.log(
                 inline_keyboard: [
                   [
                     {
-                      text: "✅ Выдано",
+                      text: await getTranslation("completed_button", partnerLang),
                       callback_data: "done",
                     },
                   ],
                   [
                     {
-                      text: "💰 Подтвердить оплату",
+                      text: await getTranslation("payment_button", partnerLang),
                       callback_data: `paid_${orderId}`,
                     },
                   ],
@@ -830,7 +962,36 @@ if (
   const orderId = Number(
     data.replace("paid_", "")
   );
+const order =
+  await getOrder(orderId);
 
+const { data: partner } =
+  await supabase
+    .from("partners")
+    .select("preferred_language")
+    .eq("id", order.partner_id)
+    .single();
+
+const partnerLang =
+  partner?.preferred_language || "en";
+
+const cashButton =
+  await getTranslation(
+    "cash_button",
+    partnerLang
+  );
+
+const cardButton =
+  await getTranslation(
+    "card_button",
+    partnerLang
+  );
+
+const qrButton =
+  await getTranslation(
+    "qr_button",
+    partnerLang
+  );
   await fetch(
     `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
     {
@@ -845,19 +1006,18 @@ if (
           inline_keyboard: [
             [
               {
-                text: "💵 Наличные",
+                text: cashButton,
                 callback_data: `payment_cash_${orderId}`,
               },
             ],
             [
               {
-                text: "💳 Карта",
+                text: cardButton,
                 callback_data: `payment_card_${orderId}`,
               },
             ],
             [
-              {
-                text: "📱 QR",
+              {text: qrButton,
                 callback_data: `payment_qr_${orderId}`,
               },
             ],
@@ -867,9 +1027,15 @@ if (
     }
   );
 
-  await answer(
-    "Выберите способ оплаты"
+ const choosePaymentText =
+  await getTranslation(
+    "choose_payment_method",
+    partnerLang
   );
+
+await answer(
+  choosePaymentText
+);
 
   return new Response("ok");
 }
@@ -907,12 +1073,53 @@ if (
     })
     .eq("id", orderId);
 
-  const methodText =
-    paymentMethod === "cash"
-      ? "💵 Наличные"
-      : paymentMethod === "card"
-      ? "💳 Карта"
-      : "📱 QR";
+ const { data: partner } =
+  await supabase
+    .from("partners")
+    .select("preferred_language")
+    .eq("id", order.partner_id)
+    .single();
+
+const partnerLang =
+  partner?.preferred_language || "en";
+
+const cashButton =
+  await getTranslation(
+    "cash_button",
+    partnerLang
+  );
+
+const cardButton =
+  await getTranslation(
+    "card_button",
+    partnerLang
+  );
+
+const qrButton =
+  await getTranslation(
+    "qr_button",
+    partnerLang
+  );
+
+const paymentReceivedButton =
+  await getTranslation(
+    "payment_received_button",
+    partnerLang
+  );
+
+const cancelButton =
+  await getTranslation(
+    "cancel_button",
+    partnerLang
+  );
+
+
+const methodText =
+  paymentMethod === "cash"
+    ? cashButton
+    : paymentMethod === "card"
+    ? cardButton
+    : qrButton;
 
   await fetch(
     `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
@@ -931,15 +1138,14 @@ if (
           inline_keyboard: [
             [
               {
-                text:
-                  "✅ Оплата получена",
+                text: paymentReceivedButton,
                 callback_data:
                   `confirm_payment_${orderId}`,
               },
             ],
             [
               {
-                text: "❌ Отмена",
+                text: cancelButton,
                 callback_data:
                   `cancel_payment_${orderId}`,
               },
@@ -958,6 +1164,7 @@ if (
 
   return new Response("ok");
 }
+
 if (
   data.startsWith(
     "confirm_payment_"
@@ -999,7 +1206,24 @@ if (
       "ok"
     );
   }
+const order =
+  await getOrder(orderId);
 
+const { data: partner } =
+  await supabase
+    .from("partners")
+    .select("preferred_language")
+    .eq("id", order.partner_id)
+    .single();
+
+const partnerLang =
+  partner?.preferred_language || "en";
+
+const billClosedButton =
+  await getTranslation(
+    "bill_closed_button",
+    partnerLang
+  );
   await fetch(
     `https://api.telegram.org/bot${token}/editMessageReplyMarkup`,
     {
@@ -1018,7 +1242,7 @@ if (
             [
               {
                 text:
-                  "🔒 Счёт закрыт",
+  billClosedButton,
                 callback_data:
                   "done",
               },
@@ -1029,16 +1253,31 @@ if (
     }
   );
 
-  const order =
-    await getOrder(orderId);
+ 
 
   const { data: client } =
     await supabase
       .from("clients")
-      .select("telegram_id")
+      .select("telegram_id, preferred_language")
       .eq("id", order.client_id)
       .single();
+const { data: paymentTemplate } =
+  await supabase
+    .from("notification_templates")
+    .select("message")
+    .eq(
+      "template_key",
+      "payment_confirmed"
+    )
+    .eq(
+      "language_code",
+      client?.preferred_language || "en"
+    )
+    .maybeSingle();
 
+const paymentText =
+  paymentTemplate?.message ||
+  "Payment confirmed";
   if (client?.telegram_id) {
     await fetch(
       `https://api.telegram.org/bot${token}/sendMessage`,
@@ -1049,12 +1288,12 @@ if (
         },
         body: JSON.stringify({
           chat_id: Number(client.telegram_id),
-          text:
-            `💳 Оплата подтверждена
+         text:
+`${paymentText}
 
-Заказ №${order.order_number}
+Order #${order.order_number}
 
-Сумма: ${order.total_amount || 0} ₫`,
+Amount: ${order.total_amount || 0} ₫`,
         }),
       }
     );
@@ -1196,6 +1435,22 @@ const orderText = (pendingOrder.cart || [])
   )
   .join("\n");
 
+const { data: addonPartner } =
+  await supabase
+    .from("partners")
+    .select("preferred_language")
+    .eq("id", pendingOrder.partner_id)
+    .single();
+
+const addonLang =
+  addonPartner?.preferred_language || "en";
+
+const acceptButton =
+  await getTranslation(
+    "accept_button",
+    addonLang
+  );
+
 const messageText =
   `🆕 ДОЗАКАЗ К СТОЛУ ${pendingOrder.table_number}\n\n` +
   orderText +
@@ -1215,7 +1470,7 @@ await fetch(
         inline_keyboard: [
           [
             {
-              text: "✅ Принять",
+              text: acceptButton,
               callback_data: `accept_addon_${existingOrder.id}`,
             },
           ],
