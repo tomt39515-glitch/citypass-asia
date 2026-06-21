@@ -770,7 +770,8 @@ console.log(
   "PARTNER LANGUAGE",
   partner?.preferred_language
 );
-      const partnerLang = "tr";
+      const partnerLang =
+  partner?.preferred_language || "en";
 
       const getTemplate = async (key, fallback) => {
         const { data, error } = await supabase
@@ -784,11 +785,27 @@ console.log(
         console.log("TEMPLATE DATA:", data);
         console.log("TEMPLATE ERROR:", error);
 
-        if (error) return fallback;
-        return data?.[0]?.message || fallback;
-      };
+       if (error) {
+  return `ERROR:${key}`;
+}
 
-      const acceptButton = await getTemplate("accept_button", "Accept");
+if (!data || data.length === 0) {
+  return `EMPTY:${key}`;
+}
+
+return data[0].message;
+};
+
+      
+      const newOrderTitle = await getTemplate("new_order_title", "New Order");
+      const orderLabel = await getTemplate("order_label", "Order");
+      const clientLabel = await getTemplate("client_label", "Client");
+      const telegramLabel = await getTemplate("telegram_label", "Telegram");
+      const tableLabel = await getTemplate("table_label", "Table");
+      const itemsLabel = await getTemplate("items_label", "Items");
+      const totalLabel = await getTemplate("total_label", "Total");
+
+const acceptButton = await getTemplate("accept_button", "Accept");
       const preparingButton = await getTemplate("preparing_button", "Preparing");
       const readyButton = await getTemplate("ready_button", "Ready");
       const completedButton = await getTemplate("completed_button", "Completed");
@@ -806,25 +823,25 @@ console.log(
       chat_id: String(partner.telegram_id),
 
       text:
-`🆕 Новый заказ
+`🆕 ${newOrderTitle}
 
-Заказ: ${orderNumber}
+${orderLabel}: ${orderNumber}
 
-Клиент:
-${client.full_name || "Гость"}
+${clientLabel}:
+${client.full_name || "Guest"}
 
-Telegram:
+${telegramLabel}:
 ${client.telegram_id}
 
-Столик:
+${tableLabel}:
 ${tableNumber || "-"}
 
-Состав заказа:
+${itemsLabel}:
 ${cart
-  .map(item => item.is_special_offer ? `• ${item.name} × ${item.quantity}\n🔥 АКЦИЯ\n${item.offer_text || ""}` : `• ${item.name} × ${item.quantity}`)
+  .map(item => item.is_special_offer ? `• ${item.name} × ${item.quantity}\n🔥 ${item.offer_text || ""}` : `• ${item.name} × ${item.quantity}`)
   .join("\n")}
 
-Сумма:
+${totalLabel}:
 ${totalAmount.toLocaleString()} ₫`,
 
       reply_markup: {
