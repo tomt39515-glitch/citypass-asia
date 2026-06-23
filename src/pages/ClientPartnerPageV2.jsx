@@ -1405,16 +1405,16 @@ finally {
       </h3>
 
 {clientLanguage !== "en" && !translationsLoaded ? (
-  <div style={{padding:20,fontWeight:600}}>Загрузка переводов...</div>
+  <div style={{ padding: 20, fontWeight: 600 }}>
+    Загрузка переводов...
+  </div>
 ) : (
+  <>
+    {products.length === 0 && (
+      <div>Товары отсутствуют</div>
+    )}
 
-      {products.length ===
-        0 && (
-        <div>
-          Товары отсутствуют
-        </div>
-      )}
-<div
+    <div
   style={{
     display: "grid",
     gridTemplateColumns:
@@ -1655,8 +1655,8 @@ position: "relative",
 </div>
 ))}
 </div>
+  </>
 )}
-
 {selectedProduct && (
   <ProductModal
     product={{
