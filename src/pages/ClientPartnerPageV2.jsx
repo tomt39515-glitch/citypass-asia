@@ -110,15 +110,11 @@ async function loadTranslations(productsList) {
 
   const translated = {};
 
-  setTranslations({});
-
-  const productIds = productsList.map(p => p.id);
-
+  // Загружаем уже существующие переводы одним запросом
   const { data: existingTranslations = [] } = await supabase
     .from("product_translations")
     .select("*")
-    .eq("language_code", clientLanguage)
-    .in("product_id", productIds);
+    .eq("language_code", clientLanguage);
 
   const translationsMap = Object.fromEntries(
     existingTranslations.map(t => [t.product_id, t])
@@ -130,6 +126,11 @@ async function loadTranslations(productsList) {
 
     if (existing) {
       translated[product.id] = existing;
+
+      setTranslations(prev => ({
+        ...prev,
+        [product.id]: existing,
+      }));
 
       continue;
     }
@@ -221,6 +222,14 @@ translated[product.id] = {
   name: translatedName,
   description: translatedDescription,
 };
+
+setTranslations(prev => ({
+  ...prev,
+  [product.id]: {
+    name: translatedName,
+    description: translatedDescription,
+  }
+}));
 
     } catch (err) {
       console.error(
