@@ -45,6 +45,7 @@ const [showCartSheet, setShowCartSheet] =
 
 const [clientLanguage, setClientLanguage] = useState("en");
 const [translations, setTranslations] = useState({});
+const [translationsLoaded, setTranslationsLoaded] = useState(false);
  useEffect(() => {
   loadProducts();
   loadReviews();
@@ -91,6 +92,7 @@ useEffect(() => {
   }
 }, [clientLanguage, products]);
 async function loadTranslations(productsList) {
+  setTranslationsLoaded(false);
 
   console.log(
     "LOAD TRANSLATIONS START",
@@ -240,6 +242,7 @@ setTranslations(prev => ({
   }
 
   setTranslations(translated);
+  setTranslationsLoaded(true);
 }
 
 
@@ -1401,6 +1404,10 @@ finally {
         Меню
       </h3>
 
+{clientLanguage !== "en" && !translationsLoaded ? (
+  <div style={{padding:20,fontWeight:600}}>Загрузка переводов...</div>
+) : (
+
       {products.length ===
         0 && (
         <div>
@@ -1648,6 +1655,8 @@ position: "relative",
 </div>
 ))}
 </div>
+)}
+
 {selectedProduct && (
   <ProductModal
     product={{
