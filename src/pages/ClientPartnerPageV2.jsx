@@ -110,14 +110,15 @@ async function loadTranslations(productsList) {
 
   const translated = {};
 
-  // Сбрасываем предыдущие переводы перед новой загрузкой
   setTranslations({});
 
-  // Загружаем уже существующие переводы одним запросом
+  const productIds = productsList.map(p => p.id);
+
   const { data: existingTranslations = [] } = await supabase
     .from("product_translations")
     .select("*")
-    .eq("language_code", clientLanguage);
+    .eq("language_code", clientLanguage)
+    .in("product_id", productIds);
 
   const translationsMap = Object.fromEntries(
     existingTranslations.map(t => [t.product_id, t])
