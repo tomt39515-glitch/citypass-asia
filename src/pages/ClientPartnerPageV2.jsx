@@ -45,7 +45,6 @@ const [showCartSheet, setShowCartSheet] =
 
 const [clientLanguage, setClientLanguage] = useState("en");
 const [translations, setTranslations] = useState({});
-const [translationsLoaded, setTranslationsLoaded] = useState(false);
  useEffect(() => {
   loadProducts();
   loadReviews();
@@ -93,8 +92,6 @@ useEffect(() => {
 }, [clientLanguage, products]);
 async function loadTranslations(productsList) {
 
-  setTranslationsLoaded(false);
-
   console.log(
     "LOAD TRANSLATIONS START",
     {
@@ -108,7 +105,6 @@ async function loadTranslations(productsList) {
   if (
     clientLanguage === "en"
   ) {
-    setTranslationsLoaded(true);
     return;
   }
 
@@ -130,7 +126,13 @@ async function loadTranslations(productsList) {
 
     if (existing) {
       translated[product.id] = existing;
-continue;
+
+      setTranslations(prev => ({
+        ...prev,
+        [product.id]: existing,
+      }));
+
+      continue;
     }
 
     try {
@@ -220,7 +222,16 @@ translated[product.id] = {
   name: translatedName,
   description: translatedDescription,
 };
-} catch (err) {
+
+setTranslations(prev => ({
+  ...prev,
+  [product.id]: {
+    name: translatedName,
+    description: translatedDescription,
+  }
+}));
+
+    } catch (err) {
       console.error(
         "Translation error",
         err
@@ -229,7 +240,6 @@ translated[product.id] = {
   }
 
   setTranslations(translated);
-  setTranslationsLoaded(true);
 }
 
 
