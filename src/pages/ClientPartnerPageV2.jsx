@@ -42,10 +42,206 @@ const [
 
 const [showCartSheet, setShowCartSheet] =
   useState(false);
+
+const [clientLanguage, setClientLanguage] = useState("en");
+const [translations, setTranslations] = useState({});
  useEffect(() => {
   loadProducts();
   loadReviews();
+  loadClientLanguage();
 }, [partner]);
+
+
+async function loadClientLanguage() {
+  try {
+    const telegramId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+    if (!telegramId) return;
+    const { data } = await supabase
+      .from("clients")
+      .select("preferred_language, telegram_language")
+      .eq("telegram_id", String(telegramId))
+      .single();
+
+    setClientLanguage(
+      data?.preferred_language ||
+      data?.telegram_language ||
+      "en"
+    );
+console.log(
+  "CLIENT DATA",
+  data
+);
+
+console.log(
+  "CLIENT LANGUAGE DETECTED",
+  data?.preferred_language ||
+  data?.telegram_language ||
+  "en"
+);
+  } catch (e) {
+    console.error(e);
+  }
+}
+useEffect(() => {
+  if (
+    clientLanguage &&
+    products.length > 0
+  ) {
+    loadTranslations(products);
+  }
+}, [clientLanguage, products]);
+async function loadTranslations(productsList) {
+
+  console.log(
+    "LOAD TRANSLATIONS START",
+    {
+      clientLanguage,
+      products: productsList.length,
+    }
+  );
+
+  if (!productsList?.length) return;
+
+  if (
+    clientLanguage === "en"
+  ) {
+    return;
+  }
+
+  const translated = {};
+
+  // Загружаем уже существующие переводы одним запросом
+  const { data: existingTranslations = [] } = await supabase
+    .from("product_translations")
+    .select("*")
+    .eq("language_code", clientLanguage);
+
+  const translationsMap = Object.fromEntries(
+    existingTranslations.map(t => [t.product_id, t])
+  );
+
+  for (const product of productsList) {
+
+    const existing = translationsMap[product.id];
+
+    if (existing) {
+      translated[product.id] = existing;
+
+      setTranslations(prev => ({
+        ...prev,
+        [product.id]: existing,
+      }));
+
+      continue;
+    }
+
+    try {
+
+    const { data: nameTranslation } =
+  await supabase.functions.invoke(
+    "translate-text",
+    {
+      body: {
+        text: product.name,
+        targetLanguage: clientLanguage,
+      },
+    }
+  );
+
+const { data: descriptionTranslation } =
+  await supabase.functions.invoke(
+    "translate-text",
+    {
+      body: {
+        text:
+          product.description || "",
+        targetLanguage:
+          clientLanguage,
+      },
+    }
+  );
+
+const translatedName =
+  nameTranslation?.translated ||
+  product.name;
+console.log(
+  "NAME TRANSLATION",
+  nameTranslation
+);
+
+console.log(
+  "CLIENT LANGUAGE",
+  clientLanguage
+);
+
+console.log(
+  "ORIGINAL NAME",
+  product.name
+);
+const translatedDescription =
+  descriptionTranslation?.translated ||
+  product.description ||
+  "";
+console.log(
+  "DESCRIPTION TRANSLATION",
+  descriptionTranslation
+);
+
+console.log(
+  "ORIGINAL DESCRIPTION",
+  product.description
+);
+const { data: insertData, error: insertError } =
+  await supabase
+    .from("product_translations")
+    .upsert({
+      product_id: product.id,
+      language_code: clientLanguage,
+      name: translatedName,
+      description: translatedDescription,
+    },{
+      onConflict: "product_id,language_code"
+    });
+
+console.log(
+  "INSERT RESULT",
+  insertData
+);
+
+console.log(
+  "INSERT ERROR",
+  insertError
+);
+
+console.log(
+  "TRANSLATION INSERT ERROR",
+  insertError
+);
+
+translated[product.id] = {
+  name: translatedName,
+  description: translatedDescription,
+};
+
+setTranslations(prev => ({
+  ...prev,
+  [product.id]: {
+    name: translatedName,
+    description: translatedDescription,
+  }
+}));
+
+    } catch (err) {
+      console.error(
+        "Translation error",
+        err
+      );
+    }
+  }
+
+  setTranslations(translated);
+}
+
 
   async function loadProducts() {
     if (!partner?.id) return;
@@ -75,6 +271,7 @@ const [showCartSheet, setShowCartSheet] =
     }
 
     setProducts(data || []);
+    
   }
 async function loadReviews() {
   if (!partner?.id) return;
@@ -677,7 +874,7 @@ ${tableNumber || existingOrder.current_table_number || "-"}
 
 Состав дозаказа:
 ${cart
-  .map(item => item.is_special_offer ? `• ${item.name} × ${item.quantity}\n🔥 АКЦИЯ\n${item.offer_text || ""}` : `• ${item.name} × ${item.quantity}`)
+  .map(item => item.is_special_offer ? `• ${translations[item.id]?.name || item.name} × ${item.quantity}\n🔥 АКЦИЯ\n${item.offer_text || ""}` : `• ${item.name} × ${item.quantity}`)
   .join("\n")}
 
 Сумма дозаказа:
@@ -1393,7 +1590,7 @@ position: "relative",
     alignItems: "flex-start",
   }}
 >
-  {item.name}
+ {translations[item.id]?.name || item.name}
 </div>
 
 {item.is_special_offer && item.offer_text && (
@@ -1453,7 +1650,11 @@ position: "relative",
 </div>
 {selectedProduct && (
   <ProductModal
-    product={selectedProduct}
+    product={{
+      ...selectedProduct,
+      name: translations[selectedProduct.id]?.name || selectedProduct.name,
+      description: translations[selectedProduct.id]?.description || selectedProduct.description,
+    }}
     onClose={() =>
       setSelectedProduct(null)
     }

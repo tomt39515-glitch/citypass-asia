@@ -20,6 +20,7 @@ export default function PartnerProductsTab() {
   const [offerText, setOfferText] = useState("");
   const [offerStartsAt, setOfferStartsAt] = useState("");
   const [offerExpiresAt, setOfferExpiresAt] = useState("");
+  const [editingProductId, setEditingProductId] = useState(null);
 
 
   useEffect(() => {
@@ -218,27 +219,47 @@ export default function PartnerProductsTab() {
         photoUrl = data.publicUrl;
       }
 
-      const { error } = await supabase
-        .from("partner_products")
-        .insert({
-          partner_id: partner.id,
-          category,
-          name,
-          description,
-          price: Number(price || 0),
-          photo_url: photoUrl,
-          is_active: true,
-        });
+      let error;
+
+      if (editingProductId) {
+        const result = await supabase
+          .from("partner_products")
+          .update({
+            category,
+            name,
+            description,
+            price: Number(price || 0),
+            ...(photoUrl ? { photo_url: photoUrl } : {}),
+          })
+          .eq("id", editingProductId);
+
+        error = result.error;
+      } else {
+        const result = await supabase
+          .from("partner_products")
+          .insert({
+            partner_id: partner.id,
+            category,
+            name,
+            description,
+            price: Number(price || 0),
+            photo_url: photoUrl,
+            is_active: true,
+          });
+
+        error = result.error;
+      }
 
       if (error) throw error;
 
-      alert("Товар успешно добавлен");
+      alert(editingProductId ? "Товар обновлен" : "Товар успешно добавлен");
 
       setCategory("");
       setName("");
       setDescription("");
       setPrice("");
       setPhoto(null);
+      setEditingProductId(null);
 
       await loadProducts(partner.id);
     } catch (err) {
@@ -332,7 +353,7 @@ export default function PartnerProductsTab() {
         >
           {saving
             ? "Сохранение..."
-            : "Добавить товар"}
+            : editingProductId ? "Сохранить изменения" : "Добавить товар"}
         </button>
       </div>
 
@@ -522,6 +543,32 @@ export default function PartnerProductsTab() {
                 )}
               </div>
             )}
+
+            <button
+              onClick={() => {
+                setEditingProductId(item.id);
+                setCategory(item.category || "");
+                setName(item.name || "");
+                setDescription(item.description || "");
+                setPrice(item.price || "");
+                window.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
+              }}
+              style={{
+                marginTop: 10,
+                marginRight: 10,
+                padding: "10px 14px",
+                borderRadius: 8,
+                border: "none",
+                cursor: "pointer",
+                background: "#3B82F6",
+                color: "#fff",
+              }}
+            >
+              ✏️ Редактировать
+            </button>
 
             <button
               onClick={() =>
